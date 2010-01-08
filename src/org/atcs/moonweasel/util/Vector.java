@@ -16,6 +16,14 @@ public class Vector {
 		return new Vector(x + o.x, y + o.y, z + o.z);
 	}
 	
+	public float dot(Vector o) {
+		return x * o.x + y * o.y + x * o.z;
+	}
+	
+	public Vector cross(Vector o) {
+		return new Vector(y * o.z - z * o.y, z*o.x - x*o.z, x*o.y - y*o.x);
+	}
+	
 	public float length() {
 		return (float)Math.sqrt(x * x + y * y + z * z);
 	}

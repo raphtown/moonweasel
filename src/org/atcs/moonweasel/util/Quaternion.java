@@ -17,6 +17,10 @@ public class Quaternion {
 		return new Quaternion(w + o.w, x + o.x, y + o.y, z + o.z);
 	}
 	
+	public Quaternion multiply(Quaternion o) {
+		return new Quaternion(w*o.w - x*o.x - y*o.y - z*o.z, w*o.x + x*o.w + y*o.z - z*o.y, w*o.y - x*o.z + y*o.w + z*o.x, w*o.z + x*o.y - y*o.x + z*o.w);
+	}
+	
 	public float length() {
 		return (float)Math.sqrt(w * w + x * x + y * y + z * z);
 	}
