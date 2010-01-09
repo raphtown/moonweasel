@@ -22,9 +22,10 @@ public abstract class Entity implements Identifiable {
 	}
 	
 	protected void scheduleThink(int ms) {
-		
+		EntityManager.getEntityManager().registerThink(this, ms);
 	}
 	
 	public void think() {
+		System.out.println("??");
 	}
 }
