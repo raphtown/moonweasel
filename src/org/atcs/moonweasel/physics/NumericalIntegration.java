@@ -1,7 +1,8 @@
-package org.atcs.moonweasel.util;
+package org.atcs.moonweasel.physics;
 
-import org.atcs.moonweasel.entities.Derivative;
-import org.atcs.moonweasel.entities.State;
+import org.atcs.moonweasel.util.Derivative;
+import org.atcs.moonweasel.util.State;
+import org.atcs.moonweasel.util.Vector;
 
 public class NumericalIntegration
 {

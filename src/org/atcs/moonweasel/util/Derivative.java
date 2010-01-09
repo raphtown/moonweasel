@@ -1,6 +1,5 @@
-package org.atcs.moonweasel.entities;
+package org.atcs.moonweasel.util;
 
-import org.atcs.moonweasel.util.Vector;
 
 public class Derivative
 {

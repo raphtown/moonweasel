@@ -1,7 +1,7 @@
 package org.atcs.moonweasel.gui;
 
 import javax.media.nativewindow.NativeWindowFactory;
-import javax.media.opengl.GL;
+
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -20,21 +20,24 @@ public abstract class View implements GLEventListener, WindowListener {
 	private GLWindow window;
 	
 	private volatile boolean quit;
+	protected volatile float alpha;
 	
-	public View(int width, int height) {
+	public View(int width, int height, boolean fullscreen) {
 		this.quit = false;
 		
 		GLProfile profile = GLProfile.get(GLProfile.GL2);
 		GLCapabilities caps = new GLCapabilities(profile);
 		
 		NewtFactory.setUseEDT(true);
-        Display display = NewtFactory.createDisplay(NativeWindowFactory.TYPE_AWT, null); // local display
-        Screen screen  = NewtFactory.createScreen(NativeWindowFactory.TYPE_AWT, display, 0); // screen 0
+        Display display = NewtFactory.createDisplay(NativeWindowFactory.TYPE_AWT, null);
+        Screen screen  = NewtFactory.createScreen(NativeWindowFactory.TYPE_AWT, display, 0);
         Window nWindow = NewtFactory.createWindow(NativeWindowFactory.TYPE_AWT, screen, caps);
         window = GLWindow.create(nWindow);
+        window.enablePerfLog(true);
         
         window.setTitle("Moonweasel");
 		window.setSize(width, height);
+		window.setFullscreen(fullscreen);
 		
 		window.addGLEventListener(this);
 		window.addWindowListener(this);
@@ -46,16 +49,19 @@ public abstract class View implements GLEventListener, WindowListener {
 		window.destroy();
 	}	
 	
-	public void render() {
-		window.display();		
+	public final void render(float alpha) {
+		this.alpha = alpha;
+		window.display();
 	}
 	
-	public boolean shouldQuit() {
-		return quit;
+	protected abstract void display(GL2 gl, float alpha);
+	
+	public final void display(GLAutoDrawable drawable) {
+		display(drawable.getGL().getGL2(), alpha);
 	}
 
-	@Override
-	public void dispose(GLAutoDrawable drawable) {
+	public boolean shouldQuit() {
+		return quit;
 	}
 
 	@Override
@@ -64,26 +70,18 @@ public abstract class View implements GLEventListener, WindowListener {
 	}
 
 	@Override
-	public void windowGainedFocus(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void dispose(GLAutoDrawable drawable) {
 	}
 
 	@Override
-	public void windowLostFocus(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowGainedFocus(WindowEvent arg0) { }
 
 	@Override
-	public void windowMoved(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowLostFocus(WindowEvent arg0) {	}
 
 	@Override
-	public void windowResized(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowMoved(WindowEvent arg0) {	}
+
+	@Override
+	public void windowResized(WindowEvent arg0) { }
 }

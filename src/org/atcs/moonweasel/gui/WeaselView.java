@@ -8,8 +8,8 @@ public class WeaselView extends View {
 	private float y;
 	private float direction;
 	
-	public WeaselView(int width, int height) {
-		super(width, height);
+	public WeaselView(int width, int height, boolean fullscreen) {
+		super(width, height, fullscreen);
 
 		this.y = 2;
 		this.direction = 0.01f;
@@ -37,8 +37,7 @@ public class WeaselView extends View {
 	}
 	
 	@Override
-	public void display(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
+	public void display(GL2 gl, float alpha) {
 		gl.glClearColor(0.2f + y / 3, 0.2f, 0.2f, 0);
 		gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
 		gl.glLoadIdentity();
