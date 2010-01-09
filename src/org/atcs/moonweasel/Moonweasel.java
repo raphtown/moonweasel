@@ -93,7 +93,7 @@ public class Moonweasel {
 		while (!view.shouldQuit()) {
 			newTime = System.currentTimeMillis();
 			deltaTime = newTime - currentTime;
-			currentTime = deltaTime;
+			currentTime = newTime;
 			
 			accumulator += deltaTime;
 			while (accumulator >= dt) {
