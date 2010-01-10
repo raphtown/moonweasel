@@ -13,8 +13,6 @@ public class Snowflake extends Ship {
 	
 	@Override
 	public void spawn() {
-		super.spawn();
-		
 		time = System.currentTimeMillis();
 		scheduleThink(1000);
 	}
