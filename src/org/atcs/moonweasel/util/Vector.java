@@ -16,6 +16,10 @@ public class Vector {
 		return new Vector(x + o.x, y + o.y, z + o.z);
 	}
 	
+	public Vector subtract(Vector o) {
+		return new Vector(x - o.x, y - o.y, z - o.z);
+	}
+	
 	public float dot(Vector o) {
 		return x * o.x + y * o.y + x * o.z;
 	}

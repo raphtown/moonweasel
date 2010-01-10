@@ -7,7 +7,7 @@ public class Snowflake extends Ship {
 	
 	private long time;
 	
-	public Snowflake() {
+	private Snowflake() {
 		super(1000, new Vector[0], new Vector[0]);
 	}
 	

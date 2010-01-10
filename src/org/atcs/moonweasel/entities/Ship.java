@@ -3,7 +3,7 @@ package org.atcs.moonweasel.entities;
 import org.atcs.moonweasel.Player;
 import org.atcs.moonweasel.util.Vector;
 
-public class Ship extends ModelEntity implements Collidable {
+public class Ship extends ModelEntity {
 	private Player pilot;
 	private Player[] gunners;
 	private Vector[] gunnerPositions;

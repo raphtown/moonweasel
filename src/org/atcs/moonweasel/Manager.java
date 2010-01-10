@@ -1,9 +1,13 @@
 package org.atcs.moonweasel;
 
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-public abstract class Manager<T extends Identifiable> {
+import org.atcs.moonweasel.ranges.Range;
+
+public abstract class Manager<T extends Identifiable> implements Iterable<T> {
 	private Map<Integer, T> elements;
 	
 	protected Manager() {
@@ -18,8 +22,11 @@ public abstract class Manager<T extends Identifiable> {
 	public <E extends T> E create(String type) {
 		Class<E> clazz = (Class<E>)getClass(type);
 		E element;
+		
 		try {
-			element = clazz.newInstance();
+			Constructor<E> constructor = clazz.getDeclaredConstructor(new Class<?>[0]);
+			constructor.setAccessible(true);
+			element = constructor.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -28,7 +35,16 @@ public abstract class Manager<T extends Identifiable> {
 		return element;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <E extends T> E get(int id) {
+		return (E)elements.get(id);
+	}
+	
 	protected abstract Class<? extends T> getClass(String type);
+	
+	public Iterator<T> iterator() {
+		return new Range<T>(elements.values().iterator());
+	}
 	
 	public abstract void update();
 }

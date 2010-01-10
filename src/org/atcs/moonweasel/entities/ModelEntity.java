@@ -5,11 +5,12 @@ import java.util.Map;
 
 import javax.media.opengl.GL2;
 
+import org.atcs.moonweasel.Positional;
 import org.atcs.moonweasel.gui.Loader;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
-public abstract class ModelEntity extends Entity {
+public abstract class ModelEntity extends Entity implements Positional {
 	private final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
 	
 	static {
@@ -52,6 +53,10 @@ public abstract class ModelEntity extends Entity {
 	
 	public State getOldState() {
 		return this.oldState;
+	}
+	
+	public Vector getPosition() {
+		return state.position;
 	}
 	
 	public State getState() {

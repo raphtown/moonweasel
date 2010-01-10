@@ -20,6 +20,10 @@ public abstract class Entity implements Identifiable {
 	
 	public abstract void destroy();
 	public abstract void spawn();
+	
+	public <T extends Entity> T createEntity(String type) {
+		return EntityManager.getEntityManager().create(type);
+	}
 
 	public final int getID() {
 		return this.id;

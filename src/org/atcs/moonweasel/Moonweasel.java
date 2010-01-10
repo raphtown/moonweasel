@@ -20,6 +20,7 @@ public class Moonweasel {
 	
 	public static void main(String[] args) {
 		Moonweasel weasel = new Moonweasel(800, 600, false);
+
 		// weasel.seeFox();
 		weasel.run();
 		weasel.destroy(); // eaten
@@ -34,7 +35,7 @@ public class Moonweasel {
 	
 	private Moonweasel(int width, int height, boolean fullscreen) {
 		this.physics = new Physics();
-		this.view = new WeaselView(800, 600, fullscreen);
+		this.view = new WeaselView(width, height, fullscreen);
 		
 		this.entityManager = EntityManager.getEntityManager();
 		Snowflake snowflake = this.entityManager.create("snowflake");

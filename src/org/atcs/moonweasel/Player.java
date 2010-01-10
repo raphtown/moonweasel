@@ -15,7 +15,7 @@ public class Player extends Entity {
 	private int assists;
 	private int deaths;
 	
-	public Player() {
+	private Player() {
 		this.status = Status.DEAD;
 		this.ship = null;
 		
