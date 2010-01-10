@@ -38,6 +38,18 @@ public abstract class ModelEntity extends Entity implements Positional {
 		gl.glCallList(displayList);
 	}
 	
+	public State getOldState() {
+		return this.oldState;
+	}
+	
+	public Vector getPosition() {
+		return state.position;
+	}
+	
+	public State getState() {
+		return this.state;
+	}
+	
 	public void precache(GL2 gl) {
 		int list = gl.glGenLists(1);
 
@@ -50,18 +62,6 @@ public abstract class ModelEntity extends Entity implements Positional {
 			}
 		gl.glEndList();
 		DISPLAY_LISTS.put(this.getClass(), list);
-	}
-	
-	public State getOldState() {
-		return this.oldState;
-	}
-	
-	public Vector getPosition() {
-		return state.position;
-	}
-	
-	public State getState() {
-		return this.state;
 	}
 	
 	public void setState(State newState) {

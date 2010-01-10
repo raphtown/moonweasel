@@ -17,5 +17,4 @@ public class Derivative
 		this.spin = spin; //angular velocity
 		this.torque = torque;
 	}
-
 }
