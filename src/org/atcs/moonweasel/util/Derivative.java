@@ -3,14 +3,19 @@ package org.atcs.moonweasel.util;
 
 public class Derivative
 {
-	public Vector dx; //this is velocity vector
-	public Vector dv; //this is acceleration vector
+	public Vector velocity;
+	public Vector force;
+	public Quaternion spin;
+	public Vector torque;
 	
-	public Derivative(Vector dx, Vector dv)
+	public Derivative(){};
+	
+	public Derivative(Vector velocity, Vector force, Quaternion spin, Vector torque)
 	{
-		this.dx = dx;
-		this.dv = dv;
+		this.velocity = velocity;
+		this.force = force;
+		this.spin = spin; //angular velocity
+		this.torque = torque;
 	}
-	//public Vector dtheta; //this is angular velocity
-	//public Vector domega; //this is angular acceleration
+
 }

@@ -28,6 +28,7 @@ public class Vector {
 		return new Vector(y * o.z - z * o.y, z*o.x - x*o.z, x*o.y - y*o.x);
 	}
 	
+	
 	public float length() {
 		return (float)Math.sqrt(x * x + y * y + z * z);
 	}

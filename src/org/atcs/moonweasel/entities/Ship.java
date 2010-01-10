@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.entities;
 
 import org.atcs.moonweasel.Player;
+import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Vector;
 
 public class Ship extends ModelEntity {
@@ -9,8 +10,8 @@ public class Ship extends ModelEntity {
 	private Vector[] gunnerPositions;
 	private Vector[] orientations;
 	
-	protected Ship(float mass, Vector[] gunnerPositions, Vector[] gunnerOrientations) {
-		super(mass);
+	protected Ship(float mass, Matrix inertiaTensor, Vector[] gunnerPositions, Vector[] gunnerOrientations) {
+		super(mass, inertiaTensor);
 
 		assert mass > 0;
 		assert gunnerPositions.length == gunnerOrientations.length;

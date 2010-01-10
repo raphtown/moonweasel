@@ -7,6 +7,7 @@ import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.Positional;
 import org.atcs.moonweasel.gui.Loader;
+import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
@@ -22,13 +23,13 @@ public abstract class ModelEntity extends Entity implements Positional {
 	protected State oldState;
 	protected State state;
 	
-	protected ModelEntity(float mass) {
+	protected ModelEntity(float mass, Matrix inertiaTensor) {
 		super();
 		
 		this.displayList = -1;
 		
-		this.oldState = new State(mass);
-		this.state = new State(mass);
+		this.oldState = new State(mass, inertiaTensor);
+		this.state = new State(mass, inertiaTensor);
 	}
 	
 	public void draw(GL2 gl) {

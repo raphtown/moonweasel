@@ -48,14 +48,16 @@ public class Moonweasel {
 	}
 	
 	private void run() {
-		final float dt = 0.01f;
+		final float dt = 10f; //note: matt redmond correcting a slight mistake on Drew's (?) part. 
+		//this should be in millseconds, not seconds
 		
 		long currentTime = System.currentTimeMillis();
 		long newTime, deltaTime;
 		float accumulator = 0.0f;
 		float t = 0.0f;
 		
-		while (!view.shouldQuit()) {
+		while (!view.shouldQuit()) 
+		{
 			entityManager.update();
 
 			newTime = System.currentTimeMillis();
@@ -69,6 +71,8 @@ public class Moonweasel {
 				t += dt;
 				accumulator -= dt;
 			}
+			
+			
 			
 			view.render(accumulator / dt);
 		}
