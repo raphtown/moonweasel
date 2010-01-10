@@ -1,22 +1,29 @@
 package org.atcs.moonweasel.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.gui.Loader;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
-public abstract class Spatial extends Entity {
-	private String model;
+public abstract class ModelEntity extends Entity {
+	private final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
+	
+	static {
+		DISPLAY_LISTS = new HashMap<Class<? extends ModelEntity>, Integer>();
+	}
+	
 	private int displayList;
 	
 	protected State oldState;
 	protected State state;
 	
-	protected Spatial(float mass) {
+	protected ModelEntity(float mass) {
 		super();
 		
-		this.model = null;
 		this.displayList = -1;
 		
 		this.oldState = new State(mass);
@@ -24,22 +31,23 @@ public abstract class Spatial extends Entity {
 	}
 	
 	public void draw(GL2 gl) {
-		assert displayList != -1;
+		assert DISPLAY_LISTS.containsKey(this.getClass());
 		
 		gl.glCallList(displayList);
 	}
 	
 	public void precache(GL2 gl) {
 		int list = gl.glGenLists(1);
-		gl.glNewList(list, GL2.GL_COMPILE);
 
-			if (model != null) {
-				Loader.load(model, gl);			
-			} else {
+		gl.glNewList(list, GL2.GL_COMPILE);
+			if (!Loader.load(getEntityType(), gl)) {
+				// Something blew up, assume draw is overridden.
+				gl.glEndList();
+				gl.glNewList(list, GL2.GL_COMPILE);
 				draw(gl);
 			}
-
 		gl.glEndList();
+		DISPLAY_LISTS.put(this.getClass(), list);
 	}
 	
 	public State getOldState() {

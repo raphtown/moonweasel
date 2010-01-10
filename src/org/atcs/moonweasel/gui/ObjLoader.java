@@ -11,7 +11,8 @@ public class ObjLoader extends Loader {
 		return EXTENSION;
 	}
 	
-	protected int loadModel(FileInputStream stream, GL2 gl) {
-		return -1;
+	@Override
+	protected boolean loadModel(FileInputStream stream, GL2 gl) {
+		return true;
 	}
 }

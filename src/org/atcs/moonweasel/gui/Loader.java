@@ -8,7 +8,7 @@ import javax.media.opengl.GL2;
 public abstract class Loader {
 	private static Loader loader;
 	
-	public static int load(String name, GL2 gl) {
+	public static boolean load(String name, GL2 gl) {
 		if (loader == null) {
 			loader = new ObjLoader();
 		}
@@ -19,12 +19,12 @@ public abstract class Loader {
 		try {
 			stream = new FileInputStream(filename);
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+			return false;
 		}
 		
 		return loader.loadModel(stream, gl);
 	}
 	
 	protected abstract String getExtension();
-	protected abstract int loadModel(FileInputStream stream, GL2 gl);
+	protected abstract boolean loadModel(FileInputStream stream, GL2 gl);
 }

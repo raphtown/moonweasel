@@ -8,6 +8,10 @@ public abstract class Entity implements Identifiable {
 		return nextID++;
 	}
 	
+	public static String getEntityType(Class<? extends Entity> clazz) {
+		return clazz.getSimpleName().toLowerCase();
+	}
+	
 	private final int id;
 	
 	protected Entity() {
@@ -21,11 +25,14 @@ public abstract class Entity implements Identifiable {
 		return this.id;
 	}
 	
+	public final String getEntityType() {
+		return this.getClass().getSimpleName().toLowerCase();
+	}
+	
 	protected void scheduleThink(int ms) {
 		EntityManager.getEntityManager().registerThink(this, ms);
 	}
 	
 	public void think() {
-		System.out.println("??");
 	}
 }

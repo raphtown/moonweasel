@@ -2,7 +2,6 @@ package org.atcs.moonweasel;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
@@ -15,8 +14,8 @@ public class Moonweasel {
 	
 	static {
 		ENTITY_MAP = new HashMap<String, Class<? extends Entity>>();
-		ENTITY_MAP.put("player", Player.class);
-		ENTITY_MAP.put("snowflake", Snowflake.class);
+		ENTITY_MAP.put(Entity.getEntityType(Player.class), Player.class);
+		ENTITY_MAP.put(Entity.getEntityType(Snowflake.class), Snowflake.class);
 	}
 	
 	public static void main(String[] args) {
