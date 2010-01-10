@@ -48,31 +48,30 @@ public class Moonweasel {
 	}
 
 	private void run() {
-		final float dt = 10f; // note: matt redmond correcting a slight mistake
-								// on Drew's (?) part.
-		// this should be in millseconds, not seconds
+		final int TICKS_PER_SECOND = 25;
+		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+		final int MAX_FRAMESKIP = 5;
 
-		long currentTime = System.currentTimeMillis();
-		long newTime, deltaTime;
-		float accumulator = 0.0f;
-		float t = 0.0f;
+		long t = 0;
+		long next_logic_tick = System.currentTimeMillis();
+		int loops;
+		float interpolation;
 
 		while (!view.shouldQuit()) {
-			entityManager.update();
+			loops = 0;
+			while (System.currentTimeMillis() > next_logic_tick &&
+					loops < MAX_FRAMESKIP) {
+				entityManager.update();
+				physics.update(t, SKIP_TICKS);
 
-			newTime = System.currentTimeMillis();
-			deltaTime = newTime - currentTime;
-			currentTime = newTime;
-
-			accumulator += deltaTime;
-			while (accumulator >= dt) {
-				physics.update(t, dt);
-
-				t += dt;
-				accumulator -= dt;
+				t += SKIP_TICKS;
+				next_logic_tick += SKIP_TICKS;
+				loops++;
 			}
 
-			view.render(accumulator / dt);
+			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
+				/ SKIP_TICKS;
+			view.render(interpolation);
 		}
 	}
 }

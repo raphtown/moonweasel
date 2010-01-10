@@ -1,7 +1,5 @@
 package org.atcs.moonweasel.physics;
 
-import java.awt.SystemColor;
-
 public class Physics 
 {
 
