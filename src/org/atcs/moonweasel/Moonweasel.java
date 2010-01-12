@@ -26,7 +26,6 @@ public class Moonweasel {
 
 	public static void main(String[] args) {
 		new Server().start();
-		
 		Moonweasel weasel = new Moonweasel(800, 600, false);
 
 		// weasel.seeFox();
@@ -56,6 +55,7 @@ public class Moonweasel {
 	}
 
 	private void run() {
+
 		final int TICKS_PER_SECOND = 25;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
