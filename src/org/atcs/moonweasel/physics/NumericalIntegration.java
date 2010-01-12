@@ -1,5 +1,6 @@
 package org.atcs.moonweasel.physics;
 
+import org.atcs.moonweasel.networking.Input;
 import org.atcs.moonweasel.util.Derivative;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
@@ -11,7 +12,7 @@ public class NumericalIntegration
 		Derivative output = new Derivative();
 		output.velocity = initial.velocity;
 		output.spin = initial.spin;
-		forces(input, initial, output.force, output.torque);
+		forces(initial, t, output.force, output.torque);
 		return output;
 	}
 	
@@ -39,18 +40,22 @@ public class NumericalIntegration
     // to the rigid body once per update. This is because the RK4 achieves
     // its accuracy by detecting curvature in derivative values over the 
     // timestep so we need our force values to supply the curvature.
-	public void forces(Input input, State state, Vector force, Vector torque)
+	public void forces(State state, float t, Vector force, Vector torque)
 	{
 		force.zero();
 		torque.zero();
+		
+		Input inputController = new Input();
+		//inputController.repoll();
 		damping(state, force, torque);
 		collisionResponse();
-		control(input, state, force, torque);
+		control(inputController, state, force, torque);
 	}
 
 	
 	public void damping(State state, Vector force, Vector torque)
 	{
+		//arbitrarily lose 0.1% of energy per timestep to simulate heat loss
 		force = force.subtract(state.velocity.scale(0.001f));
 		torque = torque.subtract(state.angularVelocity.scale(0.001f));
 	}
@@ -68,12 +73,13 @@ public class NumericalIntegration
         							   //this corresponds to the "roll" or aileron control system
         if (input.right) torque.z += f;
 
-        if (input.forward) torque.x -= f; //a nose-dive down is a torque vector like (-10,0,0), corresponding to pitch control
+        if (input.up) torque.x -= f; //a nose-dive down is a torque vector like (-10,0,0), corresponding to pitch control
 
-        if (input.back) torque.x += f;
+        if (input.down) torque.x += f;
         
         //thrusters
-        if (input.control) force.add(state.orientation.toMatrix().getOrientation());
+        if (input.ctrl) force.add(state.orientation.toMatrix().getOrientation()); //adds some thrust in the current orientation
+        
 	}
 	
 	
