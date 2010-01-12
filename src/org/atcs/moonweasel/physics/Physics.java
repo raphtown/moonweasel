@@ -1,5 +1,8 @@
 package org.atcs.moonweasel.physics;
 
+import org.atcs.moonweasel.entities.*;
+import org.atcs.moonweasel.util.*;
+
 public class Physics 
 {
 
@@ -8,9 +11,19 @@ public class Physics
 		
 	}
 	
-	public void update(float t, float dt) 
+	NumericalIntegration Integrator = new NumericalIntegration();
+	
+	public void updateAllModels(float t, float dt) 
 	{
-		
+		EntityManager em = new EntityManager(); //getEntityManagerFromServer();
+		for(Entity e : em)
+		{
+			if(e.getClass().equals(ModelEntity.class)) //it's a modelEntity
+			{
+				State oldState = ((ModelEntity) e).getState();
+				Integrator.integrate(oldState, t, dt); //refreshes the previous state and saves new values
+			}	
+		}
 	}
 	
 	public void computeInertiaTensor()

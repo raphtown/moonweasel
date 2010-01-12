@@ -21,9 +21,9 @@ public class NumericalIntegration
 	public Derivative evaluate(State initial, float t, float dt, Derivative d)
 	{
 		State state = new State(); //arbitrary initialization to keep eclipse happy. i don't think this actually has to be here.
-	    state.position = initial.position.add(  d.velocity.scale(dt)  );
-	    state.momentum = initial.momentum.add(  d.force.scale(dt)  )  ;
-	    state.orientation = initial.orientation.add( d.spin.scale(dt) );
+	    state.position = initial.position.add(d.velocity.scale(dt));
+	    state.momentum = initial.momentum.add(d.force.scale(dt))  ;
+	    state.orientation = initial.orientation.add( d.spin.scale(dt));
 	    state.angularMomentum = initial.angularMomentum.add(d.torque.scale(dt));
 	    state.recalculate();
 
@@ -48,7 +48,7 @@ public class NumericalIntegration
 		Input inputController = new Input();
 		//inputController.repoll();
 		damping(state, force, torque);
-		collisionResponse();
+		//collisionResponse();
 		control(inputController, state, force, torque);
 	}
 
