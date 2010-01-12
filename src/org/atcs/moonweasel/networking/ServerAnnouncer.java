@@ -33,8 +33,9 @@ public class ServerAnnouncer extends Thread implements Runnable
 			final DatagramSocket socket = new DatagramSocket();
 			while (true)
 			{
-				if (NETWORK_DEBUG)
-					System.out.println("Sending packet");
+// 				this is annoying
+//				if (NETWORK_DEBUG)
+//					System.out.println("Sending packet");
 
 				socket.send(packet);
 				Thread.sleep(2000);
@@ -53,6 +54,9 @@ public class ServerAnnouncer extends Thread implements Runnable
 	 */
 	public static List<String> getServerList() throws IOException
 	{
+		// why so large?
+		final int BUFFER_SIZE = 256;
+
 		final MulticastSocket socket = new MulticastSocket(ANNOUNCER_MULTICAST_PORT);
 
 		if (NETWORK_DEBUG)
@@ -67,7 +71,7 @@ public class ServerAnnouncer extends Thread implements Runnable
 		// Keep waiting until we get the same server twice
 		while (!done) 
 		{
-			byte[] buf = new byte[256];
+			byte[] buf = new byte[BUFFER_SIZE];
 			final DatagramPacket packet = new DatagramPacket(buf, buf.length);
 			socket.receive(packet);
 			String received = new String(packet.getData(), 0, packet.getLength());
