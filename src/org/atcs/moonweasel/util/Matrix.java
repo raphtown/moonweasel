@@ -280,6 +280,6 @@ public class Matrix
 	
 	public Vector getOrientation()
 	{
-		return new Vector(m11+m21+m31, m12+m22+m32, m13+m23+m33);
+		return new Vector(m11+m21+m31, m12+m22+m32, m13+m23+m33).normalize();
 	}
 }
