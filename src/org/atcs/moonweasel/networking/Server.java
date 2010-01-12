@@ -93,15 +93,10 @@ public class Server extends Thread implements Networking, Runnable
 			while (true)
 			{
 				if (NETWORK_DEBUG)
-					System.out.println("Waiting for client");					
-
-				Socket connection = serverSocket.accept();
-				DatagramSocket clientSocket = new DatagramSocket(connection.getPort(), connection.getInetAddress());
-
+					System.out.println("Waiting for client");
+				clients.add(new Client(serverSocket.accept()));
 				if (NETWORK_DEBUG)
 					System.out.println("Accepted Connection");
-
-				clients.add(new Client(clientSocket));
 			}
 		}
 		catch (Exception e)
