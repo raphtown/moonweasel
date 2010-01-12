@@ -66,5 +66,7 @@ public class State {
 		// dealing with local vs global coordinates now
 		Matrix translation = new Matrix();
 		translation.setAsTranslation(position);
+		bodyToWorld = translation.mtm(orientation.toMatrix());
+        worldToBody = bodyToWorld.inverse();
 	}
 }

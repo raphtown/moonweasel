@@ -11,7 +11,7 @@ public class NumericalIntegration
 		Derivative output = new Derivative();
 		output.velocity = initial.velocity;
 		output.spin = initial.spin;
-		forces(initial, t, output.force, output.torque);
+		forces(input, initial, output.force, output.torque);
 		return output;
 	}
 	
@@ -39,20 +39,43 @@ public class NumericalIntegration
     // to the rigid body once per update. This is because the RK4 achieves
     // its accuracy by detecting curvature in derivative values over the 
     // timestep so we need our force values to supply the curvature.
-	public void forces(State state, float t, Vector force, Vector torque)
+	public void forces(Input input, State state, Vector force, Vector torque)
 	{
-		//sum of all forces acting on the object.. 
-		//this will probably be done with a sum over all objects in the EntityManager
-		//some stuff goes here, like gravity, etc... 
-		//right now this draws us toward the origin
-		force = state.position.scale(-10); 
-		
-		//for testing purposes, this is basically arbitrary torque in random directions depending on time
-		torque.x = (float) Math.sin(t * 0.9 + 0.5);
-		torque.y = (float) (1.1 * Math.sin(t * 0.5 + 0.4));
-		torque.z = (float) (1.2 * Math.sin(t * 0.7 + 0.9));
+		force.zero();
+		torque.zero();
+		damping(state, force, torque);
+		collisionResponse();
+		control(input, state, force, torque);
 	}
 
+	
+	public void damping(State state, Vector force, Vector torque)
+	{
+		force = force.subtract(state.velocity.scale(0.001f));
+		torque = torque.subtract(state.angularVelocity.scale(0.001f));
+	}
+	
+	public void collisionResponse()
+	{
+		
+	}
+	
+	public void control(Input input, State state, Vector force, Vector torque)
+	{
+		float f = 50.0f; //50 newtons or 50 newton-meters, depending on context
+
+        if (input.left) torque.z -= f; //a rotation to the left is torque vector like (0,0,-Pi) given right-handed coords
+        							   //this corresponds to the "roll" or aileron control system
+        if (input.right) torque.z += f;
+
+        if (input.forward) torque.x -= f; //a nose-dive down is a torque vector like (-10,0,0), corresponding to pitch control
+
+        if (input.back) torque.x += f;
+        
+        //thrusters
+        if (input.control) force.add(state.orientation.toMatrix().getOrientation());
+	}
+	
 	
 	public void integrate(State state, float t, float dt)
     {

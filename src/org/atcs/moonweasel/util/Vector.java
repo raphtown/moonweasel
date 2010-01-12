@@ -28,6 +28,12 @@ public class Vector {
 		return (float)Math.sqrt(x * x + y * y + z * z);
 	}
 	
+	public void zero()
+	{
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+	}
 	
 	public Vector normalize() {
 		float length = this.length();
