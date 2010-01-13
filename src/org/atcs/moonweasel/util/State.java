@@ -59,12 +59,13 @@ public class State {
 		angularVelocity = inverseInertiaTensor.transform(angularMomentum);
 		orientation.normalize();
 
-		Quaternion tempUpdate = new Quaternion(0, angularVelocity.x,
-				angularVelocity.y, angularVelocity.z);
+		Quaternion tempUpdate = new Quaternion(0, angularVelocity.x, angularVelocity.y, angularVelocity.z);
 		spin = tempUpdate.scale(0.5f).multiply(orientation);
 
 		// dealing with local vs global coordinates now
 		Matrix translation = new Matrix();
 		translation.setAsTranslation(position);
+		bodyToWorld = translation.mtm(orientation.toMatrix());
+        worldToBody = bodyToWorld.inverse();
 	}
 }

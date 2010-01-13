@@ -1,5 +1,6 @@
 package org.atcs.moonweasel.physics;
 
+import org.atcs.moonweasel.networking.Input;
 import org.atcs.moonweasel.util.Derivative;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
@@ -20,9 +21,9 @@ public class NumericalIntegration
 	public Derivative evaluate(State initial, float t, float dt, Derivative d)
 	{
 		State state = new State(); //arbitrary initialization to keep eclipse happy. i don't think this actually has to be here.
-	    state.position = initial.position.add(  d.velocity.scale(dt)  );
-	    state.momentum = initial.momentum.add(  d.force.scale(dt)  )  ;
-	    state.orientation = initial.orientation.add( d.spin.scale(dt) );
+	    state.position = initial.position.add(d.velocity.scale(dt));
+	    state.momentum = initial.momentum.add(d.force.scale(dt))  ;
+	    state.orientation = initial.orientation.add( d.spin.scale(dt));
 	    state.angularMomentum = initial.angularMomentum.add(d.torque.scale(dt));
 	    state.recalculate();
 
@@ -41,18 +42,46 @@ public class NumericalIntegration
     // timestep so we need our force values to supply the curvature.
 	public void forces(State state, float t, Vector force, Vector torque)
 	{
-		//sum of all forces acting on the object.. 
-		//this will probably be done with a sum over all objects in the EntityManager
-		//some stuff goes here, like gravity, etc... 
-		//right now this draws us toward the origin
-		force = state.position.scale(-10); 
+		force.zero();
+		torque.zero();
 		
-		//for testing purposes, this is basically arbitrary torque in random directions depending on time
-		torque.x = (float) Math.sin(t * 0.9 + 0.5);
-		torque.y = (float) (1.1 * Math.sin(t * 0.5 + 0.4));
-		torque.z = (float) (1.2 * Math.sin(t * 0.7 + 0.9));
+		Input inputController = new Input();
+		//inputController.repoll();
+		damping(state, force, torque);
+		//collisionResponse();
+		control(inputController, state, force, torque);
 	}
 
+	
+	public void damping(State state, Vector force, Vector torque)
+	{
+		//arbitrarily lose 0.1% of energy per timestep to simulate heat loss
+		force = force.subtract(state.velocity.scale(0.001f));
+		torque = torque.subtract(state.angularVelocity.scale(0.001f));
+	}
+	
+	public void collisionResponse()
+	{
+		
+	}
+	
+	public void control(Input input, State state, Vector force, Vector torque)
+	{
+		float f = 50.0f; //50 newtons or 50 newton-meters, depending on context
+
+        if (input.left) torque.z -= f; //a rotation to the left is torque vector like (0,0,-Pi) given right-handed coords
+        							   //this corresponds to the "roll" or aileron control system
+        if (input.right) torque.z += f;
+
+        if (input.up) torque.x -= f; //a nose-dive down is a torque vector like (-10,0,0), corresponding to pitch control
+
+        if (input.down) torque.x += f;
+        
+        //thrusters
+        if (input.ctrl) force.add(state.orientation.toMatrix().getOrientation()); //adds some thrust in the current orientation
+        
+	}
+	
 	
 	public void integrate(State state, float t, float dt)
     {

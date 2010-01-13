@@ -89,4 +89,6 @@ public class Quaternion {
 				fTyz - fTwx, fTxz - fTwy,
 				fTyz + fTwx, 1.0f - (fTxx + fTyy));
 	}
+	
+
 }
