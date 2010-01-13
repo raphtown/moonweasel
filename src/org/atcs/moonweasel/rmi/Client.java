@@ -10,7 +10,7 @@ public class Client {
         }
         try {
             String name = "Compute";
-            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            Registry registry = LocateRegistry.getRegistry("127.0.0.1", 4001);
             Simulator comp = (Simulator) registry.lookup(name);
             int pi = comp.doStuff();
             System.out.println(pi);

@@ -1,7 +1,5 @@
 package org.atcs.moonweasel.rmi;
 
-
-
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -12,15 +10,16 @@ public class Server implements Simulator {
     public static void main(String[] args) {
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
+            System.getSecurityManager().checkAccept("127.0.0.1", 4001);
         }
         try {
             String name = "Simulator";
             Server engine = new Server();
             Simulator stub =
-                (Simulator) UnicastRemoteObject.exportObject(engine, 1099);
-            Registry registry = LocateRegistry.getRegistry(1099);
+                (Simulator) UnicastRemoteObject.exportObject(engine, 4001);
+            Registry registry = LocateRegistry.getRegistry();
             registry.rebind("Simulator",stub);
-            //registry.rebind(name, stub);
+//            registry.rebind(name, stub);
             System.out.println("Simulator bound");
         } catch (Exception e) {
             System.err.println("ComputeEngine exception:");
@@ -28,7 +27,6 @@ public class Server implements Simulator {
         }
     }
 
-	@Override
 	public int doStuff() throws RemoteException
 	{
 		// TODO Auto-generated method stub
