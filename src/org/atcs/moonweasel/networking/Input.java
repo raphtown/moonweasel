@@ -30,27 +30,6 @@ public class Input
 		this.flags = flags;
 	}
 
-	//single-control input constructor
-	public Input(String command)
-	{
-		if(command.equalsIgnoreCase("left"))
-			flags |= FLAGS_LEFT;
-		else if(command.equalsIgnoreCase("right"))
-			flags |= FLAGS_RIGHT;
-		else if(command.equalsIgnoreCase("up"))
-			flags |= FLAGS_UP;
-		else if(command.equalsIgnoreCase("down"))
-			flags |= FLAGS_DOWN;
-		else if(command.equalsIgnoreCase("space"))
-			flags |= FLAGS_SPACE;
-		else if(command.equalsIgnoreCase("ctrl"))
-			flags |= FLAGS_CTRL;
-		else if(command.equalsIgnoreCase("shift"))
-			flags |= FLAGS_SHIFT;
-		else if(command.equalsIgnoreCase("tab"))
-			flags |= FLAGS_TAB;
-	}
-
 	//multi-control input constructor
 	public Input(String... commandList)
 	{
