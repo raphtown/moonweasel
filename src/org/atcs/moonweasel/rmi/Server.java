@@ -11,6 +11,7 @@ public class Server implements Simulator {
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
             System.getSecurityManager().checkAccept("127.0.0.1", 4001);
+            System.getSecurityManager().checkAccept("172.30.24.61", 4001);
         }
         try {
             String name = "Simulator";
@@ -18,8 +19,7 @@ public class Server implements Simulator {
             Simulator stub =
                 (Simulator) UnicastRemoteObject.exportObject(engine, 4001);
             Registry registry = LocateRegistry.getRegistry();
-            registry.rebind("Simulator",stub);
-//            registry.rebind(name, stub);
+            registry.rebind(name, stub);
             System.out.println("Simulator bound");
         } catch (Exception e) {
             System.err.println("ComputeEngine exception:");
