@@ -13,6 +13,11 @@ public class Physics
 		
 	}
 	
+	public void update(long t, int skipTicks)
+	{
+		
+	}
+	
 	NumericalIntegration Integrator = new NumericalIntegration();
 	
 	public void updateAllModels(float t, float dt) 

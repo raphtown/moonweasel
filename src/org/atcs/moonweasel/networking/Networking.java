@@ -1,7 +1,8 @@
 package org.atcs.moonweasel.networking;
 
-public interface Networking
+import org.atcs.moonweasel.Destructible;
+
+public interface Networking extends Destructible
 {
 	public void destroy();
-	public void update();
 }

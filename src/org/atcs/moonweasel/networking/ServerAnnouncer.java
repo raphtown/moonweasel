@@ -10,12 +10,17 @@ import java.net.MulticastSocket;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.atcs.moonweasel.Destructible;
+
 /**
  * Handles listening to server announcements as well as creating them, in order to tell clients they exist. 
  * @author Maxime Serrano, Raphael Townshend
  */
-public class ServerAnnouncer extends Thread implements Runnable
-{	
+public class ServerAnnouncer extends Thread implements Runnable, Destructible
+{
+	private boolean running = true;
+	private DatagramSocket socket;
+
 	/**
 	 * @see java.lang.Thread#run()
 	 */
@@ -30,15 +35,15 @@ public class ServerAnnouncer extends Thread implements Runnable
 			final String txt = myaddr.getHostAddress();
 			final InetAddress group = InetAddress.getByName(ANNOUNCER_MULTICAST_ADDRESS);
 			final DatagramPacket packet = new DatagramPacket(txt.getBytes(), txt.length(), group, ANNOUNCER_MULTICAST_PORT);
-			final DatagramSocket socket = new DatagramSocket();
-			while (true)
+			socket = new DatagramSocket();
+			while (running)
 			{
 // 				this is annoying
 //				if (NETWORK_DEBUG)
 //					System.out.println("Sending packet");
 
 				socket.send(packet);
-				Thread.sleep(2000);
+				Thread.sleep(ANNOUNCER_SLEEP_TIME);
 			}
 		} 
 		catch (Exception e)
@@ -85,5 +90,13 @@ public class ServerAnnouncer extends Thread implements Runnable
 		socket.leaveGroup(group);
 		socket.close();
 		return servers;
+	}
+	
+	public void destroy()
+	{
+		running = false;
+		if (socket != null)
+			socket.close();
+		socket = null;
 	}
 }

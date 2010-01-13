@@ -58,7 +58,8 @@ public class Server extends Thread implements Networking, Runnable
 	{
 		try
 		{
-			serverSocket.close();
+			if (serverSocket != null)
+				serverSocket.close();
 		}
 		catch (IOException e)
 		{
@@ -69,7 +70,15 @@ public class Server extends Thread implements Networking, Runnable
 		for (Client client : clients)
 			client.destroy();
 
+		announcer.destroy();
+
 		clients.clear();
+		
+		announcer = null;
+		serverSocket = null;
+
+		// Run garbage collection?
+		// System.gc();
 		destroyed = true;
 	}
 	
@@ -103,10 +112,5 @@ public class Server extends Thread implements Networking, Runnable
 			if (NETWORK_DEBUG)
 				e.printStackTrace();
 		}
-	}
-	
-	public ServerAnnouncer getAnnouncer()
-	{
-		return announcer;
 	}
 }

@@ -9,6 +9,8 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 
 import com.sun.javafx.newt.Display;
+import com.sun.javafx.newt.KeyEvent;
+import com.sun.javafx.newt.KeyListener;
 import com.sun.javafx.newt.NewtFactory;
 import com.sun.javafx.newt.Screen;
 import com.sun.javafx.newt.Window;
@@ -16,7 +18,7 @@ import com.sun.javafx.newt.WindowEvent;
 import com.sun.javafx.newt.WindowListener;
 import com.sun.javafx.newt.opengl.GLWindow;
 
-public abstract class View implements GLEventListener, WindowListener {
+public abstract class View implements GLEventListener, WindowListener, KeyListener {
 	private GLWindow window;
 	
 	private volatile boolean quit;
@@ -83,4 +85,16 @@ public abstract class View implements GLEventListener, WindowListener {
 
 	@Override
 	public void windowResized(WindowEvent arg0) { }
+	
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		if (arg0.isMetaDown() && arg0.getKeyCode() == KeyEvent.VK_Q)
+			quit = true;
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) { }
+
+	@Override
+	public void keyTyped(KeyEvent arg0) { }
 }

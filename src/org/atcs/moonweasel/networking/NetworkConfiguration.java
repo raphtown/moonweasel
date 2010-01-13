@@ -16,4 +16,5 @@ public final class NetworkConfiguration
 	// Server Announcer
 	public static final String ANNOUNCER_MULTICAST_ADDRESS = "224.0.0.1";
 	public static final int ANNOUNCER_MULTICAST_PORT = 4446;
+	public static final int ANNOUNCER_SLEEP_TIME = 2000;
 }

@@ -118,6 +118,6 @@ public class Moonweasel {
 
 		String selection = (String) hostnames.get(number - 1);
 		int port = 40001;
-		Socket s = new Socket(selection, port);
+		new Socket(selection, port);
 	}
 }

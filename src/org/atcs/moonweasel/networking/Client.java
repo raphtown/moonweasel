@@ -7,13 +7,14 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client
+import org.atcs.moonweasel.Destructible;
+
+public class Client implements Destructible
 {
 	private Socket socket;
 	private PrintStream sout = null;
-	@SuppressWarnings("unused")
 	private Scanner sin = null;
-	
+
 	private boolean destroyed = false;
 
 	public Client(Socket socket)
@@ -36,7 +37,7 @@ public class Client
 		}
 	}
 	
-	public void sendPacket(String packet) throws IOException
+	public void sendPacket(String packet)
 	{
 		assert !destroyed : "Attempting to send packet to destroyed client!";
 		sout.println(packet);
@@ -61,7 +62,18 @@ public class Client
 				e.printStackTrace();
 			}
 		}
-		
+
+		socket = null;
+		sin = null;
+		sout = null;
+
 		destroyed = true;
+	}
+
+	// careful...
+	public String readPacket()
+	{
+		assert !destroyed : "Attempting to read packet from destroyed client!";
+		return sin.nextLine();
 	}
 }
