@@ -69,16 +69,16 @@ public class NumericalIntegration
 	{
 		float f = 50.0f; //50 newtons or 50 newton-meters, depending on context
 
-        if (input.left) torque.z -= f; //a rotation to the left is torque vector like (0,0,-Pi) given right-handed coords
+        if (input.left()) torque.z -= f; //a rotation to the left is torque vector like (0,0,-Pi) given right-handed coords
         							   //this corresponds to the "roll" or aileron control system
-        if (input.right) torque.z += f;
+        if (input.right()) torque.z += f;
 
-        if (input.up) torque.x -= f; //a nose-dive down is a torque vector like (-10,0,0), corresponding to pitch control
+        if (input.up()) torque.x -= f; //a nose-dive down is a torque vector like (-10,0,0), corresponding to pitch control
 
-        if (input.down) torque.x += f;
+        if (input.down()) torque.x += f;
         
         //thrusters
-        if (input.ctrl) force.add(state.orientation.toMatrix().getOrientation()); //adds some thrust in the current orientation
+        if (input.ctrl()) force.add(state.orientation.toMatrix().getOrientation()); //adds some thrust in the current orientation
         
 	}
 	

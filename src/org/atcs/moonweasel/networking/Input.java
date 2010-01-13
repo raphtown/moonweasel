@@ -5,117 +5,112 @@ package org.atcs.moonweasel.networking;
 //it holds a bunch of boolean values corresponding to currently pressed controls, and the physics engine interprets these bools
 public class Input
 {
-	public boolean left;
-	public boolean right;
-	public boolean up;
-	public boolean down;
-	public boolean space;
-	public boolean ctrl;
-	public boolean shift;
-	public boolean tab;
+	private static final short FLAGS_LEFT = 0x1;
+	private static final short FLAGS_RIGHT = 0x2;
+	private static final short FLAGS_UP = 0x4;
+	private static final short FLAGS_DOWN = 0x8;
+	private static final short FLAGS_SPACE = 0x10;
+	private static final short FLAGS_CTRL = 0x20;
+	private static final short FLAGS_SHIFT = 0x40;
+	private static final short FLAGS_TAB = 0x80;
+
+	private short flags = 0;
 	
 	//empty constructor
-	public Input()
+	public Input() { }
+	
+	Input(short flags)
 	{
-		this.left = false;
-		this.right = false;
-		this.up = false;
-		this.down = false;
-		this.space = false;
-		this.ctrl = false;
-		this.shift = false;
-		this.tab = false;
+		this.flags = flags;
 	}
 	
 	//single-control input constructor
 	public Input(String command)
 	{
 		if(command.equalsIgnoreCase("left"))
-		{
-			this.left = true;
-		}
+			flags |= FLAGS_LEFT;
 		else if(command.equalsIgnoreCase("right"))
-		{
-			this.right = true;
-		}
+			flags |= FLAGS_RIGHT;
 		else if(command.equalsIgnoreCase("up"))
-		{
-			this.up = true;
-		}
+			flags |= FLAGS_UP;
 		else if(command.equalsIgnoreCase("down"))
-		{
-			this.down = true;
-		}
+			flags |= FLAGS_DOWN;
 		else if(command.equalsIgnoreCase("space"))
-		{
-			this.space = true;
-		}
+			flags |= FLAGS_SPACE;
 		else if(command.equalsIgnoreCase("ctrl"))
-		{
-			this.ctrl = true;
-		}
+			flags |= FLAGS_CTRL;
 		else if(command.equalsIgnoreCase("shift"))
-		{
-			this.shift = true;
-		}
+			flags |= FLAGS_SHIFT;
 		else if(command.equalsIgnoreCase("tab"))
-		{
-			this.tab = true;
-		}
-		else //invalid command
-		{
-			
-		}
-		
+			flags |= FLAGS_TAB;
 	}
 	
 	//multi-control input constructor
-	public Input(String[] commandList)
+	public Input(String... commandList)
 	{
-		for(int i = 0; i < commandList.length; i++)
+		for(String command : commandList)
 		{
-			String command = commandList[i];
 			if(command.equalsIgnoreCase("left"))
-			{
-				this.left = true;
-			}
+				flags |= FLAGS_LEFT;
 			else if(command.equalsIgnoreCase("right"))
-			{
-				this.right = true;
-			}
+				flags |= FLAGS_RIGHT;
 			else if(command.equalsIgnoreCase("up"))
-			{
-				this.up = true;
-			}
+				flags |= FLAGS_UP;
 			else if(command.equalsIgnoreCase("down"))
-			{
-				this.down = true;
-			}
+				flags |= FLAGS_DOWN;
 			else if(command.equalsIgnoreCase("space"))
-			{
-				this.space = true;
-			}
+				flags |= FLAGS_SPACE;
 			else if(command.equalsIgnoreCase("ctrl"))
-			{
-				this.ctrl = true;
-			}
+				flags |= FLAGS_CTRL;
 			else if(command.equalsIgnoreCase("shift"))
-			{
-				this.shift = true;
-			}
+				flags |= FLAGS_SHIFT;
 			else if(command.equalsIgnoreCase("tab"))
-			{
-				this.tab = true;
-			}
-			else //invalid command
-			{
-				
-			}
-			
+				flags |= FLAGS_TAB;
 		}
 	}
 	
+	private boolean haveFlag(short flag)
+	{
+		return (flags & flag) != 0;
+	}
 	
+	public boolean up()
+	{
+		return haveFlag(FLAGS_UP);
+	}
 	
+	public boolean down()
+	{
+		return haveFlag(FLAGS_DOWN);
+	}
 	
-}
+	public boolean left()
+	{
+		return haveFlag(FLAGS_LEFT);
+	}
+	
+	public boolean right()
+	{
+		return haveFlag(FLAGS_RIGHT);
+	}
+	
+	public boolean space()
+	{
+		return haveFlag(FLAGS_SPACE);
+	}
+	
+	public boolean ctrl()
+	{
+		return haveFlag(FLAGS_CTRL);
+	}
+	
+	public boolean shift()
+	{
+		return haveFlag(FLAGS_SHIFT);
+	}
+	
+	public boolean tab()
+	{
+		return haveFlag(FLAGS_TAB);
+	}
+}	
