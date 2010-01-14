@@ -15,7 +15,7 @@ public class Physics
 	
 	NumericalIntegration Integrator = new NumericalIntegration();
 	
-	public void updateAllModels(float t, float dt) 
+	public void update(long t, long dt) //updates all models
 	{
 		EntityManager em = new EntityManager(); //getEntityManagerFromServer();
 		for(Entity e : em)
@@ -70,11 +70,28 @@ public class Physics
 		i31 = i13;
 		
 		return new Matrix(i11, i12, i13, i21, i22, i23, i31, i32, i33);
-		
-		
-		
 	}
 	
+	public boolean collisionDetected(ModelEntity A, ModelEntity B)
+	{
+		boolean collisionDetected = false;
+		if(A.isUsingSphericalBounds() && B.isUsingSphericalBounds())
+		{
+			if(A.getState().sphericalBoundingRadius + B.getState().sphericalBoundingRadius > B.getState().position.subtract(A.getState().position).length())
+			{
+				collisionDetected = true;
+			}
+		}
+		else if(!A.isUsingSphericalBounds() && !B.isUsingSphericalBounds()) //both box case
+		{
+			
+		}
+		else
+		{
+			
+		}
+		
+	}
 	
 	
 	
