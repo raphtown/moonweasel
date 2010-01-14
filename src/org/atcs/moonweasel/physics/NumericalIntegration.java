@@ -20,7 +20,7 @@ public class NumericalIntegration
 	
 	public Derivative evaluate(State initial, float t, float dt, Derivative d)
 	{
-		State state = new State(); //arbitrary initialization to keep eclipse happy. i don't think this actually has to be here.
+		State state = initial;
 	    state.position = initial.position.add(d.velocity.scale(dt));
 	    state.momentum = initial.momentum.add(d.force.scale(dt))  ;
 	    state.orientation = initial.orientation.add( d.spin.scale(dt));
