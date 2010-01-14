@@ -5,6 +5,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import org.atcs.moonweasel.rmi.announcer.ServerAnnouncer;
+
 public class Server implements Simulator {
 
 	private static int stuff = 0;
@@ -14,6 +16,7 @@ public class Server implements Simulator {
 
         try {
             Server engine = new Server();
+            new ServerAnnouncer().start();
             Registry registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
             Simulator stub = (Simulator) UnicastRemoteObject.exportObject(engine, 0);
             registry.rebind("Simulator", stub);
