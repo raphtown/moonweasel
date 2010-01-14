@@ -1,8 +1,8 @@
 package org.atcs.moonweasel.rmi;
 
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class Server implements Simulator {
@@ -14,9 +14,9 @@ public class Server implements Simulator {
 
         try {
             Server engine = new Server();
-            LocateRegistry.createRegistry(1099);
-            Simulator stub = (Simulator) UnicastRemoteObject.exportObject(engine, 4001);
-            Naming.rebind("Simulator", stub);
+            Registry registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
+            Simulator stub = (Simulator) UnicastRemoteObject.exportObject(engine, 0);
+            registry.rebind("Simulator", stub);
             System.out.println("Simulator bound");
         } catch (Exception e) {
             e.printStackTrace();
