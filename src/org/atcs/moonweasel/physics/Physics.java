@@ -75,7 +75,7 @@ public class Physics
 	public boolean collisionDetected(ModelEntity A, ModelEntity B)
 	{
 		boolean collisionDetected = false;
-		if(A.isUsingSphericalBounds() && B.isUsingSphericalBounds())
+		if(A.isUsingSphericalBounds() && B.isUsingSphericalBounds()) //sphere on sphere collision
 		{
 			if(A.getState().sphericalBoundingRadius + B.getState().sphericalBoundingRadius > B.getState().position.subtract(A.getState().position).length())
 			{
@@ -86,11 +86,31 @@ public class Physics
 		{
 			
 		}
-		else
+		else if(!A.isUsingSphericalBounds() && B.isUsingSphericalBounds()) //box on sphere collision
 		{
-			
+			float r = B.getState().sphericalBoundingRadius;
+			for (int i = 0; i < A.getState().verticesOfBoundingRegion.length; i++)
+			{
+				if(A.getState().verticesOfBoundingRegion[i].subtract(B.getState().position).length() < r)
+				{
+					collisionDetected = true;
+					break;
+				}
+			}
 		}
-		
+		else //sphere on box collision
+		{
+			float r = A.getState().sphericalBoundingRadius;
+			for (int i = 0; i <B.getState().verticesOfBoundingRegion.length; i++)
+			{
+				if(B.getState().verticesOfBoundingRegion[i].subtract(A.getState().position).length() < r)
+				{
+					collisionDetected = true;
+					break;
+				}
+			}
+		}
+		return collisionDetected;
 	}
 	
 	
