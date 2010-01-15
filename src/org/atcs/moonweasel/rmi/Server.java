@@ -32,29 +32,44 @@ public class Server implements IServer
 	 */
 	private static Registry registry = null;
 	
+	
+	static
+	{
+        System.setSecurityManager(new SecurityManager());
+        
+		try
+		{
+			registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
+		} 
+		catch (RemoteException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * The clients that have called the connect() method remotely.
 	 */
 	private List<Client> connectedClients = new ArrayList<Client>();
+	
+	public static void main(String args[])
+	{
+		new Server("lol");
+	}
 
-    public static void main(String[] args)
+    public Server(String serverName)
     {
-        if (System.getSecurityManager() == null)
-            System.setSecurityManager(new SecurityManager());
-
         try
         {
-            new ServerAnnouncer(new java.util.Scanner(System.in).nextLine()).start();
-            registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
-            Server engine = new Server();
-            engine.registerSelf("Simulator");
+            new ServerAnnouncer(serverName).start();
+            registerObject("Simulator", this);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
     }
-
+    
     /**
      * Register an object to the registry.
      * @param name The name to register with.
@@ -68,17 +83,6 @@ public class Server implements IServer
         registry.rebind(name, stub);
         if (RMI_DEBUG)
         	System.out.println(name + " bound");
-    }
-    
-    /**
-     * Register yourself to the registry.
-     * @param name The name to register with.
-     * @throws RemoteException If there is an error while rebinding.
-     * @throws AccessException If we don't have access to the registry.
-     */
-    private void registerSelf(String name) throws RemoteException, AccessException
-    {
-    	registerObject(name, this);
     }
     
     /**
