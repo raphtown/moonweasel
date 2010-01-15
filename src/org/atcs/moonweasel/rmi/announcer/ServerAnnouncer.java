@@ -2,7 +2,6 @@ package org.atcs.moonweasel.rmi.announcer;
 
 import static org.atcs.moonweasel.rmi.announcer.AnnouncerConfiguration.*;
 
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -77,6 +76,9 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 
 		final InetAddress group = InetAddress.getByName(ANNOUNCER_MULTICAST_ADDRESS);
 		socket.joinGroup(group);
+		
+		if (ANNOUNCER_DEBUG)
+			System.out.println("Joined group at " + ANNOUNCER_MULTICAST_ADDRESS);
 
 		List<String> servers = new LinkedList<String>();
 		boolean done = false;
@@ -100,6 +102,10 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 		return servers;
 	}
 	
+	/**
+	 * Essentially works like a deconstructor, but doesn't delete its references.
+	 * Do not attempt to use this object after it has been destroyed.
+	 */
 	public void destroy()
 	{
 		running = false;

@@ -8,6 +8,18 @@ import java.util.Scanner;
 
 import org.atcs.moonweasel.networking.ServerAnnouncer;
 
+/**
+ * Serves as a client for the RMI connection that we are planning to use as 
+ * a framework for networking. The basic connection principles still hold, 
+ * but this class should serve as the base for all client-based network 
+ * communication.
+ * 
+ * Currently has a main() method so that it can be run by itself for simple 
+ * testing, but this can be changed in the future.
+ * 
+ * This is a work in progress and is not currently working.
+ * @author Maxime Serrano, Raphael Townshend
+ */
 public class Client {
     public static void main(String args[])
     {
@@ -16,9 +28,9 @@ public class Client {
 
         try
         {
-        	String hostname = getConnection();
+        	String hostname = getConnectionHostname();
         	Registry registry = LocateRegistry.getRegistry(hostname, RMIConfiguration.RMI_PORT);
-            Simulator comp = (Simulator) registry.lookup("Simulator");
+            IServer comp = (IServer) registry.lookup("Simulator");
             int pi = comp.doStuff();
             System.out.println(pi);
         }
@@ -28,11 +40,17 @@ public class Client {
         }
     }    
     
-    private static String getConnection() throws IOException
+    /**
+     * Serves to get a hostname out of the ServerAnnouncer, splitting out the 
+     * server name so that nothing but an IP or DNS is left.
+     * @return The appropriate hostname that should be connected to.
+     * @throws IOException If we fail to properly get the server list.
+     */
+    private static String getConnectionHostname() throws IOException
 	{
-		List<String> hostnames = ServerAnnouncer.getServerList();
-		
 		System.out.println("Client started...");
+		List<String> hostnames = ServerAnnouncer.getServerList();
+
 		System.out.println("Available hosts:");
 		for(int i = 0; i < hostnames.size(); i++)
 		{
