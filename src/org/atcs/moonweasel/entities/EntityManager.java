@@ -4,6 +4,9 @@ import java.util.TreeMap;
 
 import org.atcs.moonweasel.Manager;
 import org.atcs.moonweasel.Moonweasel;
+import org.atcs.moonweasel.Positional;
+import org.atcs.moonweasel.ranges.SphericalRange;
+import org.atcs.moonweasel.util.Vector;
 
 public class EntityManager extends Manager<Entity> {
 	private final static EntityManager ENTITY_MANAGER;
@@ -18,12 +21,16 @@ public class EntityManager extends Manager<Entity> {
 
 	private final TreeMap<Long, Entity> thoughts;
 
-	public EntityManager() {
+	private EntityManager() {
 		this.thoughts = new TreeMap<Long, Entity>();
 	}
 
 	protected Class<? extends Entity> getClass(String type) {
 		return Moonweasel.ENTITY_MAP.get(type);
+	}
+	
+	public SphericalRange<ModelEntity> getAllEntitiesInSphere(Vector center, float radius) {
+		return new SphericalRange<ModelEntity>(center, radius, getAllOfType(ModelEntity.class));
 	}
 
 	public void registerThink(Entity entity, int ms) {

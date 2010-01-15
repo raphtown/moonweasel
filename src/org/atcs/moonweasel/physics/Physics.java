@@ -15,16 +15,13 @@ public class Physics
 	
 	NumericalIntegration Integrator = new NumericalIntegration();
 	
-	public void updateAllModels(float t, float dt) 
+	public void update(long t, int dt) 
 	{
-		EntityManager em = new EntityManager(); //getEntityManagerFromServer();
-		for(Entity e : em)
+		EntityManager em = EntityManager.getEntityManager();
+		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
-			if(e instanceof ModelEntity) //it's a modelEntity
-			{
-				State oldState = ((ModelEntity) e).getState();
-				Integrator.integrate(oldState, t, dt); //refreshes the previous state and saves new values
-			}	
+			State oldState = e.getState();
+			Integrator.integrate(oldState, t, dt); //refreshes the previous state and saves new values
 		}
 	}
 	
