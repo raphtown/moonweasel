@@ -21,6 +21,13 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 {
 	private boolean running = true;
 	private DatagramSocket socket;
+	private String serverName; // NOT A HOSTNAME
+	
+	public ServerAnnouncer(String title)
+	{
+		super();
+		serverName = title;
+	}
 
 	/**
 	 * @see java.lang.Thread#run()
@@ -33,7 +40,7 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 				System.out.println("Preparing for announcement...");				
 			
 			final InetAddress myaddr = InetAddress.getLocalHost();
-			final String txt = myaddr.getHostAddress();
+			final String txt = myaddr.getHostAddress() + " " + serverName;
 			final InetAddress group = InetAddress.getByName(ANNOUNCER_MULTICAST_ADDRESS);
 			final DatagramPacket packet = new DatagramPacket(txt.getBytes(), txt.length(), group, ANNOUNCER_MULTICAST_PORT);
 			socket = new DatagramSocket();

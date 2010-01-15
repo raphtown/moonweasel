@@ -47,7 +47,7 @@ public class Client {
 			System.out.println("Invalid server number");
 			for(int i = 0; i < hostnames.size(); i++)
 			{
-				System.out.print(i + 1 + ") ");
+				System.out.print((i + 1) + ") ");
 				System.out.println(hostnames);
 				System.out.println("Which server would you like to join?");
 				number = console.nextInt();
@@ -55,6 +55,6 @@ public class Client {
 			}
 		}
 
-		return (String) hostnames.get(number - 1);
+		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
 }

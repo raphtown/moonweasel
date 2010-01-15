@@ -33,6 +33,8 @@ public class Input
 	//multi-control input constructor
 	public Input(String... commandList)
 	{
+		assert commandList != null;
+		assert commandList.length > 0; 
 		for(String command : commandList)
 		{
 			if(command.equalsIgnoreCase("left"))

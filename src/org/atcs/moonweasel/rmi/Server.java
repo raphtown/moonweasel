@@ -16,7 +16,7 @@ public class Server implements Simulator {
 
         try {
             Server engine = new Server();
-            new ServerAnnouncer().start();
+            new ServerAnnouncer(new java.util.Scanner(System.in).nextLine()).start();
             Registry registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
             Simulator stub = (Simulator) UnicastRemoteObject.exportObject(engine, 0);
             registry.rebind("Simulator", stub);
