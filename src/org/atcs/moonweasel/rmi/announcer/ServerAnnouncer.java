@@ -24,7 +24,6 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 	
 	public ServerAnnouncer(String title)
 	{
-		super();
 		serverName = title;
 	}
 
@@ -60,10 +59,10 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 		}
 	}
 
-	/**
-	 * @return A list of server addresses that have been announcing using this port and multicast group.
-	 * @throws IOException If there is an error receiving the packet or joining the multicast group.
-	 */
+	 /**
+	* @return A list of server addresses that have been announcing using this port and multicast group.
+	* @throws IOException If there is an error receiving the packet or joining the multicast group.
+	*/
 	public static List<String> getServerList() throws IOException
 	{
 		// why so large?
@@ -76,15 +75,12 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 
 		final InetAddress group = InetAddress.getByName(ANNOUNCER_MULTICAST_ADDRESS);
 		socket.joinGroup(group);
-		
-		if (ANNOUNCER_DEBUG)
-			System.out.println("Joined group at " + ANNOUNCER_MULTICAST_ADDRESS);
 
 		List<String> servers = new LinkedList<String>();
 		boolean done = false;
 
 		// Keep waiting until we get the same server twice
-		while (!done) 
+		while (!done)
 		{
 			byte[] buf = new byte[BUFFER_SIZE];
 			final DatagramPacket packet = new DatagramPacket(buf, buf.length);
