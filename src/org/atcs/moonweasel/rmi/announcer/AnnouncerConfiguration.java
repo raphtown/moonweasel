@@ -14,7 +14,7 @@ public final class AnnouncerConfiguration
 	 * 
 	 * Not currently useful, as the announcer is known to work.
 	 */
-	public static final boolean ANNOUNCER_DEBUG = false;
+	public static final boolean ANNOUNCER_DEBUG = true;
 	
 	/**
 	 * The address that the announcer will broadcast to. Multicast groups are 
@@ -29,7 +29,7 @@ public final class AnnouncerConfiguration
 	/**
 	 * The port linked to the above multicast group.
 	 */
-	public static final int ANNOUNCER_MULTICAST_PORT = 1100;
+	public static final int ANNOUNCER_MULTICAST_PORT = 4446;
 	
 	/**
 	 * Time between the sending of "I exist!" packets.

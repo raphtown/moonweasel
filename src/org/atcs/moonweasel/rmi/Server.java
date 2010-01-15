@@ -44,7 +44,8 @@ public class Server implements IServer
 
         try
         {
-            new ServerAnnouncer(new java.util.Scanner(System.in).nextLine()).start();
+        	String name = new java.util.Scanner(System.in).nextLine();
+            new ServerAnnouncer(name).start();
             registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
             Server engine = new Server();
             engine.registerSelf("Simulator");
