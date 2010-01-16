@@ -5,7 +5,8 @@ import java.util.Map;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
-import org.atcs.moonweasel.entities.Snowflake;
+import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.physics.Physics;
 

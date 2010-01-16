@@ -15,7 +15,7 @@ public class Physics
 	
 	NumericalIntegration Integrator = new NumericalIntegration();
 	
-	public void update(long t, long dt) //updates all models
+	public void update(long t, int dt) //updates all models
 	{
 		EntityManager em = EntityManager.getEntityManager();
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
@@ -72,20 +72,28 @@ public class Physics
 	public boolean collisionDetected(ModelEntity A, ModelEntity B)
 	{
 		boolean collisionDetected = false;
-		if(A.isUsingSphericalBounds() && B.isUsingSphericalBounds()) //sphere on sphere collision
+		if(A.getBoundingShape() instanceof BoundingSphere && 
+		   B.getBoundingShape() instanceof BoundingSphere) //sphere on sphere collision
 		{
-			if(A.getState().sphericalBoundingRadius + B.getState().sphericalBoundingRadius > B.getState().position.subtract(A.getState().position).length())
+			BoundingSphere ASphere = (BoundingSphere)A.getBoundingShape();
+			BoundingSphere BSphere = (BoundingSphere)B.getBoundingShape();
+			if(ASphere.radius + BSphere.radius > B.getState().position.subtract(A.getState().position).length())
 			{
 				collisionDetected = true;
 			}
 		}
-		else if(!A.isUsingSphericalBounds() && !B.isUsingSphericalBounds()) //both box case
+		else if(A.getBoundingShape() instanceof BoundingBox && 
+				B.getBoundingShape() instanceof BoundingBox) //both box case
 		{
-			
+			BoundingBox ABox = (BoundingBox)A.getBoundingShape();
+			BoundingBox BBox = (BoundingBox)B.getBoundingShape();
 		}
-		else if(!A.isUsingSphericalBounds() && B.isUsingSphericalBounds()) //box on sphere collision
+		else if(A.getBoundingShape() instanceof BoundingBox && 
+				B.getBoundingShape() instanceof BoundingSphere) //box on sphere collision
 		{
-			float r = B.getState().sphericalBoundingRadius;
+			BoundingBox ABox = (BoundingBox)A.getBoundingShape();
+			BoundingSphere BSphere = (BoundingSphere)B.getBoundingShape();
+			float r = BSphere.radius;
 			for (int i = 0; i < A.getState().verticesOfBoundingRegion.length; i++)
 			{
 				if(A.getState().verticesOfBoundingRegion[i].subtract(B.getState().position).length() < r)
@@ -97,7 +105,9 @@ public class Physics
 		}
 		else //sphere on box collision
 		{
-			float r = A.getState().sphericalBoundingRadius;
+			BoundingSphere ASphere = (BoundingSphere)A.getBoundingShape();
+			BoundingBox BBox = (BoundingBox)B.getBoundingShape();
+			float r = ASphere.radius;
 			for (int i = 0; i <B.getState().verticesOfBoundingRegion.length; i++)
 			{
 				if(B.getState().verticesOfBoundingRegion[i].subtract(A.getState().position).length() < r)

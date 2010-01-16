@@ -4,8 +4,9 @@ import java.util.TreeMap;
 
 import org.atcs.moonweasel.Manager;
 import org.atcs.moonweasel.Moonweasel;
-import org.atcs.moonweasel.Positional;
+import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.ranges.SphericalRange;
+import org.atcs.moonweasel.ranges.TypeRange;
 import org.atcs.moonweasel.util.Vector;
 
 public class EntityManager extends Manager<Entity> {
@@ -29,8 +30,12 @@ public class EntityManager extends Manager<Entity> {
 		return Moonweasel.ENTITY_MAP.get(type);
 	}
 	
-	public SphericalRange<ModelEntity> getAllEntitiesInSphere(Vector center, float radius) {
+	public SphericalRange<ModelEntity> getAllInSphere(Vector center, float radius) {
 		return new SphericalRange<ModelEntity>(center, radius, getAllOfType(ModelEntity.class));
+	}
+	
+	public TypeRange<Ship> getAllShipsInSphere(Vector center, float radius) {
+		return new TypeRange<Ship>(Ship.class, getAllInSphere(center, radius));
 	}
 
 	public void registerThink(Entity entity, int ms) {

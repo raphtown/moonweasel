@@ -2,7 +2,7 @@ package org.atcs.moonweasel.ranges;
 
 import java.util.Iterator;
 
-import org.atcs.moonweasel.Positional;
+import org.atcs.moonweasel.entities.Positional;
 import org.atcs.moonweasel.util.Vector;
 
 public class SphericalRange<E extends Positional> implements Range<E> {

@@ -2,11 +2,6 @@ package org.atcs.moonweasel.util;
 
 public class State 
 {
-
-	public State() 
-	{
-	}
-	
 	// primary
 	public Vector position;
 	public Vector momentum;
@@ -28,8 +23,10 @@ public class State
 	public float inverseMass;
 	public Matrix inertiaTensor;
 	public Matrix inverseInertiaTensor;
-	public float sphericalBoundingRadius;
 	
+	public State() {
+		
+	}
 
 	public State(float mass, Matrix inertia) 
 	{

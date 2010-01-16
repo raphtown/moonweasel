@@ -31,7 +31,7 @@ public abstract class Manager<T extends Identifiable> implements Iterable<T> {
 			constructor.setAccessible(true);
 			element = constructor.newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Unable to create entity of type " + type, e);
 		}
 		
 		elements.put(element.getID(), element);

@@ -5,8 +5,8 @@ import java.util.Map;
 
 import javax.media.opengl.GL2;
 
-import org.atcs.moonweasel.Positional;
 import org.atcs.moonweasel.gui.Loader;
+import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
@@ -20,31 +20,15 @@ public abstract class ModelEntity extends Entity implements Positional {
 	
 	private int displayList;
 	
+	protected BoundingShape bounding;
 	protected State oldState;
 	protected State state;
-	private boolean usingSphereBounds;
 	
-	public void setSphereBoundsON()
-	{
-		usingSphereBounds = true;
-	}
-	
-	public void setSphereBoundsOFF()
-	{
-		usingSphereBounds = false;
-	}
-	
-	public boolean isUsingSphericalBounds()
-	{
-		return usingSphereBounds;
-	}
-	
-	
-	protected ModelEntity(float mass, Matrix inertiaTensor) {
+	protected ModelEntity(BoundingShape bounding, float mass, Matrix inertiaTensor) {
 		super();
 		
 		this.displayList = -1;
-		this.usingSphereBounds = false;
+		this.bounding = bounding;
 		this.oldState = new State(mass, inertiaTensor);
 		this.state = new State(mass, inertiaTensor);
 	}
@@ -53,6 +37,10 @@ public abstract class ModelEntity extends Entity implements Positional {
 		assert DISPLAY_LISTS.containsKey(this.getClass());
 		
 		gl.glCallList(displayList);
+	}
+	
+	public BoundingShape getBoundingShape() {
+		return bounding;
 	}
 	
 	public State getOldState() {

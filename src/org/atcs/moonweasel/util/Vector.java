@@ -4,6 +4,7 @@ public class Vector {
 	public float x, y, z;
 	
 	public Vector() {
+		this(0, 0, 0);
 	}
 	
 	public Vector(float x, float y, float z) {
@@ -20,19 +21,16 @@ public class Vector {
 		return new Vector(y * o.z - z * o.y, z*o.x - x*o.z, x*o.y - y*o.x);
 	}
 	
+	public float distance(Vector o) {
+		return this.subtract(o).length();
+	}
+	
 	public float dot(Vector o) {
 		return x * o.x + y * o.y + x * o.z;
 	}
 	
 	public float length() {
 		return (float)Math.sqrt(x * x + y * y + z * z);
-	}
-	
-	public void zero()
-	{
-		this.x = 0;
-		this.y = 0;
-		this.z = 0;
 	}
 	
 	public Vector normalize() {
