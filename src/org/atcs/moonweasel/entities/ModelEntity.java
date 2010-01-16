@@ -22,12 +22,29 @@ public abstract class ModelEntity extends Entity implements Positional {
 	
 	protected State oldState;
 	protected State state;
+	private boolean usingSphereBounds;
+	
+	public void setSphereBoundsON()
+	{
+		usingSphereBounds = true;
+	}
+	
+	public void setSphereBoundsOFF()
+	{
+		usingSphereBounds = false;
+	}
+	
+	public boolean isUsingSphericalBounds()
+	{
+		return usingSphereBounds;
+	}
+	
 	
 	protected ModelEntity(float mass, Matrix inertiaTensor) {
 		super();
 		
 		this.displayList = -1;
-		
+		this.usingSphereBounds = false;
 		this.oldState = new State(mass, inertiaTensor);
 		this.state = new State(mass, inertiaTensor);
 	}

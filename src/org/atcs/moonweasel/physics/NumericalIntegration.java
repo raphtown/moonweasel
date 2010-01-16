@@ -45,10 +45,13 @@ public class NumericalIntegration
 		force.zero();
 		torque.zero();
 		
-		Input inputController = new Input();
-		//inputController.repoll();
+		
 		damping(state, force, torque);
 		//collisionResponse();
+	
+		//Check if it's a player ship...
+		Input inputController = new Input();
+		//inputController.repoll();
 		control(inputController, state, force, torque);
 	}
 
