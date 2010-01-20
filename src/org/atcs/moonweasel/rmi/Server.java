@@ -11,7 +11,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.atcs.moonweasel.networking.Input;
 import org.atcs.moonweasel.physics.Physics;
 import org.atcs.moonweasel.rmi.announcer.ServerAnnouncer;
 
@@ -120,6 +119,7 @@ public class Server implements IServer
 	{
 		// TODO send command to physics engine
 		Physics physics = null; // getPhysics();
+		physics.update(0, 0);
 		
 		return connectedClients.contains(c);
 	}

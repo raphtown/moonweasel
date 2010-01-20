@@ -3,8 +3,6 @@ package org.atcs.moonweasel.rmi;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import org.atcs.moonweasel.networking.Input;
-
 /**
  * The interface linked to being a server. Used only for the purpose of keeping 
  * RMI happy.

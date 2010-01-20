@@ -1,8 +1,6 @@
 package org.atcs.moonweasel.rmi;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
@@ -34,7 +32,7 @@ public class Client {
         	Registry registry = LocateRegistry.getRegistry(hostname, RMIConfiguration.RMI_PORT);
             IServer comp = (IServer) registry.lookup("Simulator");
             int pi = comp.doStuff();
-            comp.connect(new Client());
+            comp.connect("");
             System.out.println(pi);
         }
         catch (Exception e)
