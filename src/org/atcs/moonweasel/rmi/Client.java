@@ -1,11 +1,13 @@
 package org.atcs.moonweasel.rmi;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Scanner;
 
+import org.atcs.moonweasel.networking.Input;
 import org.atcs.moonweasel.networking.ServerAnnouncer;
 
 /**
@@ -28,11 +30,15 @@ public class Client {
 
         try
         {
+        	String ip = InetAddress.getLocalHost().getHostAddress();
+        	
         	String hostname = getConnectionHostname();
         	Registry registry = LocateRegistry.getRegistry(hostname, RMIConfiguration.RMI_PORT);
             IServer comp = (IServer) registry.lookup("Simulator");
             int pi = comp.doStuff();
-            comp.connect("");
+            comp.connect(ip);
+            Input i = new Input("up");
+            comp.doCommand(i.getFlags(), ip);
             System.out.println(pi);
         }
         catch (Exception e)

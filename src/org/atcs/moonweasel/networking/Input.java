@@ -25,7 +25,7 @@ public class Input
 	private short flags = 0;
 
 	// Note: Only use this for DEBUGGING purposes
-	Input(short flags)
+	public Input(short flags)
 	{
 		this.flags = flags;
 	}
@@ -54,6 +54,11 @@ public class Input
 			else if(command.equalsIgnoreCase("tab"))
 				flags |= FLAGS_TAB;
 		}
+	}
+	
+	public short getFlags()
+	{
+		return flags;
 	}
 
 	private boolean haveFlag(short flag)
