@@ -16,6 +16,7 @@ public class State
 	public Matrix bodyToWorld;
 	public Matrix worldToBody;
 	public Vector[] verticesOfBoundingRegion;
+	public float dangerZoneRadius;
 	
 
 	// constant
@@ -43,6 +44,7 @@ public class State
 		this.inverseMass = 1 / mass;
 		this.inertiaTensor = inertia;
 		this.inverseInertiaTensor = inertia.inverse();
+		
 	}
 	
 
@@ -71,5 +73,10 @@ public class State
 		translation.setAsTranslation(position);
 		bodyToWorld = translation.mtm(orientation.toMatrix());
         worldToBody = bodyToWorld.inverse();
+	}
+	
+	public void setDangerZone(float dt)
+	{
+		dangerZoneRadius = velocity.scale(dt).length();
 	}
 }

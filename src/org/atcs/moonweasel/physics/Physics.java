@@ -21,7 +21,9 @@ public class Physics
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
 			State oldState = e.getState();
-			Integrator.integrate(oldState, t, dt); //refreshes the previous state and saves new values
+			Integrator.integrate(e.getState(), t, dt); //refreshes the previous state and saves new values
+			State futureState = e.getState();
+			e.getState().setDangerZone(dt);
 		}
 	}
 	
@@ -38,6 +40,8 @@ public class Physics
 		
 		//averages all of the vertices;
 		return returnVector;
+		
+		//Returns: a vector that gives the location of the centroid in world coordinates
 	}
 	
 	
