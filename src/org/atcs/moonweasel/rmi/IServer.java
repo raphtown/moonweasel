@@ -3,6 +3,8 @@ package org.atcs.moonweasel.rmi;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import org.atcs.moonweasel.networking.Input;
+
 /**
  * The interface linked to being a server. Used only for the purpose of keeping 
  * RMI happy.
@@ -17,7 +19,7 @@ public interface IServer extends Remote
 	 * @param c The client that is being connected to the server. 
 	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
-	public void connect(Client c) throws RemoteException;
+	public void connect(String c) throws RemoteException;
 	
 	/**
 	 * Used for nothing but testing purposes.
@@ -25,4 +27,12 @@ public interface IServer extends Remote
 	 * @throws RemoteException If the server goes away or some other part of RMI explodes.
 	 */
     public int doStuff() throws RemoteException;
+    
+    /**
+	 * When the client sends in a command, call this method.
+	 * @param command The command(s) that have been pressed.
+	 * @param c The client that is using this command.
+	 * @return Whether or not the client is allowed to call this method.
+	 */
+	public boolean doCommand(short command, String c) throws RemoteException;
 }
