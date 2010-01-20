@@ -1,6 +1,8 @@
 package org.atcs.moonweasel.rmi;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
@@ -32,6 +34,7 @@ public class Client {
         	Registry registry = LocateRegistry.getRegistry(hostname, RMIConfiguration.RMI_PORT);
             IServer comp = (IServer) registry.lookup("Simulator");
             int pi = comp.doStuff();
+            comp.connect(new Client());
             System.out.println(pi);
         }
         catch (Exception e)
@@ -63,16 +66,16 @@ public class Client {
 		while(number < 1 || number > hostnames.size())
 		{
 			System.out.println("Invalid server number");
+			System.out.println("Available hosts:");
 			for(int i = 0; i < hostnames.size(); i++)
 			{
 				System.out.print((i + 1) + ") ");
-				System.out.println(hostnames);
-				System.out.println("Which server would you like to join?");
-				number = console.nextInt();
-				console.nextLine();
+				System.out.println(hostnames.get(i));
 			}
+			System.out.println("Which server would you like to join?");
+			number = console.nextInt();
+			console.nextLine();
 		}
-
 		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
 }
