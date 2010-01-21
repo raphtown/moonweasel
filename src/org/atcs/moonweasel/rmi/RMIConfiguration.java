@@ -1,5 +1,9 @@
 package org.atcs.moonweasel.rmi;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
 /**
  * Serves as the configuration file for all RMI-related classes and methods.
  * @author Maxime Serrano, Raphael Townshend
@@ -18,4 +22,24 @@ public final class RMIConfiguration
 	 * Whether or not to print out the debug strings.
 	 */
 	public static final boolean RMI_DEBUG = true;
+	
+	
+	/**
+	 * The registry that all objects will be registered to for remote access.
+	 */
+	public static Registry registry = null;
+	
+	static
+	{
+		System.setSecurityManager(new SecurityManager());
+		
+		try
+		{
+			registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
+		} 
+		catch (RemoteException e)
+		{
+			e.printStackTrace();
+		}
+	}
 }

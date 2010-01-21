@@ -30,26 +30,6 @@ import org.atcs.moonweasel.rmi.announcer.ServerAnnouncer;
 public class Server implements IServer
 {
 	/**
-	 * The registry that all objects will be registered to for remote access.
-	 */
-	private static Registry registry = null;
-	
-	
-	static
-	{
-		System.setSecurityManager(new SecurityManager());
-		
-		try
-		{
-			registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
-		} 
-		catch (RemoteException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	/**
 	 * The clients that have called the connect() method remotely.
 	 */
 	private List<String> connectedClients = new ArrayList<String>();

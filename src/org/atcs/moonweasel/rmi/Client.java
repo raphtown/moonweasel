@@ -1,5 +1,7 @@
 package org.atcs.moonweasel.rmi;
 
+import static org.atcs.moonweasel.rmi.RMIConfiguration.*;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.rmi.NotBoundException;
@@ -28,26 +30,6 @@ import org.atcs.moonweasel.networking.ServerAnnouncer;
  */
 public class Client implements Remote
 {
-	
-	/**
-	 * The registry that all objects will be registered to for remote access.
-	 */
-	private static Registry registry = null;
-
-	static
-	{
-		System.setSecurityManager(new SecurityManager());
-		
-		try
-		{
-			registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
-		} 
-		catch (RemoteException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
     public static void main(String args[])
     {
         Client self = new Client();
