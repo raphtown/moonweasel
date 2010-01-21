@@ -39,14 +39,21 @@ public class WeaselView extends View {
 		gl.glClearColor(0.2f + 2 * (float)Math.sin(value) / 3, 0.2f, 0.2f, 0);
 		gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
 		gl.glLoadIdentity();
+	
+		gl.glTranslatef(0.f, 0.f, -3.f);
+		if (Loader.load("graphics", gl)) {
+			System.err.println("You loaded, everything is fine.");			
+		} else {
+			System.err.println("OWWWW");
+		}
 		
-		value += 0.01;
-		gl.glTranslatef(0, 2 * (float)Math.sin(value), 0);
+//		value += 0.01;
+//		gl.glTranslatef(0, 2 * (float)Math.sin(value), 0);
 		
-		gl.glBegin(GL.GL_TRIANGLES);
-			gl.glVertex3f(2, 0, -3);
-			gl.glVertex3f(0, 2, -3);
-			gl.glVertex3f(-2, 0, -3);
-		gl.glEnd();
+//		gl.glBegin(GL.GL_TRIANGLES);
+//			gl.glVertex3f(2, 0, -3);
+//			gl.glVertex3f(0, 2, -3);
+//			gl.glVertex3f(-2, 0, -3);
+//		gl.glEnd();
 	}
 }

@@ -25,7 +25,6 @@ public class Moonweasel {
 	}
 
 	public static void main(String[] args) {
-		new Server().start();
 		
 		Moonweasel weasel = new Moonweasel(800, 600, false);
 
@@ -65,12 +64,6 @@ public class Moonweasel {
 		int loops;
 		float interpolation;
 		
-		try {
-			getConnection();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		while (!view.shouldQuit()) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
@@ -88,36 +81,5 @@ public class Moonweasel {
 			view.render(interpolation);
 		}
 	}
-	 
-	private void getConnection() throws IOException
-	{
-		List<String> hostnames = ServerAnnouncer.getServerList();
-		
-		System.out.println("Client started...");
-		System.out.println("Available hosts:");
-		for(int i = 0; i < hostnames.size(); i++)
-		{
-			System.out.print(i + 1 + ") ");
-			System.out.println(hostnames.get(i));
-		}
-		System.out.println("Which server would you like to join?");
-		Scanner console = new Scanner(System.in);
-		int number = console.nextInt();
-		while(number < 1 || number > hostnames.size())
-		{
-			System.out.println("Invalid server number");
-			for(int i = 0; i < hostnames.size(); i++)
-			{
-				System.out.print(i + 1 + ") ");
-				System.out.println(hostnames);
-				System.out.println("Which server would you like to join?");
-				number = console.nextInt();
-				console.nextLine();
-			}
-		}
 
-		String selection = (String) hostnames.get(number - 1);
-		int port = 40001;
-		Socket s = new Socket(selection, port);
-	}
 }

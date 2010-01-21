@@ -15,7 +15,7 @@ public class Physics
 	
 	NumericalIntegration Integrator = new NumericalIntegration();
 	
-	public void updateAllModels(float t, float dt) 
+	public void update(float t, float dt) 
 	{
 		EntityManager em = new EntityManager(); //getEntityManagerFromServer();
 		for(Entity e : em)
