@@ -119,7 +119,7 @@ public class Server implements IServer
 	public void doCommand(short command, String c) throws RemoteException
 	{
 		if (!connectedClients.contains(c))
-			throw new RemoteException("WHAT THE FUCK YOU DOING");
+			throw new RemoteException("WHAT THE FUDGE YOU DOING");
 
 		if (RMI_DEBUG)
 			System.out.println("Received command " + command + " from " + c + ".");
