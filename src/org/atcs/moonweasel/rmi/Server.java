@@ -118,8 +118,7 @@ public class Server implements IServer
 	public boolean doCommand(short command, String c) throws RemoteException
 	{
 		// TODO send command to physics engine
-		Physics physics = null; // getPhysics();
-		physics.update(0, 0);
+		System.out.println("Received command " + command + " from " + c + ".");
 		
 		return connectedClients.contains(c);
 	}
