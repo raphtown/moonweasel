@@ -1,4 +1,4 @@
-package org.atcs.moonweasel;
+package org.atcs.moonweasel.entities;
 
 import org.atcs.moonweasel.util.Vector;
 

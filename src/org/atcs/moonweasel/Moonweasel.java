@@ -1,18 +1,13 @@
 package org.atcs.moonweasel;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
-import org.atcs.moonweasel.entities.Snowflake;
+import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
-import org.atcs.moonweasel.networking.Server;
-import org.atcs.moonweasel.networking.ServerAnnouncer;
 import org.atcs.moonweasel.physics.Physics;
 
 public class Moonweasel {
@@ -25,7 +20,6 @@ public class Moonweasel {
 	}
 
 	public static void main(String[] args) {
-		
 		Moonweasel weasel = new Moonweasel(800, 600, false);
 
 		// weasel.seeFox();
@@ -81,5 +75,4 @@ public class Moonweasel {
 			view.render(interpolation);
 		}
 	}
-
 }

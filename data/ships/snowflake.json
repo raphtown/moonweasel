@@ -1,0 +1,15 @@
+{
+    "name": "Snowflake",
+    "mass": 500.0,
+    "health": 100,
+    "attack": 10,
+    "gunners": [
+        
+    ],
+    "shape": "box",
+    "bounds": [
+        20.0,
+        20.0,
+        20.0 
+    ]
+}

@@ -9,7 +9,7 @@ public class Matrix
 
 	public Matrix()
 	{
-		
+		this(0, 0, 0, 0, 0, 0, 0, 0, 0);
 	}
 	
 	// construct a matrix from explicit values for the 3x3 sub matrix.

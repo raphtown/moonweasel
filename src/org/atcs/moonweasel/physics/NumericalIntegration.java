@@ -1,13 +1,15 @@
 package org.atcs.moonweasel.physics;
 
-import org.atcs.moonweasel.networking.Input;
+import org.atcs.moonweasel.entities.players.UserCommand;
+import org.atcs.moonweasel.entities.players.UserCommand.Commands;
 import org.atcs.moonweasel.util.Derivative;
+import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 public class NumericalIntegration
 {
-	public Derivative evaluate(State initial, float t)
+	public Derivative evaluate(State initial, long t)
 	{
 		Derivative output = new Derivative();
 		output.velocity = initial.velocity;
@@ -18,9 +20,9 @@ public class NumericalIntegration
 	
 	//overloading the evaluate() method to account for the other derivatives in RK4
 	
-	public Derivative evaluate(State initial, float t, float dt, Derivative d)
+	public Derivative evaluate(State initial, long t, int dt, Derivative d)
 	{
-		State state = new State(); //arbitrary initialization to keep eclipse happy. i don't think this actually has to be here.
+		State state = initial;
 	    state.position = initial.position.add(d.velocity.scale(dt));
 	    state.momentum = initial.momentum.add(d.force.scale(dt))  ;
 	    state.orientation = initial.orientation.add( d.spin.scale(dt));
@@ -40,16 +42,14 @@ public class NumericalIntegration
     // to the rigid body once per update. This is because the RK4 achieves
     // its accuracy by detecting curvature in derivative values over the 
     // timestep so we need our force values to supply the curvature.
-	public void forces(State state, float t, Vector force, Vector torque)
+	public void forces(State state, long t, Vector force, Vector torque)
 	{
-		force.zero();
-		torque.zero();
-		
-		Input inputController = new Input();
-		//inputController.repoll();
 		damping(state, force, torque);
 		//collisionResponse();
-		control(inputController, state, force, torque);
+	
+		//Check if it's a player ship...
+		
+		control(new UserCommand(t - 1000, new Vector(-0.5f, 0, 0)), state, force, torque);
 	}
 
 	
@@ -65,29 +65,58 @@ public class NumericalIntegration
 		
 	}
 	
-	public void control(Input input, State state, Vector force, Vector torque)
+	public void control(UserCommand input, State state, Vector force, Vector torque)
 	{
 		float f = 50.0f; //50 newtons or 50 newton-meters, depending on context
 
-        if (input.left) torque.z -= f; //a rotation to the left is torque vector like (0,0,-Pi) given right-handed coords
-        							   //this corresponds to the "roll" or aileron control system
-        if (input.right) torque.z += f;
+		// Mouse movement in x axis.
+		if (input.get(Commands.ROLLING)) { // User wants to roll.
+			torque.z += f * input.getMouse().x; // Scale mouse position. 
+		} else { // Turn rather than roll.
+			torque.y += f * input.getMouse().x;
+		}
 
-        if (input.up) torque.x -= f; //a nose-dive down is a torque vector like (-10,0,0), corresponding to pitch control
-
-        if (input.down) torque.x += f;
+		// Mouse movement in y axis.
+		torque.x += f * input.getMouse().y;
         
-        //thrusters
-        if (input.ctrl) force.add(state.orientation.toMatrix().getOrientation()); //adds some thrust in the current orientation
-        
+        // Thrusters
+		Vector relativeForce = new Vector();
+		if (input.get(Commands.FORWARD)) {
+			relativeForce.z -= f;
+		} 
+		if (input.get(Commands.BACKWARD)) {
+			relativeForce.z += f;
+		}
+		if (input.get(Commands.BOOST)) {
+			relativeForce.z *= 2;
+		}
+		
+		if (input.get(Commands.LEFT)) {
+			relativeForce.x -= f;
+		}
+		if (input.get(Commands.RIGHT)) {
+			relativeForce.x += f;
+		}
+		
+		if (input.get(Commands.UP)) {
+			relativeForce.y += f;
+		}
+		if (input.get(Commands.DOWN)) {
+			relativeForce.y -= f;
+		}
+		
+		relativeForce = state.orientation.rotate(relativeForce);
+		force.x += relativeForce.x;
+		force.y += relativeForce.y;
+		force.z += relativeForce.z;
 	}
 	
 	
-	public void integrate(State state, float t, float dt)
+	public void integrate(State state, long t, int dt)
     {
         Derivative a = evaluate(state, t);
-        Derivative b = evaluate(state, t+dt*0.5f, dt*0.5f, a);
-        Derivative c = evaluate(state, t+dt*0.5f, dt*0.5f, b);
+        Derivative b = evaluate(state, t + dt / 2, dt / 2, a);
+        Derivative c = evaluate(state, t + dt / 2, dt / 2, b);
         Derivative d = evaluate(state, t+dt, dt, c);
 
         state.position = state.position.add((a.velocity.add(b.velocity).add(b.velocity).add(c.velocity).add(c.velocity).add(d.velocity)).scale(dt/6));
