@@ -11,6 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.atcs.moonweasel.networking.Input;
 import org.atcs.moonweasel.physics.Physics;
 import org.atcs.moonweasel.rmi.announcer.ServerAnnouncer;
 
@@ -96,7 +97,8 @@ public class Server implements IServer
 	public void connect(String c) throws RemoteException
 	{
 		connectedClients.add(c);
-		System.out.println("Client connected!");
+		if (RMI_DEBUG)
+			System.out.println("Client " + c + " connected!");
 	}
 
 	/**
@@ -113,13 +115,15 @@ public class Server implements IServer
 	 * When the client sends in a command, call this method.
 	 * @param command The command(s) that have been pressed.
 	 * @param c The client that is using this command.
-	 * @return Whether or not the client is allowed to call this method.
 	 */
-	public boolean doCommand(short command, String c) throws RemoteException
+	public void doCommand(short command, String c) throws RemoteException
 	{
-		// TODO send command to physics engine
-		System.out.println("Received command " + command + " from " + c + ".");
-		
-		return connectedClients.contains(c);
+		if (!connectedClients.contains(c))
+			throw new RemoteException("WHAT THE FUCK YOU DOING");
+
+		if (RMI_DEBUG)
+			System.out.println("Received command " + command + " from " + c + ".");
+
+		Physics.getSingleton().handleInput(new Input(command), c);
 	}
 }

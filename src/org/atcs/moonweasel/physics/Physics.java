@@ -3,11 +3,23 @@ package org.atcs.moonweasel.physics;
 import java.util.ArrayList;
 
 import org.atcs.moonweasel.entities.*;
+import org.atcs.moonweasel.networking.Input;
 import org.atcs.moonweasel.util.*;
 
-public class Physics 
+public final class Physics 
 {
-
+	private static Physics physics = new Physics();
+	
+	private Physics()
+	{
+		
+	}
+	
+	public static Physics getSingleton()
+	{
+		return physics;
+	}
+	
 	public void destroy() 
 	{
 		
@@ -79,8 +91,9 @@ public class Physics
 		
 		
 	}
-	
-	
-	
-	
+
+	public void handleInput(Input input, String clientHost)
+	{
+		// do stuff
+	}
 }

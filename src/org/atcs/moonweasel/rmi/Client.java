@@ -2,8 +2,12 @@ package org.atcs.moonweasel.rmi;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,30 +26,71 @@ import org.atcs.moonweasel.networking.ServerAnnouncer;
  * This is a work in progress and is not currently working.
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Client {
+public class Client implements Remote
+{
+	
+	/**
+	 * The registry that all objects will be registered to for remote access.
+	 */
+	private static Registry registry = null;
+
+	static
+	{
+		System.setSecurityManager(new SecurityManager());
+		
+		try
+		{
+			registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
+		} 
+		catch (RemoteException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
     public static void main(String args[])
     {
-        if (System.getSecurityManager() == null)
-            System.setSecurityManager(new SecurityManager());
-
-        try
+        Client self = new Client();
+        self.findAndConnectToServer();
+    }
+    
+    public Client()
+    {
+		try 
+		{
+			Remote stub = UnicastRemoteObject.exportObject(this, 0);
+			registry.rebind("MoonweaselClient", stub);
+		}
+		catch (RemoteException e)
+		{
+			e.printStackTrace();
+		}
+    }
+    
+    public void findAndConnectToServer()
+    {
+    	try
         {
         	String ip = InetAddress.getLocalHost().getHostAddress();
-        	
         	String hostname = getConnectionHostname();
-        	Registry registry = LocateRegistry.getRegistry(hostname, RMIConfiguration.RMI_PORT);
-            IServer comp = (IServer) registry.lookup("Simulator");
-            int pi = comp.doStuff();
-            comp.connect(ip);
-            Input i = new Input("up");
-            comp.doCommand(i.getFlags(), ip);
-            System.out.println(pi);
+        	connectToServer(hostname, ip);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-    }    
+    }
+    
+    public void connectToServer(String serverHostName, String myIP) throws RemoteException, NotBoundException
+    {
+    	Registry registry = LocateRegistry.getRegistry(serverHostName, RMIConfiguration.RMI_PORT);
+        IServer comp = (IServer) registry.lookup("Simulator");
+        int pi = comp.doStuff();
+        comp.connect(myIP);
+        Input i = new Input("up");
+        comp.doCommand(i.getFlags(), myIP);
+        System.out.println(pi);
+    }
     
     /**
      * Serves to get a hostname out of the ServerAnnouncer, splitting out the 

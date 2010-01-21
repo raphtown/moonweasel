@@ -30,7 +30,6 @@ public interface IServer extends Remote
 	 * When the client sends in a command, call this method.
 	 * @param command The command(s) that have been pressed.
 	 * @param c The client that is using this command.
-	 * @return Whether or not the client is allowed to call this method.
 	 */
-	public boolean doCommand(short command, String c) throws RemoteException;
+	public void doCommand(short command, String c) throws RemoteException;
 }

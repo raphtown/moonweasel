@@ -41,7 +41,7 @@ public class Moonweasel {
 	private EntityManager entityManager;
 
 	private Moonweasel(int width, int height, boolean fullscreen) {
-		this.physics = new Physics();
+		this.physics = Physics.getSingleton();
 		this.view = new WeaselView(width, height, fullscreen);
 
 		this.entityManager = EntityManager.getEntityManager();
