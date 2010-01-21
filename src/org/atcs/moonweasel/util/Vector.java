@@ -1,48 +1,78 @@
 package org.atcs.moonweasel.util;
 
-public class Vector {
+public class Vector 
+{
 	public float x, y, z;
 	
-	public Vector() {
+	public Vector() 
+	{
 		this(0, 0, 0);
 	}
 	
-	public Vector(float x, float y, float z) {
+	public Vector(float x, float y, float z) 
+	{
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
-	public Vector add(Vector o) {
+	public Vector add(Vector o) 
+	{
 		return new Vector(x + o.x, y + o.y, z + o.z);
 	}
 	
-	public Vector cross(Vector o) {
+	public Vector cross(Vector o) 
+	{
 		return new Vector(y * o.z - z * o.y, z*o.x - x*o.z, x*o.y - y*o.x);
 	}
 	
-	public float distance(Vector o) {
+	public float distance(Vector o)
+	{
 		return this.subtract(o).length();
 	}
 	
-	public float dot(Vector o) {
+	public float dot(Vector o) 
+	{
 		return x * o.x + y * o.y + x * o.z;
 	}
 	
-	public float length() {
+	public float length() 
+	{
 		return (float)Math.sqrt(x * x + y * y + z * z);
 	}
 	
-	public Vector normalize() {
+	public Vector normalize()
+	{
 		float length = this.length();
 		return new Vector(x / length, y / length, z / length);
 	}
 	
-	public Vector scale(float scalar) {
+	public Vector scale(float scalar) 
+	{
 		return new Vector(scalar * x, scalar * y, scalar * z);
 	}
 	
-	public Vector subtract(Vector o) {
+	public Vector subtract(Vector o)
+	{
 		return new Vector(x - o.x, y - o.y, z - o.z);
 	}
+	
+	public Vector projectIntoXY(Vector o)
+	{
+		return new Vector(x, y, 0);
+	}
+	public Vector projectIntoXZ(Vector o)
+	{
+		return new Vector(x, 0, z);
+	}
+	public Vector projectIntoYZ(Vector o)
+	{
+		return new Vector(0, y, z);
+	}
+	
+	public Vector clone()
+	{
+		return new Vector(x,y,z);
+	}
+	
 }

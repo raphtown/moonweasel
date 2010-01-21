@@ -77,4 +77,5 @@ public abstract class ModelEntity extends Entity implements Positional {
 	public void teleport(Vector position) {
 		this.state.position = position;
 	}
+	
 }

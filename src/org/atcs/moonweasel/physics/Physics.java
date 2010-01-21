@@ -73,6 +73,30 @@ public class Physics
 		return new Matrix(i11, i12, i13, i21, i22, i23, i31, i32, i33);
 	}
 	
+	
+	
+	public State predictFutureState(ModelEntity me, int dt)
+	{
+		State futureState = new State(me.getState().mass, me.getState().inertiaTensor);
+		futureState.angularMomentum = me.getState().angularMomentum.clone();
+		futureState.momentum = me.getState().momentum.clone();
+		futureState.orientation = me.getState().orientation.clone();
+		futureState.position = me.getState().position.clone();
+		futureState.inverseInertiaTensor = me.getState().inverseInertiaTensor.clone();
+		futureState.inverseMass = me.getState().inverseMass;
+		futureState.recalculate();
+		Integrator.integrate(futureState,0,dt);
+		
+		return futureState;
+
+		
+		
+	}
+	
+	
+	
+	
+	
 	public boolean collisionDetected(ModelEntity A, ModelEntity B)
 	{
 		boolean collisionDetected = false;
