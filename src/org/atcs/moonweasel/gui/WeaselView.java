@@ -180,6 +180,7 @@ public class WeaselView extends View {
 	
 	@Override
 	public void display(GL2 gl, float alpha) {
+
 //		gl.glClearColor(0.2f + 2 * (float)Math.sin(value) / 3, 0.2f, 0.2f, 0);
 //		gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
 //		gl.glLoadIdentity();
@@ -208,5 +209,6 @@ public class WeaselView extends View {
         myShip.draw(gl);
         
         gl.glFlush();
+
 	}
 }
