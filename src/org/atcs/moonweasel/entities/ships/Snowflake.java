@@ -2,6 +2,8 @@ package org.atcs.moonweasel.entities.ships;
 
 import javax.media.opengl.GL2;
 
+import org.atcs.moonweasel.gui.WeaselView;
+
 import com.sun.opengl.util.gl2.GLUT;
 
 public class Snowflake extends Ship {
@@ -19,7 +21,7 @@ public class Snowflake extends Ship {
 	
 	@Override
 	public void draw(GL2 gl) {
-		glut.glutSolidCube(10);
+		WeaselView.glut.glutSolidTeapot(1);
 	}
 	
 	@Override
