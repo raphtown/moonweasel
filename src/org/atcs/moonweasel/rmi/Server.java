@@ -100,7 +100,5 @@ public class Server extends ActionSource implements IServer
 
 		if (RMI_DEBUG)
 			System.out.println("Received command " + command + " from " + c + ".");
-
-		Physics.getSingleton().handleInput(new Input(command), c);
 	}
 }
