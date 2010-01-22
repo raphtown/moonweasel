@@ -9,15 +9,14 @@ import java.util.Scanner;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
-import org.atcs.moonweasel.entities.Snowflake;
+import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.physics.Physics;
 import org.atcs.moonweasel.rmi.Server;
 import org.atcs.moonweasel.rmi.announcer.ServerAnnouncer;
 
-public class Moonweasel
-
-{
+public class Moonweasel {
 	public static final Map<String, Class<? extends Entity>> ENTITY_MAP;
 
 	static {
@@ -27,8 +26,6 @@ public class Moonweasel
 	}
 
 	public static void main(String[] args) {
-		
-		
 		Moonweasel weasel = new Moonweasel(800, 600, false);
 
 		// weasel.seeFox();

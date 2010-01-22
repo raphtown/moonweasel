@@ -1,16 +1,15 @@
-package org.atcs.moonweasel.entities;
-
-import org.atcs.moonweasel.util.Matrix;
-import org.atcs.moonweasel.util.Vector;
+package org.atcs.moonweasel.entities.ships;
 
 public class Snowflake extends Ship {
 	public static final String NAME = "snowflake";
 	
+	private static final ShipData DATA = 
+		ShipData.loadShipData(Snowflake.class.getSimpleName().toLowerCase());
+	
 	private long time;
 	
 	private Snowflake() {
-		super(1000, new Matrix(1,0,0,0,1,0,0,0,1), 
-				new Vector[0], new Vector[0]);
+		super(DATA);
 	}
 	
 	@Override
