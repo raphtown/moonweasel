@@ -13,7 +13,6 @@ import javax.media.opengl.GL2;
 
 public class ObjLoader extends Loader 
 {
-	public static final String FILE_NAME = "graphics.txt";
 	private static final String EXTENSION = "obj";
 	
 	protected String getExtension() {
@@ -31,9 +30,8 @@ public class ObjLoader extends Loader
 		ArrayList<Vertex> textureVertex = new ArrayList<Vertex>();
 		textureVertex.add(null);
 		
-		boolean done = false;
 		
-		while(!done)
+		while(sc.hasNext())
 		{
 			String nextToken = sc.next();
 			if(nextToken.equals("v"))
@@ -43,7 +41,6 @@ public class ObjLoader extends Loader
 				coordinates[1] = sc.nextFloat();
 				coordinates[2] = sc.nextFloat();
 				Vertex insertVertex = new Vertex(coordinates[0], coordinates[1], coordinates[2]);
-				System.out.println(insertVertex);
 				vertices.add(insertVertex);
 			}
 			else if(nextToken.equals("vt"))//Texture
@@ -71,7 +68,7 @@ public class ObjLoader extends Loader
 				
 				
 				ArrayList<String> tokenArray = new ArrayList<String>();
-				while(sc.hasNext())
+				while(sc.hasNext("\\d+.+"))
 				{
 					tokenArray.add(sc.next());
 				}
@@ -80,7 +77,6 @@ public class ObjLoader extends Loader
 				
 				boolean hasTextures = false;
 				boolean hasNormals = false;
-				
 				String exampleToken = tokenArray.get(0);
 				
 				if(exampleToken.indexOf('/') == -1)
@@ -168,9 +164,9 @@ public class ObjLoader extends Loader
 						Vertex vertex1 = vertices.get(faceVertices.get(0));
 						Vertex vertex2 = vertices.get(faceVertices.get(1));
 						Vertex vertex3 = vertices.get(faceVertices.get(2));
-						Vertex normalVertex1 = normalVertex.get(faceVertices.get(0));
-						Vertex normalVertex2 = normalVertex.get(faceVertices.get(1));
-						Vertex normalVertex3 = normalVertex.get(faceVertices.get(2));
+						Vertex normalVertex1 = normalVertex.get(normals.get(0));
+						Vertex normalVertex2 = normalVertex.get(normals.get(1));
+						Vertex normalVertex3 = normalVertex.get(normals.get(2));
 						gl.glNormal3f(normalVertex1.getX(), normalVertex1.getY(), normalVertex1.getZ());
 						gl.glVertex3f(vertex1.getX(), vertex1.getY(), vertex1.getZ());
 						gl.glNormal3f(normalVertex2.getX(), normalVertex2.getY(), normalVertex2.getZ());
@@ -183,12 +179,12 @@ public class ObjLoader extends Loader
 						Vertex vertex1 = vertices.get(faceVertices.get(0));
 						Vertex vertex2 = vertices.get(faceVertices.get(1));
 						Vertex vertex3 = vertices.get(faceVertices.get(2));
-						Vertex normalVertex1 = normalVertex.get(faceVertices.get(0));
-						Vertex normalVertex2 = normalVertex.get(faceVertices.get(1));
-						Vertex normalVertex3 = normalVertex.get(faceVertices.get(2));
-						Vertex textureVertex1 = textureVertex.get(faceVertices.get(0));
-						Vertex textureVertex2 = textureVertex.get(faceVertices.get(1));
-						Vertex textureVertex3 = textureVertex.get(faceVertices.get(2));
+						Vertex normalVertex1 = normalVertex.get(normals.get(0));
+						Vertex normalVertex2 = normalVertex.get(normals.get(1));
+						Vertex normalVertex3 = normalVertex.get(normals.get(2));
+						Vertex textureVertex1 = textureVertex.get(textures.get(0));
+						Vertex textureVertex2 = textureVertex.get(textures.get(1));
+						Vertex textureVertex3 = textureVertex.get(textures.get(2));
 						gl.glTexCoord2f(textureVertex1.getX(), textureVertex1.getY());
 						gl.glNormal3f(normalVertex1.getX(), normalVertex1.getY(), normalVertex1.getZ());
 						gl.glVertex3f(vertex1.getX(), vertex1.getY(), vertex1.getZ());
@@ -199,6 +195,7 @@ public class ObjLoader extends Loader
 						gl.glNormal3f(normalVertex3.getX(), normalVertex3.getY(), normalVertex3.getZ());
 						gl.glVertex3f(vertex3.getX(), vertex3.getY(), vertex3.getZ());
 					}
+					gl.glEnd();
 				}
 				else if(numOfVertices == 4)
 				{
@@ -221,10 +218,10 @@ public class ObjLoader extends Loader
 						Vertex vertex2 = vertices.get(faceVertices.get(1));
 						Vertex vertex3 = vertices.get(faceVertices.get(2));
 						Vertex vertex4 = vertices.get(faceVertices.get(3));
-						Vertex normalVertex1 = normalVertex.get(faceVertices.get(0));
-						Vertex normalVertex2 = normalVertex.get(faceVertices.get(1));
-						Vertex normalVertex3 = normalVertex.get(faceVertices.get(2));
-						Vertex normalVertex4 = normalVertex.get(faceVertices.get(3));
+						Vertex normalVertex1 = normalVertex.get(normals.get(0));
+						Vertex normalVertex2 = normalVertex.get(normals.get(1));
+						Vertex normalVertex3 = normalVertex.get(normals.get(2));
+						Vertex normalVertex4 = normalVertex.get(normals.get(3));
 						gl.glNormal3f(normalVertex1.getX(), normalVertex1.getY(), normalVertex1.getZ());
 						gl.glVertex3f(vertex1.getX(), vertex1.getY(), vertex1.getZ());
 						gl.glNormal3f(normalVertex2.getX(), normalVertex2.getY(), normalVertex2.getZ());
@@ -241,14 +238,14 @@ public class ObjLoader extends Loader
 						Vertex vertex2 = vertices.get(faceVertices.get(1));
 						Vertex vertex3 = vertices.get(faceVertices.get(2));
 						Vertex vertex4 = vertices.get(faceVertices.get(3));
-						Vertex normalVertex1 = normalVertex.get(faceVertices.get(0));
-						Vertex normalVertex2 = normalVertex.get(faceVertices.get(1));
-						Vertex normalVertex3 = normalVertex.get(faceVertices.get(2));
-						Vertex normalVertex4 = normalVertex.get(faceVertices.get(3));
-						Vertex textureVertex1 = textureVertex.get(faceVertices.get(0));
-						Vertex textureVertex2 = textureVertex.get(faceVertices.get(1));
-						Vertex textureVertex3 = textureVertex.get(faceVertices.get(2));
-						Vertex textureVertex4 = textureVertex.get(faceVertices.get(3));
+						Vertex normalVertex1 = normalVertex.get(normals.get(0));
+						Vertex normalVertex2 = normalVertex.get(normals.get(1));
+						Vertex normalVertex3 = normalVertex.get(normals.get(2));
+						Vertex normalVertex4 = normalVertex.get(normals.get(3));
+						Vertex textureVertex1 = textureVertex.get(textures.get(0));
+						Vertex textureVertex2 = textureVertex.get(textures.get(1));
+						Vertex textureVertex3 = textureVertex.get(textures.get(2));
+						Vertex textureVertex4 = textureVertex.get(textures.get(3));
 						gl.glTexCoord2f(textureVertex1.getX(), textureVertex1.getY());
 						gl.glNormal3f(normalVertex1.getX(), normalVertex1.getY(), normalVertex1.getZ());
 						gl.glVertex3f(vertex1.getX(), vertex1.getY(), vertex1.getZ());
@@ -262,6 +259,7 @@ public class ObjLoader extends Loader
 						gl.glNormal3f(normalVertex4.getX(), normalVertex4.getY(), normalVertex4.getZ());
 						gl.glVertex3f(vertex4.getX(), vertex4.getY(), vertex4.getZ());
 					}
+					gl.glEnd();
 					
 				}
 				else if(numOfVertices > 4)
@@ -273,10 +271,6 @@ public class ObjLoader extends Loader
 			if(sc.hasNextLine())
 			{
 				sc.nextLine();
-			}
-			else
-			{
-				done = true;
 			}
 		}
 		return true;
