@@ -28,7 +28,7 @@ import org.atcs.moonweasel.networking.ServerAnnouncer;
  * This is a work in progress and is not currently working.
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Client implements Remote
+public class Client implements IClient
 {
     public static void main(String args[])
     {

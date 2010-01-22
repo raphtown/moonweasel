@@ -1,12 +1,12 @@
 package org.atcs.moonweasel.rmi;
 
-import static org.atcs.moonweasel.rmi.RMIConfiguration.*;
+import static org.atcs.moonweasel.rmi.RMIConfiguration.RMI_DEBUG;
+import static org.atcs.moonweasel.rmi.RMIConfiguration.registry;
 
+import java.awt.event.ActionEvent;
 import java.rmi.AccessException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +27,12 @@ import org.atcs.moonweasel.rmi.announcer.ServerAnnouncer;
  * 
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Server implements IServer
+public class Server extends ActionSource implements IServer
 {
 	/**
 	 * The clients that have called the connect() method remotely.
 	 */
 	private List<String> connectedClients = new ArrayList<String>();
-	
-	public static void main(String args[])
-	{
-		new Server("lol");
-	}
 
 	public Server(String serverName)
 	{
@@ -79,6 +74,8 @@ public class Server implements IServer
 		connectedClients.add(c);
 		if (RMI_DEBUG)
 			System.out.println("Client " + c + " connected!");
+		this.fireActionEvent("newClient " + c);
+		
 	}
 
 	/**
@@ -99,7 +96,7 @@ public class Server implements IServer
 	public void doCommand(short command, String c) throws RemoteException
 	{
 		if (!connectedClients.contains(c))
-			throw new RemoteException("WHAT THE FUDGE YOU DOING");
+			throw new RemoteException("Invalid Client...");
 
 		if (RMI_DEBUG)
 			System.out.println("Received command " + command + " from " + c + ".");
