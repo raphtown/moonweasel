@@ -1,6 +1,6 @@
 package org.atcs.moonweasel.util;
 
-public class Vector 
+public class Vector implements Cloneable
 {
 	public float x, y, z;
 	
@@ -21,6 +21,11 @@ public class Vector
 		return new Vector(x + o.x, y + o.y, z + o.z);
 	}
 	
+	public Vector clone()
+	{
+		return new Vector(x,y,z);
+	}
+	
 	public Vector cross(Vector o) 
 	{
 		return new Vector(y * o.z - z * o.y, z*o.x - x*o.z, x*o.y - y*o.x);
@@ -35,6 +40,34 @@ public class Vector
 	{
 		return x * o.x + y * o.y + x * o.z;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vector other = (Vector) obj;
+		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
+			return false;
+		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
+			return false;
+		if (Float.floatToIntBits(z) != Float.floatToIntBits(other.z))
+			return false;
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Float.floatToIntBits(x);
+		result = prime * result + Float.floatToIntBits(y);
+		result = prime * result + Float.floatToIntBits(z);
+		return result;
+	}
 	
 	public float length() 
 	{
@@ -47,6 +80,19 @@ public class Vector
 		return new Vector(x / length, y / length, z / length);
 	}
 	
+	public Vector projectIntoXY(Vector o)
+	{
+		return new Vector(x, y, 0);
+	}
+	
+	public Vector projectIntoXZ(Vector o)
+	{
+		return new Vector(x, 0, z);
+	}
+	public Vector projectIntoYZ(Vector o)
+	{
+		return new Vector(0, y, z);
+	}
 	public Vector scale(float scalar) 
 	{
 		return new Vector(scalar * x, scalar * y, scalar * z);
@@ -56,23 +102,9 @@ public class Vector
 	{
 		return new Vector(x - o.x, y - o.y, z - o.z);
 	}
-	
-	public Vector projectIntoXY(Vector o)
-	{
-		return new Vector(x, y, 0);
+
+	@Override
+	public String toString() {
+		return String.format("<%s, %s, %s>", x, y, z);
 	}
-	public Vector projectIntoXZ(Vector o)
-	{
-		return new Vector(x, 0, z);
-	}
-	public Vector projectIntoYZ(Vector o)
-	{
-		return new Vector(0, y, z);
-	}
-	
-	public Vector clone()
-	{
-		return new Vector(x,y,z);
-	}
-	
 }
