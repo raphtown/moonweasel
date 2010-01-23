@@ -45,4 +45,8 @@ public class Vector {
 	public Vector subtract(Vector o) {
 		return new Vector(x - o.x, y - o.y, z - o.z);
 	}
+	
+	public String toString() {
+		return String.format("<%s, %s, %s>", x, y, z);
+	}
 }
