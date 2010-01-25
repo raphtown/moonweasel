@@ -9,12 +9,23 @@ public class Vector
 		this(0, 0, 0);
 	}
 	
+	public boolean equals(Vector v)
+	{
+		if(this.x == v.x && this.y == v.y && this.z == v.z) return true;
+		else return false;
+	}
+	
 	public Vector(float x, float y, float z) 
 	{
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
+	public String toString()
+	{
+		return "<" + x + ", " + y + ", " + z + ">";
+	}
+	
 	
 	public Vector add(Vector o) 
 	{
@@ -57,17 +68,23 @@ public class Vector
 		return new Vector(x - o.x, y - o.y, z - o.z);
 	}
 	
-	public Vector projectIntoXY(Vector o)
+	public Vector projectIntoXY()
 	{
 		return new Vector(x, y, 0);
 	}
-	public Vector projectIntoXZ(Vector o)
+	public Vector projectIntoXZ()
 	{
 		return new Vector(x, 0, z);
 	}
-	public Vector projectIntoYZ(Vector o)
+	public Vector projectIntoYZ()
 	{
 		return new Vector(0, y, z);
+	}
+	
+	public float angleBetween(Vector v)
+	{
+		
+		return (float) Math.acos(this.dot(v) / (v.length() * this.length()));
 	}
 	
 	public Vector clone()

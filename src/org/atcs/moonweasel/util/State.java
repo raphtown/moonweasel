@@ -1,5 +1,7 @@
 package org.atcs.moonweasel.util;
 
+import java.util.ArrayList;
+
 public class State 
 {
 	// primary
@@ -15,7 +17,7 @@ public class State
 	public Quaternion spin;
 	public Matrix bodyToWorld;
 	public Matrix worldToBody;
-	public Vector[] verticesOfBoundingRegion;
+	public ArrayList<Vector> verticesOfBoundingRegion;
 	public float dangerZoneRadius;
 	
 
@@ -40,10 +42,10 @@ public class State
 		this.spin = new Quaternion();
 		this.angularVelocity = new Vector();
 
-		this.mass = mass;
-		this.inverseMass = 1 / mass;
-		this.inertiaTensor = inertia;
-		this.inverseInertiaTensor = inertia.inverse();
+		//this.mass = mass;
+		//this.inverseMass = 1 / mass;
+		//this.inertiaTensor = inertia;
+		//this.inverseInertiaTensor = inertia.inverse();
 		
 	}
 	
