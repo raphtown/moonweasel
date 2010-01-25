@@ -3,7 +3,6 @@ package org.atcs.moonweasel.physics;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
 import org.atcs.moonweasel.util.Derivative;
-import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 

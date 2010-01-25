@@ -3,7 +3,6 @@ package org.atcs.moonweasel.rmi;
 import static org.atcs.moonweasel.rmi.RMIConfiguration.RMI_DEBUG;
 import static org.atcs.moonweasel.rmi.RMIConfiguration.registry;
 
-import java.awt.event.ActionEvent;
 import java.rmi.AccessException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;

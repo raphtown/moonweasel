@@ -14,7 +14,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Scanner;
 
-import org.atcs.moonweasel.networking.Input;
 import org.atcs.moonweasel.networking.ServerAnnouncer;
 
 /**
@@ -35,7 +34,7 @@ public class Client implements IClient
 	private final String hostname;
     public static void main(String args[])
     {
-        Client self = new Client();
+        new Client();
     }
     
     public Client()

@@ -8,6 +8,8 @@ import org.atcs.moonweasel.entities.ships.Ship;
 
 
 public class Player extends Entity {
+	private static final long serialVersionUID = -5228344170942537611L;
+
 	public enum Status {
 		DEAD, PILOT, GUNNER;
 	}
