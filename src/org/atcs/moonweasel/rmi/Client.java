@@ -1,6 +1,8 @@
 package org.atcs.moonweasel.rmi;
 
 import static org.atcs.moonweasel.rmi.RMIConfiguration.*;
+import static org.atcs.moonweasel.entities.ships.ShipTypes.*;
+
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -52,6 +54,7 @@ public class Client implements IClient
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
 			registry.rebind(CLIENT_OBJECT_NAME, stub);
 			findAndConnectToServer();
+			server.chooseShip(hostname, SHIP_TYPE_SNOWFLAKE); // only snowflake available
 		}
 		catch (RemoteException e)
 		{

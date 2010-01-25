@@ -35,4 +35,12 @@ public interface IServer extends Remote
 	 * @return A list of ModelEntities.
 	 */
 	public List<Entity> requestUpdate(String c) throws RemoteException;
+	
+	/**
+	 * The given client chooses a ship type, which then spawns.
+	 * @param clientHostname The client that is being connected to the server. 
+	 * @param shipType The type of ship that the client has chosen.
+	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
+	 */
+	public void chooseShip(final String clientHostname, final byte shipType) throws RemoteException;
 }
