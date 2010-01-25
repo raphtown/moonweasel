@@ -5,14 +5,11 @@ import static org.atcs.moonweasel.rmi.RMIConfiguration.*;
 import java.rmi.AccessException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.atcs.moonweasel.networking.Input;
-import org.atcs.moonweasel.physics.Physics;
+import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.rmi.announcer.ServerAnnouncer;
 
 /**
@@ -32,14 +29,14 @@ public class Server implements IServer
 	/**
 	 * The clients that have called the connect() method remotely.
 	 */
-	private List<String> connectedClients = new ArrayList<String>();
+	private final List<String> connectedClients = new ArrayList<String>();
 	
 	public static void main(String args[])
 	{
-		new Server("lol");
+		new Server("Moonweasel Server");
 	}
 
-	public Server(String serverName)
+	public Server(final String serverName)
 	{
 		try
 		{
@@ -59,7 +56,7 @@ public class Server implements IServer
 	 * @throws RemoteException If there is an error while rebinding.
 	 * @throws AccessException If we don't have access to the registry.
 	 */
-	private static void registerObject(String name, Remote object) throws RemoteException, AccessException
+	private static void registerObject(final String name, final Remote object) throws RemoteException, AccessException
 	{
 		Remote stub = UnicastRemoteObject.exportObject(object, 0);
 		registry.rebind(name, stub);
@@ -74,21 +71,29 @@ public class Server implements IServer
 	 * @param c The client that is being connected to the server. 
 	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
-	public void connect(String c) throws RemoteException
+	public void connect(final String c) throws RemoteException
 	{
 		connectedClients.add(c);
 		if (RMI_DEBUG)
 			System.out.println("Client " + c + " connected!");
+		// We should be okay here... unless we want to send an update immediately.
 	}
-
+	
 	/**
-	 * Used for nothing but testing purposes.
-	 * @return 0.
-	 * @throws RemoteException If the server goes away or some other part of RMI explodes.
+	 * The given client chooses a ship type, which then spawns.
+	 * @param clientHostname The client that is being connected to the server. 
+	 * @param shipType The type of ship that the client has chosen.
+	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
-	public int doStuff() throws RemoteException
+	public void chooseShip(final String clientHostname, final byte shipType) throws RemoteException
 	{
-		return 0;
+		if(!connectedClients.contains(clientHostname))
+			throw new RemoteException("Unconnected client trying to choose ship!");
+		
+		if (RMI_DEBUG)
+			System.out.println("Received ship choice " + shipType + " from " + clientHostname + ".");
+		
+		// TODO handle the choice itself
 	}
 
 	/**
@@ -96,14 +101,28 @@ public class Server implements IServer
 	 * @param command The command(s) that have been pressed.
 	 * @param c The client that is using this command.
 	 */
-	public void doCommand(short command, String c) throws RemoteException
+	public void doCommand(short command, final String c) throws RemoteException
 	{
 		if (!connectedClients.contains(c))
-			throw new RemoteException("WHAT THE FUDGE YOU DOING");
+			throw new RemoteException("Unconnected client trying to execute command!");
 
 		if (RMI_DEBUG)
 			System.out.println("Received command " + command + " from " + c + ".");
 
-		Physics.getSingleton().handleInput(new Input(command), c);
+		// TODO handle the input itself
+	}
+	
+	/**
+	 * Gets an updated list of Entities.
+	 * @param c The client that is asking for an update.
+	 * @return A list of Entities.
+	 */
+	public List<Entity> requestUpdate(final String c) throws RemoteException
+	{
+		if (!connectedClients.contains(c))
+			throw new RemoteException("Unconnected client trying to get an update!");
+
+		// TODO build a list of entities and prepare it to be sent to the client
+		return null;
 	}
 }

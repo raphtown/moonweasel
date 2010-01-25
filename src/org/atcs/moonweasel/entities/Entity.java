@@ -1,8 +1,10 @@
 package org.atcs.moonweasel.entities;
 
+import java.io.Serializable;
+
 import org.atcs.moonweasel.Identifiable;
 
-public abstract class Entity implements Identifiable {
+public abstract class Entity implements Identifiable, Serializable {
 	private static int nextID = 0;
 	public static String getEntityType(Class<? extends Entity> clazz) {
 		return clazz.getSimpleName().toLowerCase();

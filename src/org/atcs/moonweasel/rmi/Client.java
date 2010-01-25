@@ -4,6 +4,7 @@ import static org.atcs.moonweasel.rmi.RMIConfiguration.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -28,20 +29,30 @@ import org.atcs.moonweasel.networking.ServerAnnouncer;
  * This is a work in progress and is not currently working.
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Client implements Remote
+public class Client implements IClient
 {
+	private IServer server = null;
+	private final String hostname;
     public static void main(String args[])
     {
         Client self = new Client();
-        self.findAndConnectToServer();
     }
     
     public Client()
     {
+    	String ip = null;
+    	try {
+			ip = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		hostname = ip;
+		
 		try 
 		{
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
 			registry.rebind("MoonweaselClient", stub);
+			findAndConnectToServer();
 		}
 		catch (RemoteException e)
 		{
@@ -53,9 +64,8 @@ public class Client implements Remote
     {
     	try
         {
-        	String ip = InetAddress.getLocalHost().getHostAddress();
-        	String hostname = getConnectionHostname();
-        	connectToServer(hostname, ip);
+        	String serverHostname = getConnectionHostname();
+        	connectToServer(serverHostname, hostname);
         }
         catch (Exception e)
         {
@@ -66,12 +76,8 @@ public class Client implements Remote
     public void connectToServer(String serverHostName, String myIP) throws RemoteException, NotBoundException
     {
     	Registry registry = LocateRegistry.getRegistry(serverHostName, RMIConfiguration.RMI_PORT);
-        IServer comp = (IServer) registry.lookup("Simulator");
-        int pi = comp.doStuff();
-        comp.connect(myIP);
-        Input i = new Input("up");
-        comp.doCommand(i.getFlags(), myIP);
-        System.out.println(pi);
+        server = (IServer) registry.lookup("Simulator");
+        server.connect(myIP);
     }
     
     /**
@@ -109,4 +115,9 @@ public class Client implements Remote
 		}
 		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
+    
+    public void forceUpdate() throws RemoteException
+    {
+    	// entityList = requestUpdate(hostname);
+    }
 }

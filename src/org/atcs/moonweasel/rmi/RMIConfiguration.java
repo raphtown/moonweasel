@@ -35,7 +35,10 @@ public final class RMIConfiguration
 		
 		try
 		{
-			registry = LocateRegistry.createRegistry(RMIConfiguration.RMI_PORT);
+			if (LocateRegistry.getRegistry(RMI_PORT) == null)
+				registry = LocateRegistry.createRegistry(RMI_PORT);
+			else
+				registry = LocateRegistry.getRegistry(RMI_PORT);
 		} 
 		catch (RemoteException e)
 		{

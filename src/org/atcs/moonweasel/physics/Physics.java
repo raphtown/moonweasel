@@ -7,19 +7,7 @@ import org.atcs.moonweasel.networking.Input;
 import org.atcs.moonweasel.util.*;
 
 public final class Physics 
-{
-	private static Physics physics = new Physics();
-	
-	private Physics()
-	{
-		
-	}
-	
-	public static Physics getSingleton()
-	{
-		return physics;
-	}
-	
+{	
 	public void destroy() 
 	{
 		

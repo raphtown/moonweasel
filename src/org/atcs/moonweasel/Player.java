@@ -3,7 +3,10 @@ package org.atcs.moonweasel;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.Ship;
 
-public class Player extends Entity {
+public class Player extends Entity
+{
+	private static final long serialVersionUID = -1194039944281290318L;
+
 	public enum Status {
 		DEAD, PILOT, GUNNER;
 	}

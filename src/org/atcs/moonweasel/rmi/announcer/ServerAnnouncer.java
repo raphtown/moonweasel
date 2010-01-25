@@ -59,10 +59,10 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 		}
 	}
 
-	 /**
-	* @return A list of server addresses that have been announcing using this port and multicast group.
-	* @throws IOException If there is an error receiving the packet or joining the multicast group.
-	*/
+	/**
+	 * @return A list of server addresses that have been announcing using this port and multicast group.
+	 * @throws IOException If there is an error receiving the packet or joining the multicast group.
+	 */
 	public static List<String> getServerList() throws IOException
 	{
 		// why so large?

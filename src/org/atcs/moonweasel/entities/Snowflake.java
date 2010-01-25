@@ -3,7 +3,10 @@ package org.atcs.moonweasel.entities;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Vector;
 
-public class Snowflake extends Ship {
+public class Snowflake extends Ship
+{
+	private static final long serialVersionUID = 8769516548398728687L;
+
 	public static final String NAME = "snowflake";
 	
 	private long time;
