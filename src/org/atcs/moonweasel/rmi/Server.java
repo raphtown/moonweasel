@@ -1,11 +1,13 @@
 package org.atcs.moonweasel.rmi;
 
-import static org.atcs.moonweasel.rmi.RMIConfiguration.RMI_DEBUG;
-import static org.atcs.moonweasel.rmi.RMIConfiguration.registry;
+import static org.atcs.moonweasel.rmi.RMIConfiguration.*;
 
 import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class Server extends ActionSource implements IServer
 		try
 		{
 			new ServerAnnouncer(serverName).start();
-			registerObject("Simulator", this);
+			registerObject(SERVER_OBJECT_NAME, this);
 		}
 		catch (Exception e)
 		{
@@ -77,7 +79,7 @@ public class Server extends ActionSource implements IServer
 		connectedClients.add(c);
 		if (RMI_DEBUG)
 			System.out.println("Client " + c + " connected!");
-		this.fireActionEvent("newClient " + c);
+		fireActionEvent("newClient " + c);
 	}
 	
 	/**
@@ -94,7 +96,7 @@ public class Server extends ActionSource implements IServer
 		if (RMI_DEBUG)
 			System.out.println("Received ship choice " + shipType + " from " + clientHostname + ".");
 		
-		// TODO handle the choice itself
+		fireActionEvent("shipChosen " + shipType + " " + clientHostname);
 	}
 
 	/**
@@ -109,8 +111,9 @@ public class Server extends ActionSource implements IServer
 
 		if (RMI_DEBUG)
 			System.out.println("Received command " + command + " from " + c + ".");
+		
+		fireActionEvent("commRec " + command + " " + c);
 
-		// TODO handle the input itself
 	}
 	
 	/**
@@ -125,5 +128,35 @@ public class Server extends ActionSource implements IServer
 
 		// TODO build a list of entities and prepare it to be sent to the client
 		return null;
+	}
+	
+	/**
+	 * Forces all of the server's clients to request (and receive) an update.
+	 */
+	public void update()
+	{
+		for (String clientName : connectedClients)
+		{
+	        try
+	        {
+				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
+				((IClient)registry.lookup(CLIENT_OBJECT_NAME)).forceUpdate();
+			}
+	        catch (AccessException e)
+	        {
+				e.printStackTrace();
+	        	throw new RuntimeException("Could not access client!");
+			}
+	        catch (RemoteException e)
+	        {
+				e.printStackTrace();
+	        	throw new RuntimeException("Remote exception occurred while forcing client update");
+			}
+	        catch (NotBoundException e)
+	        {
+				e.printStackTrace();
+				throw new RuntimeException("Client does not exist on clientside (what the?)");
+			}
+		}
 	}
 }

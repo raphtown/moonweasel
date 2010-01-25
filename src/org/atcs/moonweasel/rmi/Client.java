@@ -50,7 +50,7 @@ public class Client implements IClient
 		try 
 		{
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
-			registry.rebind("MoonweaselClient", stub);
+			registry.rebind(CLIENT_OBJECT_NAME, stub);
 			findAndConnectToServer();
 		}
 		catch (RemoteException e)
@@ -74,8 +74,8 @@ public class Client implements IClient
     
     public void connectToServer(String serverHostName, String myIP) throws RemoteException, NotBoundException
     {
-    	Registry registry = LocateRegistry.getRegistry(serverHostName, RMIConfiguration.RMI_PORT);
-        server = (IServer) registry.lookup("Simulator");
+    	Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
+        server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
         server.connect(myIP);
     }
     
@@ -117,6 +117,7 @@ public class Client implements IClient
     
     public void forceUpdate() throws RemoteException
     {
-    	// entityList = requestUpdate(hostname);
+    	// TODO actually get the update
+    	// entityList = server.requestUpdate(hostname);
     }
 }

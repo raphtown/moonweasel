@@ -29,6 +29,16 @@ public final class RMIConfiguration
 	 */
 	public static Registry registry = null;
 	
+	/**
+	 * The name that the server object will be saved at on the server's RMI registry.
+	 */
+	public static final String SERVER_OBJECT_NAME = "MoonweaselServer";
+	
+	/**
+	 * The name that the client object will be saved at on the client's RMI registry.
+	 */
+	public static final String CLIENT_OBJECT_NAME = "MoonweaselClient";
+	
 	static
 	{
 		System.setSecurityManager(new SecurityManager());
