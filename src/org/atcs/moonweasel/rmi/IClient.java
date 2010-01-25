@@ -6,5 +6,4 @@ import java.rmi.RemoteException;
 public interface IClient extends Remote
 {
 	public void forceUpdate() throws RemoteException;
-	
 }

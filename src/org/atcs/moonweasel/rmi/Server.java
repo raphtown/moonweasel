@@ -1,7 +1,9 @@
 package org.atcs.moonweasel.rmi;
 
-import static org.atcs.moonweasel.rmi.RMIConfiguration.*;
+import static org.atcs.moonweasel.rmi.RMIConfiguration.RMI_DEBUG;
+import static org.atcs.moonweasel.rmi.RMIConfiguration.registry;
 
+import java.awt.event.ActionEvent;
 import java.rmi.AccessException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -24,7 +26,7 @@ import org.atcs.moonweasel.rmi.announcer.ServerAnnouncer;
  * 
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Server implements IServer
+public class Server extends ActionSource implements IServer
 {
 	/**
 	 * The clients that have called the connect() method remotely.
@@ -76,7 +78,7 @@ public class Server implements IServer
 		connectedClients.add(c);
 		if (RMI_DEBUG)
 			System.out.println("Client " + c + " connected!");
-		// We should be okay here... unless we want to send an update immediately.
+		this.fireActionEvent("newClient " + c);
 	}
 	
 	/**

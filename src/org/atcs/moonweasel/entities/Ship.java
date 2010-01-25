@@ -14,7 +14,7 @@ public class Ship extends ModelEntity
 	
 	protected Ship(float mass, Matrix inertiaTensor, 
 			Vector[] gunnerPositions, Vector[] gunnerOrientations) {
-		super(mass, inertiaTensor);
+		super(null, mass, inertiaTensor);
 
 		assert mass > 0;
 		assert gunnerPositions.length == gunnerOrientations.length;

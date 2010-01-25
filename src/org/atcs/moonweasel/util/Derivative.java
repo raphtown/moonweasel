@@ -8,7 +8,12 @@ public class Derivative
 	public Quaternion spin;
 	public Vector torque;
 	
-	public Derivative(){};
+	public Derivative() {
+		this.velocity = new Vector();
+		this.force = new Vector();
+		this.spin = new Quaternion();
+		this.torque = new Vector();
+	}
 	
 	public Derivative(Vector velocity, Vector force, Quaternion spin, Vector torque)
 	{

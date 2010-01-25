@@ -26,9 +26,10 @@ public class Quaternion {
 		}
 	}
 
-	public float w, x, y, z;
+	public final float w, x, y, z;
 
 	public Quaternion() {
+		this(0, 0, 0, 0);
 	}
 
 	public Quaternion(float w, float x, float y, float z) {
@@ -56,14 +57,36 @@ public class Quaternion {
 
 	public Quaternion normalize() {
 		float length = this.length();
-		Quaternion quaternion = new Quaternion();
-		quaternion.w = w / length;
-		quaternion.x = x / length;
-		quaternion.y = y / length;
-		quaternion.z = z / length;
-		return quaternion;
+		float nw, nx, ny, nz;
+		nw = w / length;
+		nx = x / length;
+		ny = y / length;
+		nz = z / length;
+		return new Quaternion(nw, nx, ny, nz);
 	}
 
+	// Supposedly this should rotate a vector according to the orientation of
+	// this quaternion.
+	// See "Pseudo-code for rotating using a quaternion" on 
+	// http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+	public Vector rotate(Vector v) {
+		float t2 = w * x;
+		float t3 = w * y;
+		float t4 = w * z;
+		float t5 = -x * x;
+		float t6 = x * y;
+		float t7 = x * z;
+		float t8 = -y * y;
+		float t9 = y * y;
+		float t10 = -z * z;
+		
+		float nx, ny, nz;
+		nx = 2 * ((t8 + t10) * v.x + (t6 - t4) * v.y + (t3 + t7) * v.z) + v.x;
+		ny = 2 * ((t4 + t6) * v.x + (t5 + t10) * v.y + (t9 - t2) * v.z) + v.y;
+		nz = 2  * ((t7 - t3) * v.x + (t2 + t9) * v.y + (t5 + t8) * v.z) + v.z;
+		return new Vector(nx, ny, nz);
+	}
+	
 	public Quaternion scale(float o) {
 		return new Quaternion(o * w, o * x, o * y, o * z);
 	}
@@ -90,5 +113,9 @@ public class Quaternion {
 				fTyz + fTwx, 1.0f - (fTxx + fTyy));
 	}
 	
-
+	public Quaternion clone()
+	{
+		return new Quaternion(w, x, y, z);
+	}
+	
 }

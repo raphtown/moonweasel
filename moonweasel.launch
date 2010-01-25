@@ -8,5 +8,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.atcs.moonweasel.Moonweasel"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="moonweasel"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea -Djava.security.policy=no.policy"/>
 </launchConfiguration>
