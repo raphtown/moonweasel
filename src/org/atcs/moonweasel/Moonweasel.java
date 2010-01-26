@@ -36,10 +36,15 @@ public class Moonweasel {
 
 	private Moonweasel(int width, int height, boolean fullscreen) {
 		this.physics = new Physics();
-		this.view = new WeaselView(width, height, fullscreen);
 
 		this.entityManager = EntityManager.getEntityManager();
+		Player player = this.entityManager.create("player");
+		player.spawn();
+
+		this.view = new WeaselView(width, height, fullscreen, player);
+		
 		Snowflake snowflake = this.entityManager.create("snowflake");
+		snowflake.setPilot(player);
 		snowflake.spawn();
 	}
 

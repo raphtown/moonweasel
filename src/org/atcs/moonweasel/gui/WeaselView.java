@@ -4,12 +4,16 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
+import org.atcs.moonweasel.entities.players.Player;
+
 public class WeaselView extends View {
+	private Player player;
 	private float value;
 	
-	public WeaselView(int width, int height, boolean fullscreen) {
+	public WeaselView(int width, int height, boolean fullscreen, Player player) {
 		super(width, height, fullscreen);
 
+		this.player = player;
 		this.value = 0;
 	}
 
