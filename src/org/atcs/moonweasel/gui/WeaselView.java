@@ -14,8 +14,6 @@ import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
-import org.atcs.moonweasel.entities.players.Player;
-
 public class WeaselView extends View {
 	/* Window size*/
 	private int width;
@@ -159,11 +157,9 @@ public class WeaselView extends View {
             gl.glPushMatrix();
 	        	gl.glTranslatef(interpolated.position.x, interpolated.position.y,
 	        			interpolated.position.z);
-	        	
-	        	if (!rotation.equals(Vector.ZERO)) {
-		        	gl.glRotatef(rotation.angle, rotation.axis.x, rotation.axis.y,
-		        			rotation.axis.z);	        		
-	        	}
+	        	// I don't know how to do this, rotating by 0, 0, 0 is bad.
+//	        	gl.glRotatef(rotation.angle, rotation.axis.x, rotation.axis.y,
+//	        			rotation.axis.z);	        		
 	        	entity.draw(gl);
         	gl.glPopMatrix();
         }
