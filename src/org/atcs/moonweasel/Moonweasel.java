@@ -41,7 +41,9 @@ public class Moonweasel {
 		
 		Player player = this.entityManager.create("player");
 		player.spawn();
+
 		Snowflake snowflake = this.entityManager.create("snowflake");
+		snowflake.setPilot(player);
 		snowflake.spawn();
 		player.setShip(snowflake);
 		

@@ -14,6 +14,8 @@ import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
+import org.atcs.moonweasel.entities.players.Player;
+
 public class WeaselView extends View {
 	/* Window size*/
 	private int width;
