@@ -4,11 +4,8 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.Vulnerable;
 import org.atcs.moonweasel.entities.players.Player;
-import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Vector;
-
-
 
 public class Ship extends ModelEntity implements Vulnerable {
 	private static Matrix BASE_TENSOR = new Matrix(1,0,0,0,1,0,0,0,1);
@@ -67,9 +64,5 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 	@Override
 	public void spawn() {
-	}
-	
-	public void draw() {
-
 	}
 }

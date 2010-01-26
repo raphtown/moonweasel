@@ -30,7 +30,6 @@ public class ObjLoader extends Loader
 		ArrayList<Vertex> textureVertex = new ArrayList<Vertex>();
 		textureVertex.add(null);
 		
-		
 		while(sc.hasNext())
 		{
 			String nextToken = sc.next();

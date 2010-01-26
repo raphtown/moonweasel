@@ -2,12 +2,23 @@ package org.atcs.moonweasel.util;
 
 public class State 
 {
+	// interpolation used for animating in between states
+	public static State interpolate(State a, State b, float alpha) 
+	{
+		State interpolatedState = b;
+		interpolatedState.position = a.position.scale(1 - alpha).add(b.position.scale(alpha));
+		interpolatedState.momentum = a.momentum.scale(1 - alpha).add(b.momentum.scale(alpha));
+		interpolatedState.orientation = Quaternion.slerp(a.orientation,b.orientation, alpha);
+		interpolatedState.angularMomentum = a.angularMomentum.scale(1 - alpha).add(b.angularMomentum.scale(alpha));
+		interpolatedState.recalculate();
+		return interpolatedState;
+	}
+	
 	// primary
 	public Vector position;
 	public Vector momentum;
 	public Quaternion orientation;
 	public Vector angularMomentum;
-
 
 	// secondary
 	public Vector velocity;
@@ -17,7 +28,6 @@ public class State
 	public Matrix worldToBody;
 	public Vector[] verticesOfBoundingRegion;
 	
-
 	// constant
 	public float mass;
 	public float inverseMass;
@@ -30,32 +40,19 @@ public class State
 
 	public State(float mass, Matrix inertia) 
 	{
-		this.position = new Vector();
-		this.momentum = new Vector();
-		this.velocity = new Vector();
+		this.position = Vector.ZERO;
+		this.momentum = Vector.ZERO;
+		this.velocity = Vector.ZERO;
 
 		this.orientation = new Quaternion();
-		this.angularMomentum = new Vector();
+		this.angularMomentum = Vector.ZERO;
 		this.spin = new Quaternion();
-		this.angularVelocity = new Vector();
+		this.angularVelocity = Vector.ZERO;
 
 		this.mass = mass;
 		this.inverseMass = 1 / mass;
 		this.inertiaTensor = inertia;
 		this.inverseInertiaTensor = inertia.inverse();
-	}
-	
-
-	// interpolation used for animating inbetween states
-	public State interpolate(State a, State b, float alpha) 
-	{
-		State interpolatedState = b;
-		interpolatedState.position = a.position.scale(1 - alpha).add(b.position.scale(alpha));
-		interpolatedState.momentum = a.momentum.scale(1 - alpha).add(b.momentum.scale(alpha));
-		interpolatedState.orientation = Quaternion.slerp(a.orientation,b.orientation, alpha);
-		interpolatedState.angularMomentum = a.angularMomentum.scale(1 - alpha).add(b.angularMomentum.scale(alpha));
-		interpolatedState.recalculate();
-		return interpolatedState;
 	}
 
 	public void recalculate() {

@@ -18,8 +18,6 @@ public abstract class ModelEntity extends Entity implements Positional {
 		DISPLAY_LISTS = new HashMap<Class<? extends ModelEntity>, Integer>();
 	}
 	
-	private int displayList;
-	
 	protected BoundingShape bounding;
 	protected State oldState;
 	protected State state;
@@ -27,7 +25,6 @@ public abstract class ModelEntity extends Entity implements Positional {
 	protected ModelEntity(BoundingShape bounding, float mass, Matrix inertiaTensor) {
 		super();
 		
-		this.displayList = -1;
 		this.bounding = bounding;
 		this.oldState = new State(mass, inertiaTensor);
 		this.state = new State(mass, inertiaTensor);
@@ -36,7 +33,7 @@ public abstract class ModelEntity extends Entity implements Positional {
 	public void draw(GL2 gl) {
 		assert DISPLAY_LISTS.containsKey(this.getClass());
 		
-		gl.glCallList(displayList);
+		gl.glCallList(DISPLAY_LISTS.get(this.getClass()));
 	}
 	
 	public BoundingShape getBoundingShape() {
@@ -53,6 +50,10 @@ public abstract class ModelEntity extends Entity implements Positional {
 	
 	public State getState() {
 		return this.state;
+	}
+	
+	public boolean isPreCached() {
+		return DISPLAY_LISTS.containsKey(this.getClass());
 	}
 	
 	public void precache(GL2 gl) {

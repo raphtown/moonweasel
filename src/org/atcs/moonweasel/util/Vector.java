@@ -1,7 +1,9 @@
 package org.atcs.moonweasel.util;
 
 public class Vector {
-	public float x, y, z;
+	public static final Vector ZERO = new Vector();
+	
+	public final float x, y, z;
 	
 	public Vector() {
 		this(0, 0, 0);
