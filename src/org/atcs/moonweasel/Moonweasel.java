@@ -36,11 +36,18 @@ public class Moonweasel {
 
 	private Moonweasel(int width, int height, boolean fullscreen) {
 		this.physics = new Physics();
-		this.view = new WeaselView(width, height, fullscreen);
 
 		this.entityManager = EntityManager.getEntityManager();
+		
+		Player player = this.entityManager.create("player");
+		player.spawn();
+
 		Snowflake snowflake = this.entityManager.create("snowflake");
+		snowflake.setPilot(player);
 		snowflake.spawn();
+		player.setShip(snowflake);
+		
+		this.view = new WeaselView(width, height, fullscreen, player);
 	}
 
 	private void destroy() {
@@ -57,7 +64,7 @@ public class Moonweasel {
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		float interpolation;
-
+		
 		while (!view.shouldQuit()) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&

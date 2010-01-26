@@ -55,4 +55,13 @@ public class Player extends Entity {
 	public void spawn() {
 		this.commands.clear();
 	}
+	
+	public void setShip(Ship pihs) {
+		ship = pihs;
+	}
+	
+	public Ship getShip() {
+		return ship;
+	}
+	
 }

@@ -19,6 +19,7 @@ public abstract class Loader {
 		try {
 			stream = new FileInputStream(filename);
 		} catch (FileNotFoundException e) {
+			System.out.println("err");
 			return false;
 		}
 		

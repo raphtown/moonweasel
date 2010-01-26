@@ -1,8 +1,10 @@
 package org.atcs.moonweasel.util;
 
-public class Vector implements Cloneable
+public class Vector implements Cloneable 
 {
-	public float x, y, z;
+	public static final Vector ZERO = new Vector();
+	
+	public final float x, y, z;
 	
 	public Vector() 
 	{
@@ -47,7 +49,7 @@ public class Vector implements Cloneable
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Vector))
 			return false;
 		Vector other = (Vector) obj;
 		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
@@ -58,7 +60,7 @@ public class Vector implements Cloneable
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -68,9 +70,8 @@ public class Vector implements Cloneable
 		result = prime * result + Float.floatToIntBits(z);
 		return result;
 	}
-	
-	public float length() 
-	{
+
+	public float length() {
 		return (float)Math.sqrt(x * x + y * y + z * z);
 	}
 	
@@ -102,7 +103,7 @@ public class Vector implements Cloneable
 	{
 		return new Vector(x - o.x, y - o.y, z - o.z);
 	}
-
+	
 	@Override
 	public String toString() {
 		return String.format("<%s, %s, %s>", x, y, z);
