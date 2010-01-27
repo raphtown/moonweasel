@@ -142,29 +142,29 @@ public class Server extends ActionSource implements IServer
 	{
 		for (String clientName : connectedClients)
 		{
-	        try
-	        {
+			try
+			{
 				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
 				((IClient)registry.lookup(CLIENT_OBJECT_NAME)).forceUpdate();
 			}
-	        catch (AccessException e)
-	        {
-	        	connectedClients.remove(clientName);
-	        	fireActionEvent("discClient " + clientName);
+			catch (AccessException e)
+			{
+				connectedClients.remove(clientName);
+				fireActionEvent("discClient " + clientName);
 				e.printStackTrace();
-	        	throw new RuntimeException("Could not access client!");
+				throw new RuntimeException("Could not access client!");
 			}
-	        catch (RemoteException e)
-	        {
-	        	connectedClients.remove(clientName);
-	        	fireActionEvent("discClient " + clientName);
+			catch (RemoteException e)
+			{
+				connectedClients.remove(clientName);
+				fireActionEvent("discClient " + clientName);
 				e.printStackTrace();
-	        	throw new RuntimeException("Remote exception occurred while forcing client update");
+				throw new RuntimeException("Remote exception occurred while forcing client update");
 			}
-	        catch (NotBoundException e)
-	        {
-	        	connectedClients.remove(clientName);
-	        	fireActionEvent("discClient " + clientName);
+			catch (NotBoundException e)
+			{
+				connectedClients.remove(clientName);
+				fireActionEvent("discClient " + clientName);
 				e.printStackTrace();
 				throw new RuntimeException("Client does not exist on clientside (what the?)");
 			}
