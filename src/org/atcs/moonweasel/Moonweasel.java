@@ -8,8 +8,8 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
+import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.physics.Physics;
-import org.atcs.moonweasel.rmi.Server;
 
 public class Moonweasel {
 	public static final Map<String, Class<? extends Entity>> ENTITY_MAP;
