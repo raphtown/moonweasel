@@ -61,6 +61,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 	public Player getPilot() {
 		return pilot;
 	}
+	
+	public void setPilot(Player pilot) {
+		this.pilot = pilot;
+	}
 
 	@Override
 	public void spawn() {
