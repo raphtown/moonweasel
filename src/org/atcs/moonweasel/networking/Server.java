@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.atcs.moonweasel.entities.Entity;
+import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
+import org.atcs.moonweasel.ranges.Range;
 
 /**
  * Serves as the Remote Method Invocation implementation of server software. 
@@ -126,8 +128,11 @@ public class Server extends ActionSource implements IServer
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to get an update!");
 
-		// TODO build a list of entities and prepare it to be sent to the client
-		return null;
+		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
+		List<Entity> entityList = new ArrayList<Entity>();
+		while(range.hasNext())
+			entityList.add(range.next());
+		return entityList;
 	}
 	
 	/**
