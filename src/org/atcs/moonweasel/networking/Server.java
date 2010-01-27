@@ -152,21 +152,21 @@ public class Server extends ActionSource implements IServer
 				connectedClients.remove(clientName);
 				fireActionEvent("discClient " + clientName);
 				e.printStackTrace();
-				throw new RuntimeException("Could not access client!");
+				//throw new RuntimeException("Could not access client!");
 			}
 			catch (RemoteException e)
 			{
 				connectedClients.remove(clientName);
 				fireActionEvent("discClient " + clientName);
 				e.printStackTrace();
-				throw new RuntimeException("Remote exception occurred while forcing client update");
+				//throw new RuntimeException("Remote exception occurred while forcing client update");
 			}
 			catch (NotBoundException e)
 			{
 				connectedClients.remove(clientName);
 				fireActionEvent("discClient " + clientName);
 				e.printStackTrace();
-				throw new RuntimeException("Client does not exist on clientside (what the?)");
+				//throw new RuntimeException("Client does not exist on clientside (what the?)");
 			}
 		}
 	}
