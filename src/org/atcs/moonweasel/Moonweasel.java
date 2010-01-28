@@ -41,8 +41,16 @@ public class Moonweasel {
 		this.view = new WeaselView(width, height, fullscreen);
 
 		this.entityManager = EntityManager.getEntityManager();
+		
+		Player player = this.entityManager.create("player");
+		player.spawn();
+
 		Snowflake snowflake = this.entityManager.create("snowflake");
+		snowflake.setPilot(player);
 		snowflake.spawn();
+		player.setShip(snowflake);
+		
+		this.view = new WeaselView(width, height, fullscreen, player);
 	}
 
 	private void destroy() {
@@ -51,7 +59,6 @@ public class Moonweasel {
 	}
 
 	private void run() {
-
 		final int TICKS_PER_SECOND = 25;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
