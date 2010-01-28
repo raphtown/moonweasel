@@ -3,6 +3,8 @@ package org.atcs.moonweasel.physics;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
 import org.atcs.moonweasel.util.Derivative;
+import org.atcs.moonweasel.util.Matrix;
+import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
@@ -13,7 +15,7 @@ public class NumericalIntegration
 		Derivative output = new Derivative();
 		output.velocity = initial.velocity;
 		output.spin = initial.spin;
-		forces(initial, t, output.force, output.torque);
+		forces(initial, t, output);
 		return output;
 	}
 	
@@ -31,7 +33,7 @@ public class NumericalIntegration
 	    Derivative output = new Derivative();
 	    output.velocity = state.velocity;
 	    output.spin = state.spin;
-	    forces(state, t+dt, output.force, output.torque);
+	    forces(state, t+dt, output);
 	    return output;
 	}
 
@@ -41,22 +43,22 @@ public class NumericalIntegration
     // to the rigid body once per update. This is because the RK4 achieves
     // its accuracy by detecting curvature in derivative values over the 
     // timestep so we need our force values to supply the curvature.
-	public void forces(State state, long t, Vector force, Vector torque)
+	public void forces(State state, long t, Derivative output)
 	{
-		damping(state, force, torque);
+		damping(state, output);
 		//collisionResponse();
 	
 		//Check if it's a player ship...
 		
-		control(new UserCommand(t - 1000, new Vector(-0.5f, 0, 0)), state, force, torque);
+		control(new UserCommand(t - 1000, new Vector(-0.5f, 0, 0)), state, output);
 	}
 
 	
-	public void damping(State state, Vector force, Vector torque)
+	public void damping(State state, Derivative output)
 	{
 		//arbitrarily lose 0.1% of energy per timestep to simulate heat loss
-		force = force.subtract(state.velocity.scale(0.001f));
-		torque = torque.subtract(state.angularVelocity.scale(0.001f));
+		output.force = output.force.subtract(state.velocity.scale(0.001f));
+		output.torque = output.torque.subtract(state.angularVelocity.scale(0.001f));
 	}
 	
 	public void collisionResponse()
@@ -64,10 +66,13 @@ public class NumericalIntegration
 		
 	}
 	
-	public void control(UserCommand input, State state, Vector force, Vector torque)
+	public void control(UserCommand input, State state, Derivative output)
 	{
 		float f = 50.0f; //50 newtons or 50 newton-meters, depending on context
 
+		MutableVector relativeForce = new MutableVector();
+		MutableVector torque = new MutableVector();
+		
 		// Mouse movement in x axis.
 		if (input.get(Commands.ROLLING)) { // User wants to roll.
 			torque.z += f * input.getMouse().x; // Scale mouse position. 
@@ -79,7 +84,6 @@ public class NumericalIntegration
 		torque.x += f * input.getMouse().y;
         
         // Thrusters
-		Vector relativeForce = new Vector();
 		if (input.get(Commands.FORWARD)) {
 			relativeForce.z -= f;
 		} 
@@ -104,10 +108,8 @@ public class NumericalIntegration
 			relativeForce.y -= f;
 		}
 		
-		relativeForce = state.orientation.rotate(relativeForce);
-		force.x += relativeForce.x;
-		force.y += relativeForce.y;
-		force.z += relativeForce.z;
+		output.force = state.orientation.rotate(relativeForce.toVector());
+		output.torque = torque.toVector();
 	}
 	
 	

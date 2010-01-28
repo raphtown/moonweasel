@@ -90,6 +90,13 @@ public class Quaternion {
 	public Quaternion scale(float o) {
 		return new Quaternion(o * w, o * x, o * y, o * z);
 	}
+	
+	public AxisAngle toAxisAngle() {
+		float length = length();
+		Vector axis = new Vector(x / length, y / length, z / length);
+		float angle = (float)Math.acos(w) * 2.f;
+		return new AxisAngle(angle, axis);
+	}
 
 	public Matrix toMatrix() {
 		float fTx = 2.0f * x;
