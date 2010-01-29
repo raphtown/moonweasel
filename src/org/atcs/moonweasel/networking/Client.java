@@ -1,8 +1,10 @@
 package org.atcs.moonweasel.networking;
 
-import static org.atcs.moonweasel.networking.RMIConfiguration.*;
-import static org.atcs.moonweasel.entities.ships.ShipTypes.*;
-
+import static org.atcs.moonweasel.entities.ships.ShipTypes.SHIP_TYPE_SNOWFLAKE;
+import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
+import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
+import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
+import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,8 +34,9 @@ import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
  */
 public class Client implements IClient
 {
-	private IServer server = null;
+	private IBetaServer server = null;
 	private final String hostname;
+	private String ip;
     public static void main(String args[])
     {
         new Client();
@@ -41,7 +44,6 @@ public class Client implements IClient
     
     public Client()
     {
-    	String ip = null;
     	try {
 			ip = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
@@ -54,7 +56,7 @@ public class Client implements IClient
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
 			registry.rebind(CLIENT_OBJECT_NAME, stub);
 			findAndConnectToServer();
-			server.chooseShip(hostname, SHIP_TYPE_SNOWFLAKE); // only snowflake available
+			server.sendPacket(Protocol.shortValue("sendInput"), ip);
 		}
 		catch (RemoteException e)
 		{
@@ -67,7 +69,7 @@ public class Client implements IClient
     	try
         {
         	String serverHostname = getConnectionHostname();
-        	connectToServer(serverHostname, hostname);
+        	connectToServer(serverHostname);
         }
         catch (Exception e)
         {
@@ -75,11 +77,11 @@ public class Client implements IClient
         }
     }
     
-    public void connectToServer(String serverHostName, String myIP) throws RemoteException, NotBoundException
+    public void connectToServer(String serverHostName) throws RemoteException, NotBoundException
     {
     	Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
-        server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
-        server.connect(myIP);
+        server = (IBetaServer) registry.lookup(SERVER_OBJECT_NAME);
+        server.sendPacket(Protocol.shortValue("connect"), ip);
     }
     
     /**

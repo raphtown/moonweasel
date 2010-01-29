@@ -167,16 +167,20 @@ public class BetaServer extends ActionSource implements IBetaServer
 	}
 
 	@Override
-	public Object sendPacket(String command, String c) throws RemoteException
+	public Object sendPacket(short command, String c) throws RemoteException
 	{
 
 		try
 		{
-			Class<?> lol = command.getClass();
-			Class<?> partypes[] = new Class[0];
-			Method m = lol.getMethod("toString", partypes);
-			Object arglist[] = new Object[0];
-			m.invoke(command, arglist);
+			String method = Protocol.stringValue(command);
+			System.out.println(method);
+//			Class<?> lol = command.getClass();
+//			Method[] methList = lol.getMethods();
+//			methList[0].getParameterTypes(); 
+//			Class<?> partypes[] = new Class[0];
+//			Method m = lol.getMethod("toString", partypes);
+//			Object arglist[] = new Object[0];
+//			m.invoke(command, arglist);
 		} 
 		catch (Exception e)
 		{

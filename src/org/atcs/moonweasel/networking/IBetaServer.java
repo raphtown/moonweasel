@@ -18,5 +18,5 @@ public interface IBetaServer extends Remote
 	 * @param command The command(s) that have been pressed.
 	 * @param c The client that is using this command.
 	 */
-	public Object sendPacket(String command, String c) throws RemoteException;
+	public Object sendPacket(short command, String c) throws RemoteException;
 }
