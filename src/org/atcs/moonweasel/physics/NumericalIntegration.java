@@ -1,15 +1,25 @@
 package org.atcs.moonweasel.physics;
 
+import org.atcs.moonweasel.entities.ModelEntity;
+import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
+import org.atcs.moonweasel.entities.ships.Ship;
+import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Derivative;
-import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 public class NumericalIntegration
 {
+	private Player me;
+	private ModelEntity curEntity;
+	
+	public NumericalIntegration(Player me) {
+		this.me = me;
+	}
+	
 	public Derivative evaluate(State initial, long t)
 	{
 		Derivative output = new Derivative();
@@ -48,9 +58,13 @@ public class NumericalIntegration
 		damping(state, output);
 		//collisionResponse();
 	
-		//Check if it's a player ship...
-		
-		control(new UserCommand(t - 1000, new Vector(-0.5f, 0, 0)), state, output);
+		if (curEntity instanceof Ship &&
+				((Ship)curEntity).getPilot().getID() == me.getID()) {
+			Range<UserCommand> commands = me.getCommandsBefore(t);
+			for (UserCommand command : commands) {
+				control(command, state, output);				
+			}
+		}
 	}
 
 	
@@ -112,9 +126,14 @@ public class NumericalIntegration
 		output.torque = torque.toVector();
 	}
 	
+	public void integrate(ModelEntity entity, long t, int dt) {
+		integrate(entity, entity.getState(), t, dt);
+	}
 	
-	public void integrate(State state, long t, int dt)
+	public void integrate(ModelEntity entity, State state, long t, int dt)
     {
+		this.curEntity = entity;
+		
         Derivative a = evaluate(state, t);
         Derivative b = evaluate(state, t + dt / 2, dt / 2, a);
         Derivative c = evaluate(state, t + dt / 2, dt / 2, b);
@@ -126,8 +145,6 @@ public class NumericalIntegration
         state.angularMomentum = state.angularMomentum.add((a.torque.add(b.torque).add(b.torque).add(c.torque).add(c.torque).add(d.torque)).scale(dt/6));
         state.recalculate();
    }
-	
-	
 }
 
 

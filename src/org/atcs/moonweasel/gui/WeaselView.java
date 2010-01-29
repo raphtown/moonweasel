@@ -128,8 +128,7 @@ public class WeaselView extends View {
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
-		// TODO Auto-generated method stub
-		
+        drawable.getGL().getGL2().glViewport(0, 0, width, height);
 	}
 	
 	@Override

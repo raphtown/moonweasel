@@ -5,6 +5,8 @@ import java.util.PriorityQueue;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.ships.Ship;
+import org.atcs.moonweasel.ranges.Range;
+import org.atcs.moonweasel.ranges.TimeRange;
 
 
 public class Player extends Entity {
@@ -42,26 +44,29 @@ public class Player extends Entity {
 		this.commands.add(command);
 	}
 	
+	public void clearCommandsBefore(long t) {
+		while (!commands.isEmpty() &&
+				commands.peek().getTime() < t) {
+			commands.remove();
+		}
+	}
+	
 	public void destroy() {
 	}
 	
-	public UserCommand getCommandBefore(long t) {
-		if (commands.peek().getTime() < t) {
-			return commands.remove();
-		}
-		return null;
+	public Range<UserCommand> getCommandsBefore(long t) {
+		return new TimeRange<UserCommand>(0, t, commands.iterator());
 	}
 	
 	public void spawn() {
 		this.commands.clear();
 	}
 	
-	public void setShip(Ship pihs) {
-		ship = pihs;
+	public void setShip(Ship ship) {
+		this.ship = ship;
 	}
 	
 	public Ship getShip() {
 		return ship;
 	}
-	
 }
