@@ -4,6 +4,7 @@ import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
 import org.atcs.moonweasel.entities.ships.Ship;
+import org.atcs.moonweasel.entities.ships.ShipData;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.Quaternion;
@@ -57,7 +58,7 @@ public class NumericalIntegration
 		if (curEntity instanceof Ship) {
 			Range<UserCommand> commands = ((Ship)curEntity).getPilot().getCommandsBefore(t);
 			for (UserCommand command : commands) {
-				control(command, state, output);				
+				control(((Ship)curEntity).getData(), command, state, output);				
 			}
 		}
 	}
@@ -75,9 +76,9 @@ public class NumericalIntegration
 		
 	}
 	
-	public void control(UserCommand input, State state, Derivative output)
+	public void control(ShipData data, UserCommand input, State state, Derivative output)
 	{
-		float f = 1000 * 0.00005f; //50 newtons or 50 newton-meters, depending on context
+		float f = data.thrust * 0.00001f; //50 newtons or 50 newton-meters, depending on context
 		Vector relativeVelocity = state.orientation.inverse().rotate(state.velocity);
 		
 		MutableVector relativeForce = new MutableVector();
@@ -94,11 +95,12 @@ public class NumericalIntegration
 		relativeTorque.x += 0.001 * input.getMouse().y;
 				
 		// Damp that angular motion!!!
-		Vector dampTorque = null;
 		if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
-			dampTorque = new Vector(0.1f * state.angularVelocity.x,
-									0.1f * state.angularVelocity.y,
-									0.1f * state.angularVelocity.z);
+			Vector dampTorque = new Vector(
+					0.1f * state.angularVelocity.x,
+					0.1f * state.angularVelocity.y,
+					0.1f * state.angularVelocity.z);
+			output.torque= output.torque.subtract(dampTorque);
 		}
 
 		// Thrusters
@@ -109,7 +111,7 @@ public class NumericalIntegration
 			relativeForce.z += f;
 		}
 		if (input.get(Commands.BOOST)) {
-			relativeForce.z *= 2;
+			relativeForce.z *= 5;
 		}
 		
 		if (input.get(Commands.LEFT) && input.get(Commands.RIGHT)) {
@@ -128,15 +130,10 @@ public class NumericalIntegration
 			relativeForce.y -= f;
 		} else if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
 			relativeForce.y -= 10 * relativeVelocity.y;
-			System.out.println(relativeVelocity);
 		}
 		
 		output.force = output.force.add(state.orientation.rotate(relativeForce.toVector()));
 		output.torque = output.torque.add(state.orientation.rotate(relativeTorque.toVector()));
-		
-		if (dampTorque != null) {
-			output.torque= output.torque.subtract(dampTorque);
-		}		
 	}
 	
 	public void integrate(ModelEntity entity, long t, int dt) {

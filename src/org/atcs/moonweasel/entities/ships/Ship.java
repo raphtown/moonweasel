@@ -10,7 +10,7 @@ import org.atcs.moonweasel.util.Vector;
 public class Ship extends ModelEntity implements Vulnerable {
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	
-	private final int ORIGINAL_HEALTH;
+	private ShipData data;
 	private int health;
 	
 	private Player pilot;
@@ -20,8 +20,8 @@ public class Ship extends ModelEntity implements Vulnerable {
 	protected Ship(ShipData data) {
 		super(data.bounds, data.mass, BASE_TENSOR.scale(data.mass / 100));
 
-		this.ORIGINAL_HEALTH = data.health;
-		this.health = this.ORIGINAL_HEALTH;
+		this.data = data;
+		this.health = this.data.health;
 		
 		this.gunners = new Player[data.gunners.length];
 		this.gunnerPositions = data.gunners;
@@ -48,6 +48,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 		}
 	}
 	
+	public ShipData getData() {
+		return this.data;
+	}
+	
 	@Override
 	public int getHealth() {
 		return health;
@@ -55,7 +59,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	@Override
 	public int getOriginalHealth() {
-		return ORIGINAL_HEALTH;
+		return this.data.health;
 	}
 	
 	public Player getPilot() {
