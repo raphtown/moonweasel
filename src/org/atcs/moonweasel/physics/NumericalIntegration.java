@@ -128,6 +128,7 @@ public class NumericalIntegration
 			relativeForce.y -= f;
 		} else if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
 			relativeForce.y -= 10 * relativeVelocity.y;
+			System.out.println(relativeVelocity);
 		}
 		
 		output.force = output.force.add(state.orientation.rotate(relativeForce.toVector()));
