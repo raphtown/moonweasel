@@ -1,15 +1,24 @@
 package org.atcs.moonweasel.util;
 
-public class Vector implements Cloneable 
+public class Vector
 {
-	public static final Vector ZERO = new Vector();
+	public static final Vector ZERO = new Vector(0, 0, 0);
+	
+	public static Vector add(Vector... vectors) {
+		float x = 0;
+		float y = 0;
+		float z = 0;
+		
+		for (Vector v : vectors) {
+			x += v.x;
+			y += v.y;
+			z += v.z;
+		}
+		
+		return new Vector(x, y, z);
+	}
 	
 	public final float x, y, z;
-	
-	public Vector() 
-	{
-		this(0, 0, 0);
-	}
 	
 	public Vector(float x, float y, float z) 
 	{
@@ -21,11 +30,6 @@ public class Vector implements Cloneable
 	public Vector add(Vector o) 
 	{
 		return new Vector(x + o.x, y + o.y, z + o.z);
-	}
-	
-	public Vector clone()
-	{
-		return new Vector(x,y,z);
 	}
 	
 	public Vector cross(Vector o) 

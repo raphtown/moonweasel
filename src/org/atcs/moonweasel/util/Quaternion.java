@@ -1,6 +1,24 @@
 package org.atcs.moonweasel.util;
 
-public class Quaternion {
+public class Quaternion {	
+	public static final Quaternion ZERO = new Quaternion(0, 0, 0, 0);
+	
+	public static Quaternion add(Quaternion... quaternions) {
+		float w = 0;
+		float x = 0;
+		float y = 0;
+		float z = 0;
+		
+		for (Quaternion q : quaternions) {
+			w += q.w;
+			x += q.x;
+			y += q.y;
+			z += q.z;
+		}
+		
+		return new Quaternion(w, x, y, z);
+	}
+	
 	// COOLbeans... this is a spherical linear interpolation between two
 	// Quaternions
 	public static Quaternion slerp(Quaternion a, Quaternion b, float t) {
@@ -27,24 +45,35 @@ public class Quaternion {
 	}
 
 	public final float w, x, y, z;
-
-	public Quaternion() {
-		this(0, 0, 0, 0);
-	}
+	private final float length;
+	private final float lengthSq;
+	private final AxisAngle axisAngle;
 
 	public Quaternion(float w, float x, float y, float z) {
 		this.w = w;
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		
+		lengthSq = w * w + x * x + y * y + z * z;
+		length = (float)Math.sqrt(lengthSq);
+
+		float angle = (float)Math.acos(w) * 2.f;
+		Vector axis = new Vector(x / length, y / length, z / length);			
+		axisAngle = new AxisAngle(angle, axis);
 	}
 
 	public Quaternion add(Quaternion o) {
 		return new Quaternion(w + o.w, x + o.x, y + o.y, z + o.z);
 	}
+	
+	public Quaternion inverse() {
+		Quaternion norm = this.normalize();
+		return norm.multiply(norm);
+	}
 
 	public float length() {
-		return (float) Math.sqrt(w * w + x * x + y * y + z * z);
+		return length;
 	}
 
 	public Quaternion multiply(Quaternion o) {
@@ -56,12 +85,18 @@ public class Quaternion {
 	}
 
 	public Quaternion normalize() {
-		float length = this.length();
-		float nw, nx, ny, nz;
-		nw = w / length;
-		nx = x / length;
-		ny = y / length;
-		nz = z / length;
+		float nw = 1;
+		float nx = 0;
+		float ny = 0;
+		float nz = 0;
+		
+		if (lengthSq != 0) {
+			nw = w / length;
+			nx = x / length;
+			ny = y / length;
+			nz = z / length;			
+		}
+		
 		return new Quaternion(nw, nx, ny, nz);
 	}
 
@@ -92,10 +127,7 @@ public class Quaternion {
 	}
 	
 	public AxisAngle toAxisAngle() {
-		float length = length();
-		Vector axis = new Vector(x / length, y / length, z / length);
-		float angle = (float)Math.acos(w) * 2.f;
-		return new AxisAngle(angle, axis);
+		return axisAngle;
 	}
 
 	public Matrix toMatrix() {
@@ -113,16 +145,12 @@ public class Quaternion {
 		float fTzz = fTz * z;
 
 		return new Matrix(
-				1.0f - (fTyy + fTzz), 
-				fTxy - fTwz, fTxz + fTwy, 
-				fTxy + fTwz, 1.0f - (fTxx + fTzz), 
-				fTyz - fTwx, fTxz - fTwy,
-				fTyz + fTwx, 1.0f - (fTxx + fTyy));
+				1.0f - (fTyy + fTzz), fTxy - fTwz, fTxz + fTwy, 
+				fTxy + fTwz, 1.0f - (fTxx + fTzz), fTyz - fTwx, 
+				fTxz - fTwy, fTyz + fTwx, 1.0f - (fTxx + fTyy));
 	}
 	
-	public Quaternion clone()
-	{
-		return new Quaternion(w, x, y, z);
+	public String toString() {
+		return String.format("<%s, %s, %s, %s>", w, x, y, z);
 	}
-	
 }

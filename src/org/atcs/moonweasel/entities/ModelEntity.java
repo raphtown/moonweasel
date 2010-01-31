@@ -19,14 +19,14 @@ public abstract class ModelEntity extends Entity implements Positional {
 	}
 	
 	protected BoundingShape bounding;
-	protected State oldState;
+	protected State lastRenderState;
 	protected State state;
 	
 	protected ModelEntity(BoundingShape bounding, float mass, Matrix inertiaTensor) {
 		super();
 		
 		this.bounding = bounding;
-		this.oldState = new State(mass, inertiaTensor);
+		this.lastRenderState = new State(mass, inertiaTensor);
 		this.state = new State(mass, inertiaTensor);
 	}
 	
@@ -40,8 +40,8 @@ public abstract class ModelEntity extends Entity implements Positional {
 		return bounding;
 	}
 	
-	public State getOldState() {
-		return this.oldState;
+	public State getLastRenderState() {
+		return this.lastRenderState;
 	}
 	
 	public Vector getPosition() {
@@ -70,9 +70,8 @@ public abstract class ModelEntity extends Entity implements Positional {
 		DISPLAY_LISTS.put(this.getClass(), list);
 	}
 	
-	public void setState(State newState) {
-		this.oldState = this.state;
-		this.state = newState;
+	public void setLastRenderState(State state) {
+		this.lastRenderState = state;
 	}
 	
 	public void teleport(Vector position) {

@@ -8,7 +8,7 @@ import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Vector;
 
 public class Ship extends ModelEntity implements Vulnerable {
-	private static Matrix BASE_TENSOR = new Matrix(1,0,0,0,1,0,0,0,1);
+	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	
 	private final int ORIGINAL_HEALTH;
 	private int health;

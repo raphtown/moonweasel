@@ -1,5 +1,8 @@
 package org.atcs.moonweasel.gui;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
@@ -14,20 +17,49 @@ import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureCoords;
+import com.sun.opengl.util.texture.TextureIO;
+
 public class WeaselView extends View {
-	/* Window size*/
-	private int width;
-	private int height;
+	private enum BaseTextures {
+		WALL("dev_measuregeneric01.png"),
+		NUM_TEXTURES(null);
+		
+		public final String filename;
+		
+		private BaseTextures(String filename) {
+			this.filename = filename;
+		}
+	}
 	
     /* OpenGL objects */
 	private static GLU glu;
 	
 	/* Camera parameters */
-	public static final double CAMERA_FOV_ANGLE = 60.0;		/* Camera (vertical) field of view angle */
-	public static final float CAMERA_PILOT_OFFSET_SCALAR = 1.5f;
-	public static final double CAMERA_CLIPPING_NEAR = 0.1;
-	public static final double CAMERA_CLIPPING_FAR = 500;
-	public static final double CAMERA_WALL_OFFSET = 0.5;
+	private static final double CAMERA_FOV_ANGLE = 60.0;		/* Camera (vertical) field of view angle */
+	private static final float CAMERA_PILOT_OFFSET_SCALAR = 5.f;
+	private static final double CAMERA_CLIPPING_NEAR = 0.1;
+	private static final double CAMERA_CLIPPING_FAR = 10000;
+	
+	private static void drawCubeFace(TextureCoords tc, float radius, GL2 gl) {
+    	gl.glBegin(GL2.GL_QUADS);
+			gl.glTexCoord2f(tc.left() * 5, tc.bottom() * 5);
+	    	gl.glVertex3f(radius, -radius, 0.f);
+			gl.glTexCoord2f(tc.right() * 5, tc.bottom() * 5);
+	    	gl.glVertex3f(radius, radius, 0.f);
+			gl.glTexCoord2f(tc.right() * 5, tc.top() * 5);
+	    	gl.glVertex3f(-radius, radius, 0.f);
+			gl.glTexCoord2f(tc.left() * 5, tc.top() * 5);
+	    	gl.glVertex3f(-radius, -radius, 0.f);
+    	gl.glEnd();
+    }
+	
+	/* Window size*/
+	private int width;
+	private int height;
+	
+	private Texture[] textures;
 	
     /* Game objects */
     private Player me;
@@ -38,6 +70,8 @@ public class WeaselView extends View {
 		width = w;
 		height = h;
 		
+		textures = new Texture[BaseTextures.NUM_TEXTURES.ordinal()];
+		
 		me = p;
 	}
 
@@ -46,13 +80,26 @@ public class WeaselView extends View {
 		GL2 gl = drawable.getGL().getGL2();
 		
 		glu = new GLU();
+
+		for (int i = 0; i < textures.length; i++) {
+			try {
+				textures[i] = TextureIO.newTexture(
+						new File("data/textures/" + BaseTextures.values()[i].filename),
+						false);
+			} catch (IOException e) {
+				throw new RuntimeException("Unable to load texture " + 
+						BaseTextures.values()[i].name(), e);
+			}
+
+			textures[i].setTexParameteri(GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
+			textures[i].setTexParameteri(GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
+		}
 		
-		/* Set up texture options */
-//		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        
+		textures[BaseTextures.WALL.ordinal()].setTexParameteri(
+				GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
+		textures[BaseTextures.WALL.ordinal()].setTexParameteri(
+				GL2.GL_TEXTURE_WRAP_T, GL2.GL_REPEAT);
+
         /* Set viewport */
         gl.glViewport(0, 0, width, height);
         
@@ -61,7 +108,6 @@ public class WeaselView extends View {
         
         /* Enable things */
         gl.glEnable(GL2.GL_LIGHTING);
-        gl.glDepthFunc(GL2.GL_LEQUAL);
         gl.glEnable(GL2.GL_DEPTH_TEST);
         gl.glShadeModel(GL2.GL_SMOOTH);
 	}
@@ -114,15 +160,16 @@ public class WeaselView extends View {
         			shape.getClass().getName()));
         }
         
-        State interp = State.interpolate(ent.getOldState(), ent.getState(), alpha);
+        State interp = State.interpolate(ent.getLastRenderState(), ent.getState(), alpha);
         Vector relative = interp.orientation.rotate(
-        		new Vector(0, 0, -radius * CAMERA_PILOT_OFFSET_SCALAR));
+        		new Vector(0, 0, radius * CAMERA_PILOT_OFFSET_SCALAR));
         Vector camera = interp.position.add(relative);
-        
+        Vector up = interp.orientation.rotate(new Vector(0, 1, 0));
+
         glu.gluLookAt(
         		camera.x, camera.y, camera.z,
         		interp.position.x, interp.position.y, interp.position.z,
-        		0, 1, 0);
+        		up.x, up.y, up.z);
     }
 
 	@Override
@@ -141,6 +188,38 @@ public class WeaselView extends View {
         gl.glClearColor(0.47f, 0.53f, 0.67f, 0);
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         
+        gl.glPushAttrib(GL2.GL_DEPTH_BUFFER_BIT);
+        	gl.glDisable(GL2.GL_LIGHTING);
+        	gl.glEnable(GL2.GL_TEXTURE_2D);
+        	Texture tex = textures[BaseTextures.WALL.ordinal()];
+        	TextureCoords tc = tex.getImageTexCoords();
+        	tex.enable();
+        	tex.bind();
+        	
+        	gl.glPushMatrix();
+	        	gl.glTranslatef(0, 0, 200.f);
+	        	drawCubeFace(tc, 200.f, gl);
+        	gl.glPopMatrix();
+        	gl.glPushMatrix();
+	        	gl.glTranslatef(200.f, 0, 0);
+	        	gl.glRotatef(90, 0, 1, 0);
+	        	drawCubeFace(tc, 200.f, gl);
+	        gl.glPopMatrix();
+	    	gl.glPushMatrix();
+		    	gl.glTranslatef(-200.f, 0, 0);
+		    	gl.glRotatef(90, 0, 1, 0);
+		    	drawCubeFace(tc, 200.f, gl);
+		    gl.glPopMatrix();
+			gl.glPushMatrix();
+				gl.glTranslatef(0, 0, -200.f);
+				gl.glRotatef(0, 0, 1, 0);
+				drawCubeFace(tc, 200.f, gl);
+			gl.glPopMatrix();
+        	
+        	gl.glDisable(GL2.GL_TEXTURE_2D);
+        	gl.glEnable(GL2.GL_LIGHTING);
+        gl.glPopAttrib();
+        	
         EntityManager em = EntityManager.getEntityManager();
         State interpolated;
         AxisAngle rotation;
@@ -149,16 +228,18 @@ public class WeaselView extends View {
         		entity.precache(gl);
         	}
         	
-        	interpolated = State.interpolate(entity.getOldState(), entity.getState(), 
+        	interpolated = State.interpolate(entity.getLastRenderState(), entity.getState(), 
         			alpha);
+        	entity.setLastRenderState(entity.getState().clone());
         	rotation = interpolated.orientation.toAxisAngle();
         	
             gl.glPushMatrix();
 	        	gl.glTranslatef(interpolated.position.x, interpolated.position.y,
 	        			interpolated.position.z);
-	        	// I don't know how to do this, rotating by 0, 0, 0 is bad.
-//	        	gl.glRotatef(rotation.angle, rotation.axis.x, rotation.axis.y,
-//	        			rotation.axis.z);	        		
+	        	if (!rotation.axis.equals(Vector.ZERO)) {
+		        	gl.glRotated(Math.toDegrees(rotation.angle), rotation.axis.x, rotation.axis.y,
+		        			rotation.axis.z);
+	        	}
 	        	entity.draw(gl);
         	gl.glPopMatrix();
         }

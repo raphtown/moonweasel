@@ -17,6 +17,7 @@ public class UserCommand implements Timed {
 		
 		BOOST,
 		ATTACK_1,
+		AUTOMATIC_THRUSTER_CONTROL,
 		
 		NUM_COMMANDS
 	}
@@ -27,6 +28,13 @@ public class UserCommand implements Timed {
 	
 	public UserCommand() {
 		this.commands = new boolean[Commands.NUM_COMMANDS.ordinal()];
+		set(Commands.AUTOMATIC_THRUSTER_CONTROL, true);
+	}
+	
+	public void copyKeyState(UserCommand o) {
+		for(int i = 0; i < Commands.NUM_COMMANDS.ordinal(); i++) {
+			commands[i] = o.commands[i];
+		}
 	}
 	
 	public boolean get(Commands command) {
@@ -51,5 +59,9 @@ public class UserCommand implements Timed {
 	
 	public void setTime(long t) {
 		this.time = t;
+	}
+	
+	public void toggle(Commands command) {
+		commands[command.ordinal()] = !commands[command.ordinal()];
 	}
 }

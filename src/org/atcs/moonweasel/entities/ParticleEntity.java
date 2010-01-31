@@ -1,28 +1,21 @@
 package org.atcs.moonweasel.entities;
 
-import org.atcs.moonweasel.Identifiable;
-import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
-public abstract class ParticleEntity extends Entity implements Identifiable {
-	private static int nextID = 0;
-	private static int getNextID() { 
-		return nextID++;
-	}
-	
-	private final int id;
-
-	private State oldState;
-	private State state;
+public abstract class ParticleEntity extends Entity implements Positional {
+	private Vector position;
 	
 	protected ParticleEntity() {
-		this.id = getNextID();
+		super();
 		
-		this.oldState = new State();
-		this.state = new State();
+		this.position = Vector.ZERO;
+	}
+	
+	public Vector getPosition() {
+		return this.position;
 	}
 	
 	public void teleport(Vector position) {
-		this.state.position = position;
+		this.position = position;
 	}
 }
