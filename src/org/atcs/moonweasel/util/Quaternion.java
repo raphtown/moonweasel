@@ -112,13 +112,13 @@ public class Quaternion {
 		float t6 = x * y;
 		float t7 = x * z;
 		float t8 = -y * y;
-		float t9 = y * y;
+		float t9 = y * z;
 		float t10 = -z * z;
 		
 		float nx, ny, nz;
 		nx = 2 * ((t8 + t10) * v.x + (t6 - t4) * v.y + (t3 + t7) * v.z) + v.x;
 		ny = 2 * ((t4 + t6) * v.x + (t5 + t10) * v.y + (t9 - t2) * v.z) + v.y;
-		nz = 2  * ((t7 - t3) * v.x + (t2 + t9) * v.y + (t5 + t8) * v.z) + v.z;
+		nz = 2 * ((t7 - t3) * v.x + (t2 + t9) * v.y + (t5 + t8) * v.z) + v.z;
 		return new Vector(nx, ny, nz);
 	}
 	

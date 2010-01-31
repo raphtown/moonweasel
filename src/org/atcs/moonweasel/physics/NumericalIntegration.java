@@ -81,19 +81,27 @@ public class NumericalIntegration
 		Vector relativeVelocity = state.orientation.inverse().rotate(state.velocity);
 		
 		MutableVector relativeForce = new MutableVector();
-		MutableVector torque = new MutableVector();
+		MutableVector relativeTorque = new MutableVector();
 		
 		// Mouse movement in x axis.
 		if (input.get(Commands.ROLLING)) { // User wants to roll.
-			torque.z += 0.001 * input.getMouse().x; // Scale mouse position. 
+			relativeTorque.z += 0.001 * input.getMouse().x; // Scale mouse position. 
 		} else { // Turn rather than roll.
-			torque.y += 0.001 * input.getMouse().x;
+			relativeTorque.y += 0.001 * input.getMouse().x;			
 		}
 
 		// Mouse movement in y axis.
-		torque.x += 0.001 * input.getMouse().y;
-        
-        // Thrusters
+		relativeTorque.x += 0.001 * input.getMouse().y;
+				
+		// Damp that angular motion!!!
+		Vector dampTorque = null;
+		if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+			dampTorque = new Vector(0.1f * state.angularVelocity.x,
+									0.1f * state.angularVelocity.y,
+									0.1f * state.angularVelocity.z);
+		}
+
+		// Thrusters
 		if (input.get(Commands.FORWARD)) {
 			relativeForce.z -= f;
 		} 
@@ -123,7 +131,11 @@ public class NumericalIntegration
 		}
 		
 		output.force = output.force.add(state.orientation.rotate(relativeForce.toVector()));
-		output.torque = output.torque.add(state.orientation.rotate(torque.toVector()));
+		output.torque = output.torque.add(state.orientation.rotate(relativeTorque.toVector()));
+		
+		if (dampTorque != null) {
+			output.torque= output.torque.subtract(dampTorque);
+		}		
 	}
 	
 	public void integrate(ModelEntity entity, long t, int dt) {
