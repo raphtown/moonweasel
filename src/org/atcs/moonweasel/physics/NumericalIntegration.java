@@ -150,8 +150,8 @@ public class NumericalIntegration
         Derivative d = evaluate(state.clone(), t, dt, c);
         
         state.position = state.position.add(
-        		Vector.add(a.velocity, b.velocity, b.velocity, b.velocity, 
-        				c.velocity, c.velocity, d.velocity).scale(dt / 6));
+        		Vector.add(a.velocity, b.velocity, b.velocity, c.velocity, c.velocity, 
+        				d.velocity).scale(dt / 6));
         state.momentum = state.momentum.add(
         		Vector.add(a.force, b.force, b.force, c.force, c.force, d.force).scale(dt/6));
         state.orientation = state.orientation.add(
