@@ -260,7 +260,10 @@ public class WeaselView extends View {
    			gl.glLoadIdentity();
    			
    			for(UIElement e : uiElements)
+   			{
+   				gl.glTranslated(e.pos.x,e.pos.y,e.pos.z);
    				e.draw(gl);
+   			}
    		gl.glPopAttrib();
    		gl.glMatrixMode(gl.GL_PROJECTION);
    		gl.glPopMatrix();
