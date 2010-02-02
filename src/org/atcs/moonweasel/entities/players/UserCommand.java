@@ -1,9 +1,9 @@
 package org.atcs.moonweasel.entities.players;
 
+import org.atcs.moonweasel.Timed;
 import org.atcs.moonweasel.util.Vector;
 
-public class UserCommand
-{
+public class UserCommand implements Timed {
 	public enum Commands {
 		UP,
 		DOWN,
@@ -17,18 +17,24 @@ public class UserCommand
 		
 		BOOST,
 		ATTACK_1,
+		AUTOMATIC_THRUSTER_CONTROL,
 		
 		NUM_COMMANDS
 	}
 	
-	private final long time;
-	private final boolean[] commands;
-	private final Vector mouse;
+	private long time;
+	private boolean[] commands;
+	private Vector mouse;
 	
-	public UserCommand(long time, Vector mouse) {
-		this.time = time;
+	public UserCommand() {
 		this.commands = new boolean[Commands.NUM_COMMANDS.ordinal()];
-		this.mouse = mouse;
+		set(Commands.AUTOMATIC_THRUSTER_CONTROL, true);
+	}
+	
+	public void copyKeyState(UserCommand o) {
+		for(int i = 0; i < Commands.NUM_COMMANDS.ordinal(); i++) {
+			commands[i] = o.commands[i];
+		}
 	}
 	
 	public boolean get(Commands command) {
@@ -45,5 +51,17 @@ public class UserCommand
 	
 	public void set(Commands command, boolean value) {
 		commands[command.ordinal()] = value;
+	}
+	
+	public void setMouse(Vector position) {
+		this.mouse = position;
+	}
+	
+	public void setTime(long t) {
+		this.time = t;
+	}
+	
+	public void toggle(Commands command) {
+		commands[command.ordinal()] = !commands[command.ordinal()];
 	}
 }

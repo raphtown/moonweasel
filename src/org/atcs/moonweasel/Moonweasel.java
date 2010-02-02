@@ -21,7 +21,7 @@ public class Moonweasel {
 	}
 
 	public static void main(String[] args) {
-		Moonweasel weasel = new Moonweasel(800, 600, false);
+		Moonweasel weasel = new Artemis(800, 600, false);
 
 		// weasel.seeFox();
 		weasel.run();
@@ -30,19 +30,18 @@ public class Moonweasel {
 		System.exit(0);
 	}
 
-	private Physics physics;
-	private WeaselView view;
+	protected Physics physics;
+	protected WeaselView view;
+	protected InputController input;
+	//protected Networking networking;
 
 	private EntityManager entityManager;
+	private Player player;
 
-	private Moonweasel(int width, int height, boolean fullscreen) {
-		this.physics = new Physics();
-		/* Server server = */ new Server("Server");
-		
-
+	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
 		
-		Player player = this.entityManager.create("player");
+		player = this.entityManager.create("player");
 		player.spawn();
 		this.view = new WeaselView(width, height, fullscreen, player);
 
@@ -51,14 +50,16 @@ public class Moonweasel {
 		snowflake.spawn();
 		player.setShip(snowflake);
 		
+		this.physics = new Physics();
 		this.view = new WeaselView(width, height, fullscreen, player);
+		this.input = new InputController(view.getWindow());
 	}
 
 	private void destroy() {
 		physics.destroy();
 		view.destroy();
 	}
-
+	
 	private void run() {
 		final int TICKS_PER_SECOND = 25;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
@@ -75,6 +76,8 @@ public class Moonweasel {
 					loops < MAX_FRAMESKIP) {
 				entityManager.update();
 				physics.update(t, SKIP_TICKS);
+				player.addCommand(input.poll(t));
+				player.clearCommandsBefore(t);
 
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;

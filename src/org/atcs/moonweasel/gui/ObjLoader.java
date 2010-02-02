@@ -1,12 +1,8 @@
 package org.atcs.moonweasel.gui;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.lang.*;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;

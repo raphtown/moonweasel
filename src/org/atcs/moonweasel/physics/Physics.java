@@ -2,27 +2,30 @@ package org.atcs.moonweasel.physics;
 
 import java.util.ArrayList;
 
-import org.atcs.moonweasel.entities.*;
-import org.atcs.moonweasel.util.*;
+import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.ModelEntity;
+import org.atcs.moonweasel.util.Matrix;
+import org.atcs.moonweasel.util.Vector;
 
-public class Physics 
-{
+public class Physics {
+	private NumericalIntegration integrator;
+	
+	public Physics() {
+		this.integrator = new NumericalIntegration();
+	}
+	
 	public void destroy() 
 	{
 		
 	}
 
 	
-	NumericalIntegration Integrator = new NumericalIntegration();
-	
 	public void update(long t, int dt) //updates all models
 	{
 		EntityManager em = EntityManager.getEntityManager();
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
-			State oldState = e.getState();
-			Integrator.integrate(e.getState(), t, dt); //refreshes the previous state and saves new values
-			State futureState = e.getState();
+			integrator.integrate(e, t, dt);
 			e.getState().setDangerZone(dt);
 		}
 	}
@@ -72,28 +75,6 @@ public class Physics
 		
 		return new Matrix(i11, i12, i13, i21, i22, i23, i31, i32, i33);
 	}
-	
-	
-	
-	public State predictFutureState(ModelEntity me, int dt)
-	{
-		State futureState = new State(me.getState().mass, me.getState().inertiaTensor);
-		futureState.angularMomentum = me.getState().angularMomentum.clone();
-		futureState.momentum = me.getState().momentum.clone();
-		futureState.orientation = me.getState().orientation.clone();
-		futureState.position = me.getState().position.clone();
-		futureState.inverseInertiaTensor = me.getState().inverseInertiaTensor.clone();
-		futureState.inverseMass = me.getState().inverseMass;
-		futureState.recalculate();
-		Integrator.integrate(futureState,0,dt);
-		
-		return futureState;
-
-		
-		
-	}
-	
-	
 	
 	
 	

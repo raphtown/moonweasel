@@ -1,5 +1,7 @@
-package org.atcs.moonweasel.util;
+package org.atcs.moonweasel.physics;
 
+import org.atcs.moonweasel.util.Quaternion;
+import org.atcs.moonweasel.util.Vector;
 
 public class Derivative
 {
@@ -9,13 +11,10 @@ public class Derivative
 	public Vector torque;
 	
 	public Derivative() {
-		this.velocity = new Vector();
-		this.force = new Vector();
-		this.spin = new Quaternion();
-		this.torque = new Vector();
+		this(Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO);
 	}
 	
-	public Derivative(Vector velocity, Vector force, Quaternion spin, Vector torque)
+	private Derivative(Vector velocity, Vector force, Quaternion spin, Vector torque)
 	{
 		this.velocity = velocity;
 		this.force = force;
