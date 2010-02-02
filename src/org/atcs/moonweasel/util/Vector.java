@@ -13,6 +13,7 @@ public class Vector implements Cloneable
 	
 	public boolean equals(Vector v)
 	{
+		//this needs to be updated to account for roundoff error.
 		if(this.x == v.x && this.y == v.y && this.z == v.z) return true;
 		else return false;
 	}
@@ -87,6 +88,16 @@ public class Vector implements Cloneable
 	{
 		float length = this.length();
 		return new Vector(x / length, y / length, z / length);
+	}
+	
+	public Vector roundMe(int decimalPrecision)
+	{
+		return new Vector(
+				
+	(float) (Math.floor(x*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)),
+	(float) (Math.floor(y*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)),
+	(float) (Math.floor(z*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)) 	
+		);
 	}
 	
 	public Vector scale(float scalar) 
