@@ -10,6 +10,8 @@ import org.atcs.moonweasel.ranges.TimeRange;
 
 
 public class Player extends Entity {
+	private static final long serialVersionUID = -5228344170942537611L;
+
 	public enum Status {
 		DEAD, PILOT, GUNNER;
 	}

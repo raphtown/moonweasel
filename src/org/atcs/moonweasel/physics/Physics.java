@@ -2,31 +2,27 @@ package org.atcs.moonweasel.physics;
 
 import java.util.ArrayList;
 
-import org.atcs.moonweasel.entities.EntityManager;
-import org.atcs.moonweasel.entities.ModelEntity;
-import org.atcs.moonweasel.entities.players.Player;
-import org.atcs.moonweasel.util.Matrix;
-import org.atcs.moonweasel.util.State;
-import org.atcs.moonweasel.util.Vector;
+import org.atcs.moonweasel.entities.*;
+import org.atcs.moonweasel.util.*;
 
-public class Physics {
-	private NumericalIntegration integrator;
-	
-	public Physics(Player me) {
-		this.integrator = new NumericalIntegration(me);
-	}
-	
+public class Physics 
+{
 	public void destroy() 
 	{
 		
 	}
+
+	
+	NumericalIntegration Integrator = new NumericalIntegration();
 	
 	public void update(long t, int dt) //updates all models
 	{
 		EntityManager em = EntityManager.getEntityManager();
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
-			integrator.integrate(e, t, dt); //refreshes the previous state and saves new values
+			State oldState = e.getState();
+			Integrator.integrate(e.getState(), t, dt); //refreshes the previous state and saves new values
+			State futureState = e.getState();
 			e.getState().setDangerZone(dt);
 		}
 	}
@@ -89,7 +85,7 @@ public class Physics {
 		futureState.inverseInertiaTensor = me.getState().inverseInertiaTensor.clone();
 		futureState.inverseMass = me.getState().inverseMass;
 		futureState.recalculate();
-		integrator.integrate(me, futureState,0,dt);
+		Integrator.integrate(futureState,0,dt);
 		
 		return futureState;
 

@@ -68,7 +68,7 @@ public class Moonweasel {
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		float interpolation;
-		
+
 		while (!view.shouldQuit()) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
