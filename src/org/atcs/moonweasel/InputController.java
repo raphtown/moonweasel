@@ -4,7 +4,6 @@ import java.awt.AWTException;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Robot;
-import java.util.Arrays;
 
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
@@ -59,6 +58,7 @@ public class InputController implements KeyListener, MouseListener {
 		case KeyEvent.VK_R: command.set(Commands.FORWARD, false); break;
 		case KeyEvent.VK_F: command.set(Commands.BACKWARD, false); break;
 		case KeyEvent.VK_SHIFT: command.set(Commands.BOOST, false); break;
+		case KeyEvent.VK_SPACE: command.toggle(Commands.AUTOMATIC_THRUSTER_CONTROL); break;
 		}
 	}
 
@@ -82,7 +82,7 @@ public class InputController implements KeyListener, MouseListener {
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			command.set(Commands.ATTACK_1, true);			
-		} else if (e.getButton() == MouseEvent.BUTTON2) {
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			command.set(Commands.ROLLING, true);
 		}
 	}
@@ -91,7 +91,7 @@ public class InputController implements KeyListener, MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			command.set(Commands.ATTACK_1, false);			
-		} else if (e.getButton() == MouseEvent.BUTTON2) {
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			command.set(Commands.ROLLING, false);
 		}
 	}
@@ -101,8 +101,8 @@ public class InputController implements KeyListener, MouseListener {
 		int centerY = window.getY() + window.getHeight() / 2;
 		Point mouse = MouseInfo.getPointerInfo().getLocation();
 		float[] delta = new float[2];
-		delta[0] = (float)(mouse.x - centerX) / window.getWidth() * 2; 
-		delta[1] = (float)(centerY - mouse.y) / window.getHeight() * 2; 
+		delta[0] = (float)(centerX - mouse.x) / window.getWidth() * 2; 
+		delta[1] = (float)(mouse.y - centerY) / window.getHeight() * 2; 
 		robot.mouseMove(centerX, centerY);
 		return delta;
 	}
@@ -110,6 +110,7 @@ public class InputController implements KeyListener, MouseListener {
 	public UserCommand poll(long t) {
 		UserCommand old = command;
 		command = new UserCommand();
+		command.copyKeyState(old);
 
 		float[] mouse = getMouseDelta();
 		old.setMouse(new Vector(mouse[0], mouse[1], 0));

@@ -34,6 +34,7 @@ public abstract class View implements GLEventListener, WindowListener, KeyListen
         Screen screen  = NewtFactory.createScreen(NativeWindowFactory.TYPE_AWT, display, 0);
         Window nWindow = NewtFactory.createWindow(NativeWindowFactory.TYPE_AWT, screen, caps);
         window = GLWindow.create(nWindow);
+        window.enablePerfLog(true);
 
         window.setTitle("Moonweasel");
 		window.setSize(width, height);

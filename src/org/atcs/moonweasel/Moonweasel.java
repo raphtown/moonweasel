@@ -8,7 +8,6 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
-import org.atcs.moonweasel.networking.Networking;
 import org.atcs.moonweasel.physics.Physics;
 
 public class Moonweasel {
@@ -33,7 +32,6 @@ public class Moonweasel {
 	protected Physics physics;
 	protected WeaselView view;
 	protected InputController input;
-	protected Networking networking;
 
 	private EntityManager entityManager;
 	private Player player;
@@ -49,7 +47,7 @@ public class Moonweasel {
 		snowflake.spawn();
 		player.setShip(snowflake);
 		
-		this.physics = new Physics(player);
+		this.physics = new Physics();
 		this.view = new WeaselView(width, height, fullscreen, player);
 		this.input = new InputController(view.getWindow());
 	}

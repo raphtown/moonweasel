@@ -38,6 +38,9 @@ public class ShipData {
 		if (object.containsKey("attack")) {
 			factory.attack = ((Long)object.get("attack")).intValue();
 		}
+		if (object.containsKey("thrust")) {
+			factory.thrust = ((Double)object.get("thrust")).floatValue();
+		}
 
 		if (object.containsKey("gunners")) {
 			List<Vector> gunners = new LinkedList<Vector>();
@@ -77,12 +80,13 @@ public class ShipData {
 		private float mass;
 		private int health;
 		private int attack;
+		private float thrust;
 		private Vector[] gunners;
 		
 		private BoundingShape bounds;
 		
 		public ShipData build() {
-			return new ShipData(name, mass, health, attack, gunners, bounds);
+			return new ShipData(name, mass, health, attack, thrust, gunners, bounds);
 		}
 	}
 	
@@ -90,16 +94,18 @@ public class ShipData {
 	public final float mass;
 	public final int health;
 	public final int attack;
+	public final float thrust;
 	public final Vector[] gunners;
 	
 	public final BoundingShape bounds;
 	
 	private ShipData(String name, float mass, int health, int attack,
-			Vector[] gunners, BoundingShape bounds) {
+			float thrust, Vector[] gunners, BoundingShape bounds) {
 		assert name != null && name.length() > 0;
 		assert mass > 0;
 		assert health > 0;
 		assert attack > 0;
+		assert thrust > 0;
 		assert gunners != null;
 		assert bounds != null;
 		
@@ -107,6 +113,7 @@ public class ShipData {
 		this.mass = mass;
 		this.health = health;
 		this.attack = attack;
+		this.thrust = thrust;
 		this.gunners = gunners;
 		this.bounds = bounds;
 	}
