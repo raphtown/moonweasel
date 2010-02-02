@@ -41,6 +41,7 @@ public class Moonweasel {
 	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
 		
+		new Server("MoonweaselServer");
 		player = this.entityManager.create("player");
 		player.spawn();
 		this.view = new WeaselView(width, height, fullscreen, player);

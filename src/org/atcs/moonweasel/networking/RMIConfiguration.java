@@ -16,7 +16,7 @@ public final class RMIConfiguration
 	/**
 	 * The port that the RMI server will use to create and connect to its registry.
 	 */
-	public static final int RMI_PORT = 4001;
+	public static final int RMI_PORT = 4002;
 	
 	/**
 	 * Whether or not to print out the debug strings.

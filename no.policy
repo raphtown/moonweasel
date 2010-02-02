@@ -1,5 +1,4 @@
 grant
 {
-	permission java.net.SocketPermission "*:1024-65535", "connect,accept,resolve";
-	permission java.net.SocketPermission "224.0.0.1", "connect,accept,resolve";
+	permission java.security.AllPermission;
 };
