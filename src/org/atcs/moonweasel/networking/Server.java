@@ -166,6 +166,5 @@ public class Server extends ActionSource implements IServer
 	{
 		connectedClients.remove(clientName);
 		fireActionEvent("discClient " + clientName);
-		e.printStackTrace();
 	}
 }

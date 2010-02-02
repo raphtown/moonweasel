@@ -16,6 +16,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Scanner;
 
+import org.atcs.moonweasel.entities.Entity;
+import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 
 /**
@@ -120,7 +122,17 @@ public class Client implements IClient
     
     public void forceUpdate() throws RemoteException
     {
-    	// TODO actually get the update
-    	// entityList = server.requestUpdate(hostname);
+    	List<Entity> entityList = server.requestUpdate(hostname);
+    	EntityManager mgr = EntityManager.getEntityManager();
+    	for (Entity entity : entityList)
+    	{
+    		mgr.delete(entity);
+    		mgr.add(entity);
+    	}
+    }
+    
+    public IServer getServer()
+    {
+    	return server;
     }
 }

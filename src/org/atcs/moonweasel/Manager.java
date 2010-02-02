@@ -20,6 +20,11 @@ public abstract class Manager<T extends Identifiable> implements Iterable<T> {
 		this.elements.put(element.getID(), element);
 	}
 	
+	public void delete(T element)
+	{
+		this.elements.remove(element.getID());
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <E extends T> E create(String type) {
 		Class<E> clazz = (Class<E>)getClass(type);

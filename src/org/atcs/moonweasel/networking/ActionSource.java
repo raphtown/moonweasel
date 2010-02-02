@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public abstract class ActionSource
 {
-	ArrayList<ActionListener> actionListeners = new ArrayList<ActionListener>();
-	static int counter = 0;
+	private ArrayList<ActionListener> actionListeners = new ArrayList<ActionListener>();
+	private static int counter = 0;
 	
 	public void fireActionEvent(String command)
 	{
@@ -17,7 +17,7 @@ public abstract class ActionSource
 		}
 	}
 	
-	public void addActionListener (ActionListener e)
+	public void addActionListener(ActionListener e)
 	{
 		actionListeners.add(e);
 	}
