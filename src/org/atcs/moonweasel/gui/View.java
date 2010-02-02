@@ -28,11 +28,11 @@ public abstract class View implements GLEventListener, WindowListener {
 		GLProfile profile = GLProfile.get(GLProfile.GL2);
 		GLCapabilities caps = new GLCapabilities(profile);
 		
-		NewtFactory.setUseEDT(true);
         Display display = NewtFactory.createDisplay(NativeWindowFactory.TYPE_AWT, null);
         Screen screen  = NewtFactory.createScreen(NativeWindowFactory.TYPE_AWT, display, 0);
         Window nWindow = NewtFactory.createWindow(NativeWindowFactory.TYPE_AWT, screen, caps);
         window = GLWindow.create(nWindow);
+        window.enablePerfLog(true);
 
         window.setTitle("Moonweasel");
 		window.setSize(width, height);
@@ -46,7 +46,11 @@ public abstract class View implements GLEventListener, WindowListener {
 	
 	public void destroy() {
 		window.destroy();
-	}	
+	}
+	
+	public Window getWindow() {
+		return window;
+	}
 	
 	public final void render(float alpha) {
 		this.alpha = alpha;

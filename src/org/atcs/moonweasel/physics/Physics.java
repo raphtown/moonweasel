@@ -4,73 +4,33 @@ import java.util.ArrayList;
 
 import org.atcs.moonweasel.entities.*;
 import org.atcs.moonweasel.util.*;
+import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.ModelEntity;
+import org.atcs.moonweasel.util.Matrix;
+import org.atcs.moonweasel.util.Vector;
 
 public class Physics 
 {
-	public static ArrayList<Vector> cubeVectors = new ArrayList<Vector>();
-	public static ArrayList<Vector> projectedVectors = new ArrayList<Vector>();
-	public static ArrayList<Vector> convexHullVectors = new ArrayList<Vector>();
-	public static final float VECTOR_PRECISION_TOLERANCE = 0.00001f;
-	public static void main(String[] args)
+	private NumericalIntegration integrator;
+	
+	public Physics() 
 	{
-		State me1 = new State(0, null);
-		State me2 = new State(0, null);
-
-		Vector pt1 = new Vector((int) (500*Math.random()),(int)( 500*Math.random()), (int) (500*Math.random()));
-		Vector pt2 = new Vector((int) (500*Math.random()),(int)( 500*Math.random()), (int) (500*Math.random()));
-		Vector pt3 = new Vector((int) (500*Math.random()),(int)( 500*Math.random()), (int) (500*Math.random()));
-		Vector pt4 = new Vector((int) (500*Math.random()),(int)( 500*Math.random()), (int) (500*Math.random()));
-		Vector pt5 = new Vector((int) (500*Math.random()),(int)( 500*Math.random()), (int) (500*Math.random()));
-		Vector pt6 = new Vector((int) (500*Math.random()),(int)( 500*Math.random()), (int) (500*Math.random()));
-		Vector pt7 = new Vector((int) (500*Math.random()),(int)( 500*Math.random()), (int) (500*Math.random()));
-		Vector pt8 = new Vector((int) (500*Math.random()),(int)( 500*Math.random()), (int) (500*Math.random()));
-
-
-		ArrayList<Vector> cube1 = new ArrayList<Vector>();
-		cube1.add(pt1);
-		cube1.add(pt2);
-		cube1.add(pt3);
-		cube1.add(pt4);
-		cube1.add(pt5);
-		cube1.add(pt6);
-		cube1.add(pt7);
-		cube1.add(pt8);
-
-		cubeVectors.addAll(cube1);
-		projectedVectors.addAll(projectOntoXY(cube1));
-		convexHullVectors.addAll(convexHull(projectOntoXY(cube1), "xy"));
-		
-		me1.verticesOfBoundingRegion = cube1;
-
-		System.out.println("Handling cube 1.");
-		System.out.println("Cube 1: " + cube1);
-		System.out.println("Convex hull on xy plane: " + convexHull(projectOntoXY(cube1), "xy"));
-		
-		convexHullTester myTester = new convexHullTester();
-		myTester.repaint();
-		
-
+		this.integrator = new NumericalIntegration();
 	}
-
-
-
-
-
+	
 	public void destroy() 
 	{
 
 	}
 
-	NumericalIntegration Integrator = new NumericalIntegration();
+	NumericalIntegration Integrator = new NumericalIntegration();	
 
 	public void update(long t, int dt) //updates all models
 	{
 		EntityManager em = EntityManager.getEntityManager();
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
-			State oldState = e.getState();
-			Integrator.integrate(e.getState(), t, dt); //refreshes the previous state and saves new values
-			State futureState = e.getState();
+			integrator.integrate(e, t, dt);
 			e.getState().setDangerZone(dt);
 		}
 	}
@@ -91,8 +51,6 @@ public class Physics
 
 		//Returns: a vector that gives the location of the centroid in world coordinates
 	}
-
-
 	//given a list of a body's coordinates (centered around the centroid), compute the inertia tensor
 	//helpful if you already have the vertices in body coordinates
 	public Matrix computeInertiaTensor(ArrayList<Vector> vertexListInBodyCoords)
@@ -120,25 +78,18 @@ public class Physics
 
 		return new Matrix(i11, i12, i13, i21, i22, i23, i31, i32, i33);
 	}
-
-
-
 	public State predictFutureState(ModelEntity me, int dt)
 	{
 		State futureState = new State(me.getState().mass, me.getState().inertiaTensor);
-		futureState.angularMomentum = me.getState().angularMomentum.clone();
-		futureState.momentum = me.getState().momentum.clone();
-		futureState.orientation = me.getState().orientation.clone();
-		futureState.position = me.getState().position.clone();
-		futureState.inverseInertiaTensor = me.getState().inverseInertiaTensor.clone();
-		futureState.inverseMass = me.getState().inverseMass;
+		futureState.angularMomentum = me.getState().angularMomentum;
+		futureState.momentum = me.getState().momentum;
+		futureState.orientation = me.getState().orientation;
+		futureState.position = me.getState().position;
 		futureState.recalculate();
-		Integrator.integrate(futureState,0,dt);
+		Integrator.integrate(me, futureState,0,dt);
 
 		return futureState;
 	}
-
-
 	public static ArrayList<Vector> projectOntoXY(ArrayList<Vector> A)
 	{
 		ArrayList<Vector> projectedComponents = new ArrayList<Vector>();
@@ -166,7 +117,6 @@ public class Physics
 		}
 		return projectedComponents;
 	}
-
 	public static ArrayList<Vector> convexHull(ArrayList<Vector> projcomps, String plane)
 	{
 		ArrayList<Vector> convexHull = new ArrayList<Vector>();
@@ -189,8 +139,6 @@ public class Physics
 		return convexHull;
 
 	}
-
-
 	public static Vector findMostExtremalPoint(ArrayList<Vector> projcomps, String plane)
 	{
 		Vector extremalPoint = projcomps.get(0);
@@ -226,7 +174,6 @@ public class Physics
 		}
 		return extremalPoint;
 	}
-
 	public static Vector setReferenceVector(String plane)
 
 	{
@@ -244,7 +191,6 @@ public class Physics
 		}
 		else return null;
 	}
-	
 	public static Vector findNextPoint(ArrayList<Vector> projcomps, Vector referenceVector, Vector lastPointAdded)
 	{
 		double tempAlpha = 6.28318531; //2pi
@@ -269,63 +215,9 @@ public class Physics
 		}
 		return bestPoint;
 	}
-	
 	public static Vector updateReferenceVector(ArrayList<Vector> convexHull)
 	{
 		return convexHull.get(convexHull.size()-1).subtract(convexHull.get(convexHull.size()-2));
 	}
-	
-	public boolean collisionDetected(ModelEntity A, ModelEntity B)
-	{
-		boolean collisionDetected = false;
-		if(A.getBoundingShape() instanceof BoundingSphere && 
-				B.getBoundingShape() instanceof BoundingSphere) //sphere on sphere collision
-		{
-			BoundingSphere ASphere = (BoundingSphere)A.getBoundingShape();
-			BoundingSphere BSphere = (BoundingSphere)B.getBoundingShape();
-			if(ASphere.radius + BSphere.radius > B.getState().position.subtract(A.getState().position).length())
-			{
-				collisionDetected = true;
-			}
-		}
-		else if(A.getBoundingShape() instanceof BoundingBox && 
-				B.getBoundingShape() instanceof BoundingBox) //both box case
-		{
-			BoundingBox ABox = (BoundingBox)A.getBoundingShape();
-			BoundingBox BBox = (BoundingBox)B.getBoundingShape();
-		}
-		else if(A.getBoundingShape() instanceof BoundingBox && 
-				B.getBoundingShape() instanceof BoundingSphere) //box on sphere collision
-		{
-			BoundingBox ABox = (BoundingBox)A.getBoundingShape();
-			BoundingSphere BSphere = (BoundingSphere)B.getBoundingShape();
-			float r = BSphere.radius;
-			for (int i = 0; i < A.getState().verticesOfBoundingRegion.size(); i++)
-			{
-				if(A.getState().verticesOfBoundingRegion.get(i).subtract(B.getState().position).length() < r)
-				{
-					collisionDetected = true;
-					break;
-				}
-			}
-		}
-		else //sphere on box collision
-		{
-			BoundingSphere ASphere = (BoundingSphere)A.getBoundingShape();
-			BoundingBox BBox = (BoundingBox)B.getBoundingShape();
-			float r = ASphere.radius;
-			for (int i = 0; i <B.getState().verticesOfBoundingRegion.size(); i++)
-			{
-				if(B.getState().verticesOfBoundingRegion.get(i).subtract(A.getState().position).length() < r)
-				{
-					collisionDetected = true;
-					break;
-				}
-			}
-		}
-		return collisionDetected;
-	}
-
-
 
 }
