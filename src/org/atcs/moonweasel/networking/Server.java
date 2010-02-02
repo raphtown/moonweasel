@@ -2,6 +2,7 @@ package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
 
+import java.lang.reflect.Method;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -142,32 +143,51 @@ public class Server extends ActionSource implements IServer
 	{
 		for (String clientName : connectedClients)
 		{
-			try
-			{
+	        try
+	        {
 				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
 				((IClient)registry.lookup(CLIENT_OBJECT_NAME)).forceUpdate();
 			}
-			catch (AccessException e)
-			{
-				connectedClients.remove(clientName);
-				fireActionEvent("discClient " + clientName);
+	        catch (AccessException e)
+	        {
 				e.printStackTrace();
-				//throw new RuntimeException("Could not access client!");
+	        	throw new RuntimeException("Could not access client!");
 			}
-			catch (RemoteException e)
-			{
-				connectedClients.remove(clientName);
-				fireActionEvent("discClient " + clientName);
+	        catch (RemoteException e)
+	        {
 				e.printStackTrace();
-				//throw new RuntimeException("Remote exception occurred while forcing client update");
+	        	throw new RuntimeException("Remote exception occurred while forcing client update");
 			}
-			catch (NotBoundException e)
-			{
-				connectedClients.remove(clientName);
-				fireActionEvent("discClient " + clientName);
+	        catch (NotBoundException e)
+	        {
 				e.printStackTrace();
-				//throw new RuntimeException("Client does not exist on clientside (what the?)");
+				throw new RuntimeException("Client does not exist on clientside (what the?)");
 			}
 		}
+	}
+
+	@Override
+	public Object sendPacket(short command, String c) throws RemoteException
+	{
+
+		try
+		{
+			String method = Protocol.stringValue(command);
+			System.out.println(method);
+//			Class<?> lol = command.getClass();
+//			Method[] methList = lol.getMethods();
+//			methList[0].getParameterTypes(); 
+//			Class<?> partypes[] = new Class[0];
+//			Method m = lol.getMethod("toString", partypes);
+//			Object arglist[] = new Object[0];
+//			m.invoke(command, arglist);
+		} 
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 }
