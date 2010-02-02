@@ -51,7 +51,6 @@ public class Moonweasel {
 		player.setShip(snowflake);
 		
 		this.physics = new Physics();
-		this.view = new WeaselView(width, height, fullscreen, player);
 		this.input = new InputController(view.getWindow());
 	}
 
