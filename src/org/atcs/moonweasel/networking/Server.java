@@ -35,12 +35,10 @@ public class Server extends ActionSource implements IServer
 	 * The clients that have called the connect() method remotely.
 	 */
 	private final List<String> connectedClients = new ArrayList<String>();
-	
-	public static void main(String args[])
-	{
-		new Server("Moonweasel Server");
-	}
 
+	/**
+	 * Creates a new Server instance with the given name. Starts an announcer announce its presence and attempts to register itself in the RMI registry.
+	 */
 	public Server(final String serverName)
 	{
 		try
@@ -115,7 +113,6 @@ public class Server extends ActionSource implements IServer
 			System.out.println("Received command " + command + " from " + c + ".");
 		
 		fireActionEvent("commRec " + command + " " + c);
-
 	}
 	
 	/**
@@ -149,25 +146,26 @@ public class Server extends ActionSource implements IServer
 			}
 			catch (AccessException e)
 			{
-				connectedClients.remove(clientName);
-				fireActionEvent("discClient " + clientName);
-				e.printStackTrace();
-				//throw new RuntimeException("Could not access client!");
+				disconnectClient(clientName);
 			}
 			catch (RemoteException e)
 			{
-				connectedClients.remove(clientName);
-				fireActionEvent("discClient " + clientName);
-				e.printStackTrace();
-				//throw new RuntimeException("Remote exception occurred while forcing client update");
+				disconnectClient(clientName);
 			}
 			catch (NotBoundException e)
 			{
-				connectedClients.remove(clientName);
-				fireActionEvent("discClient " + clientName);
-				e.printStackTrace();
-				//throw new RuntimeException("Client does not exist on clientside (what the?)");
+				disconnectClient(clientName);
 			}
 		}
+	}
+
+	/**
+	 * Disconnects the given client, telling all listeners of the event as well.
+	 */
+	private void disconnectClient(String clientName)
+	{
+		connectedClients.remove(clientName);
+		fireActionEvent("discClient " + clientName);
+		e.printStackTrace();
 	}
 }
