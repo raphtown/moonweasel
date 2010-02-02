@@ -66,6 +66,7 @@ public class Server extends ActionSource implements IServer
 	{
 		Remote stub = UnicastRemoteObject.exportObject(object, 0);
 		registry.rebind(name, stub);
+		
 		if (RMI_DEBUG)
 			System.out.println(name + " bound");
 	}

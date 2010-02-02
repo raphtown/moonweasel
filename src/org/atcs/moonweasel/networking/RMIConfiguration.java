@@ -45,15 +45,22 @@ public final class RMIConfiguration
 		
 		try
 		{
-			registry = LocateRegistry.getRegistry(RMI_PORT);
-			if(registry == null)
-			{
-				registry = LocateRegistry.createRegistry(RMI_PORT);
-			} 
+//			
+			registry = LocateRegistry.createRegistry(RMI_PORT);
 		} 
 		catch (RemoteException e)
 		{
-			e.printStackTrace();
+			System.err.println("Registry already exists! Attempting to obtain it...");
+			try
+			{
+				registry = LocateRegistry.getRegistry(RMI_PORT);
+				System.out.println("Registry obtained successfully!");
+			} 
+			catch (RemoteException e1)
+			{
+				System.err.println("Registry cannot be obtained...");
+				e1.printStackTrace();
+			}
 		}
 	}
 }
