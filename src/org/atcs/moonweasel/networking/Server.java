@@ -12,6 +12,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
@@ -39,7 +40,10 @@ public class Server extends ActionSource implements IServer
 	
 	public static void main(String args[])
 	{
-		new Server("Moonweasel Server");
+		Scanner console = new Scanner(System.in);
+		System.out.print("Input Server Name...");
+		String name = console.nextLine();
+		new Server(name);
 	}
 
 	public Server(final String serverName)
@@ -168,13 +172,35 @@ public class Server extends ActionSource implements IServer
 	}
 
 	@Override
-	public Object sendPacket(short command, String c) throws RemoteException
+	public Object sendPacket(short command, Object... parameters) throws RemoteException
 	{
 
 		try
 		{
-			String method = Protocol.stringValue(command);
-			System.out.println(method);
+			String method = Protocol.methodName(command);
+			int numParams = Protocol.parameters(method).length / 2;
+			Class[] parameterClasses = new Class[numParams];
+			String[] parameterNames = new String[numParams];
+			
+			String[] expectedParameters = Protocol.parameters(method);
+			for(int i = 0; i < numParams; i++)
+			{
+				parameterClasses[i] = expectedParameters[1].getClass();
+				parameterNames[i] = expectedParameters[0];
+			}
+			
+			System.out.println("----------------");
+			System.out.println("Received packet!");
+			System.out.println("Short: " + command);
+			System.out.println("Command: " + method);
+			System.out.println("Parameters:");
+			System.out.println("	Number: " + numParams);
+			for(int i = 0; i < numParams; i++)
+			{
+				System.out.println("	Parameter class: " + parameterClasses[i].getSimpleName() + "  Parameter name: " + parameterNames[i] + "  Parameter value: " + parameters[i]);
+			}
+			System.out.println("----------------");
+			
 //			Class<?> lol = command.getClass();
 //			Method[] methList = lol.getMethods();
 //			methList[0].getParameterTypes(); 

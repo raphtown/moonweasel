@@ -14,7 +14,7 @@ public final class AnnouncerConfiguration
 	 * 
 	 * Not currently useful, as the announcer is known to work.
 	 */
-	public static final boolean ANNOUNCER_DEBUG = true;
+	public static final boolean ANNOUNCER_DEBUG = false;
 	
 	/**
 	 * The address that the announcer will broadcast to. Multicast groups are 

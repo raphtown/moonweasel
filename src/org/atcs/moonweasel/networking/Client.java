@@ -34,9 +34,9 @@ import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
  */
 public class Client implements IClient
 {
-	private IBetaServer server = null;
+	private IServer server = null;
 	private final String hostname;
-	private String ip;
+	public String ip;
     public static void main(String args[])
     {
         new Client();
@@ -56,7 +56,7 @@ public class Client implements IClient
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
 			registry.rebind(CLIENT_OBJECT_NAME, stub);
 			findAndConnectToServer();
-			server.sendPacket(Protocol.shortValue("sendInput"), ip);
+			sendPacket("sendInput");
 		}
 		catch (RemoteException e)
 		{
@@ -80,8 +80,8 @@ public class Client implements IClient
     public void connectToServer(String serverHostName) throws RemoteException, NotBoundException
     {
     	Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
-        server = (IBetaServer) registry.lookup(SERVER_OBJECT_NAME);
-        server.sendPacket(Protocol.shortValue("connect"), ip);
+        server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
+        sendPacket("connect");
     }
     
     /**
@@ -92,7 +92,6 @@ public class Client implements IClient
      */
     private static String getConnectionHostname() throws IOException
 	{
-		System.out.println("Client started...");
 		List<String> hostnames = ServerAnnouncer.getServerList();
 
 		System.out.println("Available hosts:");
@@ -119,6 +118,36 @@ public class Client implements IClient
 		}
 		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
+    
+    public Object sendPacket(String command)
+    {
+    	String[] parameters = Protocol.parameters(command);
+    	Object[] values = new Object[parameters.length];
+    	for(int i = 0; i < parameters.length; i = i + 2)
+    	{
+    		try
+			{
+				values[i] = this.getClass().getField(parameters[i]);
+			} catch (SecurityException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	try
+		{
+			return server.sendPacket(Protocol.shortValue(command), values);
+		} catch (RemoteException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+    }
     
     public void forceUpdate() throws RemoteException
     {
