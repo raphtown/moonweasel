@@ -97,4 +97,22 @@ public class UserCommand implements Timed {
 		}
 		return bitmask;
 	}
+	
+	public void setKeysAsBitmask(short bitmask)
+	{
+		for (Commands command : Commands.values())
+		{
+			if (command.ordinal() >= Commands.NUM_COMMANDS.ordinal())
+				break;
+			if ((bitmask & command.bitmask) != 0)
+				commands[command.ordinal()] = true;
+			else
+				commands[command.ordinal()] = false;
+		}
+	}
+	
+	public void setMouse(float x, float y)
+	{
+		setMouse(new Vector(x, y, 0f));
+	}
 }

@@ -8,7 +8,6 @@ import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
-
 public class Player extends Entity {
 	private static final long serialVersionUID = -5228344170942537611L;
 

@@ -9,7 +9,9 @@ import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
+import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.entities.ships.Snowflake;
+import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
 import org.atcs.moonweasel.networking.Server;
@@ -39,14 +41,17 @@ public class Moonweasel implements ActionListener
 	protected WeaselView view;
 	protected InputController input;
 	protected Client client;
+	protected Server server;
 
 	private EntityManager entityManager;
 	private Player player;
+	private Map<String, Player> playerMap = new HashMap<String, Player>();
 
 	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
 		
-		new Server("MoonweaselServer").addActionListener(this);
+		server = new Server("MoonweaselServer");
+		server.addActionListener(this);
 		this.client = new Client();
 		player = this.entityManager.create("player");
 		player.spawn();
@@ -110,27 +115,44 @@ public class Moonweasel implements ActionListener
 		{
 			if (parts[0].equals("newClient"))
 			{
-				// TODO handle new client connecting
 				String clientHostname = parts[1];
+				
+				Player plr = this.entityManager.create("player");
+				plr.spawn();
+				
+				playerMap.put(clientHostname, plr);
 			}
 			else if (parts[0].equals("shipChosen"))
 			{
-				// TODO handle ship choice
-				short shipChoice = Short.parseShort(parts[1]);
+				byte shipChoice = Byte.parseByte(parts[1]);
 				String clientHostname = parts[2];
+				
+				String shipTypeName = ShipType.getFromType(shipChoice).typeName;
+				Player plr = playerMap.get(clientHostname);
+				Ship ship = this.entityManager.create(shipTypeName);
+				ship.setPilot(plr);
+				ship.spawn();
 			}
 			else if (parts[0].equals("commRec"))
 			{
-				// TODO handle command receipt
 				short command = Short.parseShort(parts[1]);
 				float mouseX = Float.parseFloat(parts[2]);
 				float mouseY = Float.parseFloat(parts[3]);
 				String clientHostname = parts[4];
+				UserCommand ucommand = new UserCommand();
+				ucommand.setKeysAsBitmask(command);
+				ucommand.setMouse(mouseX, mouseY);
+				playerMap.get(clientHostname).addCommand(ucommand);
 			}
 			else if (parts[0].equals("discClient"))
 			{
-				// TODO handle client disconnect
 				String hostname = parts[1];
+				Player plr = playerMap.get(hostname);
+				this.entityManager.delete(plr);
+				playerMap.remove(hostname);
+				plr.getShip().destroy();
+				plr.destroy();
+				((Server)(e.getSource())).update();
 			}
 		}
 	}
