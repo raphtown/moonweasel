@@ -141,7 +141,7 @@ public class Client implements IClient
     public void sendCommandToServer(UserCommand command)
     {
     	try {
-			server.doCommand(command.getAsBitmask(), ip);
+			server.doCommand(command.getAsBitmask(), command.getMouse(), ip);
 		} catch (RemoteException e) {
 			System.err.println("Server went away!");
 			//e.printStackTrace();

@@ -123,7 +123,9 @@ public class Moonweasel implements ActionListener
 			{
 				// TODO handle command receipt
 				short command = Short.parseShort(parts[1]);
-				String clientHostname = parts[2];
+				float mouseX = Float.parseFloat(parts[2]);
+				float mouseY = Float.parseFloat(parts[3]);
+				String clientHostname = parts[4];
 			}
 			else if (parts[0].equals("discClient"))
 			{

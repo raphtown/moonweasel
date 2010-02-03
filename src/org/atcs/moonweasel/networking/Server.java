@@ -16,6 +16,7 @@ import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.ranges.Range;
+import org.atcs.moonweasel.util.Vector;
 
 /**
  * Serves as the Remote Method Invocation implementation of server software. 
@@ -104,7 +105,7 @@ public class Server extends ActionSource implements IServer
 	 * @param command The command(s) that have been pressed.
 	 * @param c The client that is using this command.
 	 */
-	public void doCommand(short command, final String c) throws RemoteException
+	public void doCommand(short command, Vector mouse, final String c) throws RemoteException
 	{
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to execute command!");
@@ -112,7 +113,7 @@ public class Server extends ActionSource implements IServer
 		if (RMI_DEBUG)
 			System.out.println("Received command " + command + " from " + c + ".");
 		
-		fireActionEvent("commRec " + command + " " + c);
+		fireActionEvent("commRec " + command + " " + mouse.x + " " + mouse.y + " " + c);
 	}
 	
 	/**

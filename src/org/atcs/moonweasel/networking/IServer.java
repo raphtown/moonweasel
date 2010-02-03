@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import org.atcs.moonweasel.entities.Entity;
+import org.atcs.moonweasel.util.Vector;
 
 /**
  * The interface linked to being a server. Used only for the purpose of keeping 
@@ -27,7 +28,7 @@ public interface IServer extends Remote
 	 * @param command The command(s) that have been pressed.
 	 * @param c The client that is using this command.
 	 */
-	public void doCommand(short command, String c) throws RemoteException;
+	public void doCommand(short command, Vector mouse, String c) throws RemoteException;
 	
 	/**
 	 * Gets an updated list of ModelEntities.
