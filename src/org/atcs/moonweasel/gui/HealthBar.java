@@ -42,6 +42,7 @@ public class HealthBar extends UIElement
 			gl.glColor3f(1, 0, 0);
 				gl.glVertex3f(xmin, ymin, 0);
 				gl.glVertex3f(xmax, ymin, 0);
+				gl.glColor3f(0,0,0);
 				gl.glVertex3f(xmax, ymax, 0);
 				gl.glVertex3f(xmin, ymax, 0);
 			gl.glEnd();
@@ -50,6 +51,7 @@ public class HealthBar extends UIElement
 			gl.glColor3f(0, 1, 0);
 				gl.glVertex3f(xmin, ymin, 1);
 				gl.glVertex3f((xmax*healthPercent), ymin, 1);
+			gl.glColor4f(1, 1, 1, (float) 0.1);
 				gl.glVertex3f((xmax*healthPercent), ymax, 1);
 				gl.glVertex3f(xmin, ymax, 1);
 			gl.glEnd();
