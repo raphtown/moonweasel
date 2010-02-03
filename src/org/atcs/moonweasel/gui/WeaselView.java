@@ -123,7 +123,7 @@ public class WeaselView extends View {
 	public void initComponents()
 	{
 		uiElements = new ArrayList<UIElement>();
-		uiElements.add(new HealthBar(new Vector(10, 10, 0)));
+		uiElements.add(new HealthBar(new Vector(10, 10, 0), me));
 	}
 	
 	
