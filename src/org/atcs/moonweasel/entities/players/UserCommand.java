@@ -19,7 +19,12 @@ public class UserCommand implements Timed {
 		ATTACK_1((short)0x100),
 		AUTOMATIC_THRUSTER_CONTROL((short)0x200),
 		
-		NUM_COMMANDS((short)0x400);
+		MOUSE_LEFT((short)0x400),
+		MOUSE_RIGHT((short)0x800),
+		MOUSE_UP((short)0x1000),
+		MOUSE_DOWN((short)0x2000),
+		
+		NUM_COMMANDS((short)0x4000);
 		public final short bitmask;
 		Commands(short bitmask)
 		{
@@ -60,6 +65,16 @@ public class UserCommand implements Timed {
 	
 	public void setMouse(Vector position) {
 		this.mouse = position;
+
+		if (position.x < 0)
+			commands[Commands.MOUSE_LEFT.ordinal()] = true;
+		else if (position.x > 0)
+			commands[Commands.MOUSE_RIGHT.ordinal()] = true;
+		
+		if (position.y < 0)
+			commands[Commands.MOUSE_UP.ordinal()] = true;
+		else if (position.y > 0)
+			commands[Commands.MOUSE_DOWN.ordinal()] = true;
 	}
 	
 	public void setTime(long t) {

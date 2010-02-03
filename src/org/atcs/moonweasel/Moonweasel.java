@@ -104,6 +104,7 @@ public class Moonweasel implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		String actionCommand = e.getActionCommand();
+		System.out.println("Action performed: " + actionCommand);
 		String[] parts = actionCommand.split(" ");
 		if (parts.length > 0)
 		{
