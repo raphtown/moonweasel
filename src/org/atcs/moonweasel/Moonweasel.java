@@ -30,7 +30,6 @@ public class Moonweasel implements ActionListener
 	public static void main(String[] args) {
 		Moonweasel weasel = new Artemis(800, 600, false);
 
-		// weasel.seeFox();
 		weasel.run();
 		weasel.destroy(); // eaten
 
@@ -132,6 +131,7 @@ public class Moonweasel implements ActionListener
 				Ship ship = this.entityManager.create(shipTypeName);
 				ship.setPilot(plr);
 				ship.spawn();
+				plr.setShip(ship);
 			}
 			else if (parts[0].equals("commRec"))
 			{
