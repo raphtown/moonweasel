@@ -1,5 +1,7 @@
 package org.atcs.moonweasel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +15,8 @@ import org.atcs.moonweasel.networking.Client;
 import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.physics.Physics;
 
-public class Moonweasel {
+public class Moonweasel implements ActionListener
+{
 	public static final Map<String, Class<? extends Entity>> ENTITY_MAP;
 
 	static {
@@ -43,7 +46,7 @@ public class Moonweasel {
 	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
 		
-		new Server("MoonweaselServer");
+		new Server("MoonweaselServer").addActionListener(this);
 		this.client = new Client();
 		player = this.entityManager.create("player");
 		player.spawn();
@@ -94,6 +97,38 @@ public class Moonweasel {
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
 				/ SKIP_TICKS;
 			view.render(interpolation);
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		String actionCommand = e.getActionCommand();
+		String[] parts = actionCommand.split(" ");
+		if (parts.length > 0)
+		{
+			if (parts[0].equals("newClient"))
+			{
+				// TODO handle new client connecting
+				String clientHostname = parts[1];
+			}
+			else if (parts[0].equals("shipChosen"))
+			{
+				// TODO handle ship choice
+				short shipChoice = Short.parseShort(parts[1]);
+				String clientHostname = parts[2];
+			}
+			else if (parts[0].equals("commRec"))
+			{
+				// TODO handle command receipt
+				short command = Short.parseShort(parts[1]);
+				String clientHostname = parts[2];
+			}
+			else if (parts[0].equals("discClient"))
+			{
+				// TODO handle client disconnect
+				String hostname = parts[1];
+			}
 		}
 	}
 }
