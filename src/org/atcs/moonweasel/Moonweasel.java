@@ -6,8 +6,10 @@ import java.util.Map;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
+import org.atcs.moonweasel.networking.Client;
 import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.physics.Physics;
 
@@ -33,7 +35,7 @@ public class Moonweasel {
 	protected Physics physics;
 	protected WeaselView view;
 	protected InputController input;
-	//protected Networking networking;
+	protected Client client;
 
 	private EntityManager entityManager;
 	private Player player;
@@ -42,6 +44,7 @@ public class Moonweasel {
 		this.entityManager = EntityManager.getEntityManager();
 		
 		new Server("MoonweaselServer");
+		this.client = new Client();
 		player = this.entityManager.create("player");
 		player.spawn();
 		this.view = new WeaselView(width, height, fullscreen, player);
@@ -69,14 +72,18 @@ public class Moonweasel {
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		float interpolation;
-
+		short lastCommand = 0;
 		while (!view.shouldQuit()) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
 				entityManager.update();
 				physics.update(t, SKIP_TICKS);
-				player.addCommand(input.poll(t));
+				UserCommand command = input.poll(t);
+				player.addCommand(command);
+				if (command.getAsBitmask() != lastCommand)
+					client.sendCommandToServer(command);
+				lastCommand = command.getAsBitmask();
 				player.clearCommandsBefore(t);
 
 				t += SKIP_TICKS;

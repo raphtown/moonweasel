@@ -16,7 +16,7 @@ public final class RMIConfiguration
 	/**
 	 * The port that the RMI server will use to create and connect to its registry.
 	 */
-	public static final int RMI_PORT = 4002;
+	public static final int RMI_PORT = 4001;
 	
 	/**
 	 * Whether or not to print out the debug strings.
@@ -49,7 +49,13 @@ public final class RMIConfiguration
 		} 
 		catch (RemoteException e)
 		{
-			e.printStackTrace();
+			try {
+				registry = LocateRegistry.getRegistry(RMI_PORT);
+			} catch (RemoteException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			//e.printStackTrace();
 		}
 	}
 }

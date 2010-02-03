@@ -18,6 +18,7 @@ import java.util.Scanner;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 
 /**
@@ -36,14 +37,9 @@ public class Client implements IClient
 {
 	private IServer server = null;
 	private final String hostname;
-    public static void main(String args[])
-    {
-        new Client();
-    }
-    
+    private String ip = null;
     public Client()
     {
-    	String ip = null;
     	try {
 			ip = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
@@ -122,6 +118,7 @@ public class Client implements IClient
     
     public void forceUpdate() throws RemoteException
     {
+    	// problems can be foreseen here...
     	List<Entity> entityList = server.requestUpdate(hostname);
     	EntityManager mgr = EntityManager.getEntityManager();
     	for (Entity entity : entityList)
@@ -134,5 +131,20 @@ public class Client implements IClient
     public IServer getServer()
     {
     	return server;
+    }
+    
+    public String getIP()
+    {
+    	return ip;
+    }
+    
+    public void sendCommandToServer(UserCommand command)
+    {
+    	try {
+			server.doCommand(command.getAsBitmask(), ip);
+		} catch (RemoteException e) {
+			System.err.println("Server went away!");
+			//e.printStackTrace();
+		}
     }
 }
