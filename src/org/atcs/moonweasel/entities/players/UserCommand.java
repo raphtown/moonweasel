@@ -113,6 +113,6 @@ public class UserCommand implements Timed {
 	
 	public void setMouse(float x, float y)
 	{
-		setMouse(new Vector(x, y, 0f));
+		setMouse(new Vector(x, y, 0));
 	}
 }

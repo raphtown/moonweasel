@@ -45,6 +45,8 @@ public class Moonweasel implements ActionListener
 	private EntityManager entityManager;
 	private Player player;
 	private Map<String, Player> playerMap = new HashMap<String, Player>();
+	private Map<Player, Long> playerCommandMap = new HashMap<Player, Long>();
+	protected long t;
 
 	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
@@ -52,8 +54,10 @@ public class Moonweasel implements ActionListener
 		server = new Server("MoonweaselServer");
 		server.addActionListener(this);
 		this.client = new Client();
+		client.chooseShip();
 		player = this.entityManager.create("player");
 		player.spawn();
+		playerMap.put(client.getIP(), player);
 		this.view = new WeaselView(width, height, fullscreen, player);
 
 		Snowflake snowflake = this.entityManager.create("snowflake");
@@ -75,7 +79,7 @@ public class Moonweasel implements ActionListener
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
 
-		long t = 0;
+		t = 0;
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		float interpolation;
@@ -125,13 +129,15 @@ public class Moonweasel implements ActionListener
 			{
 				byte shipChoice = Byte.parseByte(parts[1]);
 				String clientHostname = parts[2];
-				
-				String shipTypeName = ShipType.getFromType(shipChoice).typeName;
-				Player plr = playerMap.get(clientHostname);
-				Ship ship = this.entityManager.create(shipTypeName);
-				ship.setPilot(plr);
-				ship.spawn();
-				plr.setShip(ship);
+				if (!clientHostname.equals(client.getIP()))
+				{
+					String shipTypeName = ShipType.getFromType(shipChoice).typeName;
+					Player plr = playerMap.get(clientHostname);
+					Ship ship = this.entityManager.create(shipTypeName);
+					ship.setPilot(plr);
+					ship.spawn();
+					plr.setShip(ship);
+				}
 			}
 			else if (parts[0].equals("commRec"))
 			{
@@ -139,10 +145,19 @@ public class Moonweasel implements ActionListener
 				float mouseX = Float.parseFloat(parts[2]);
 				float mouseY = Float.parseFloat(parts[3]);
 				String clientHostname = parts[4];
-				UserCommand ucommand = new UserCommand();
-				ucommand.setKeysAsBitmask(command);
-				ucommand.setMouse(mouseX, mouseY);
-				playerMap.get(clientHostname).addCommand(ucommand);
+				if (!clientHostname.equals(client.getIP()))
+				{
+					Player plr = playerMap.get(clientHostname);
+					if (playerCommandMap.get(plr) != null)
+						if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
+							return;
+					UserCommand ucommand = new UserCommand();
+					ucommand.setKeysAsBitmask(command);
+					ucommand.setMouse(mouseX, mouseY);
+					ucommand.setTime(t);
+					plr.addCommand(ucommand);
+					playerCommandMap.put(plr, new Long(command));
+				}
 			}
 			else if (parts[0].equals("discClient"))
 			{

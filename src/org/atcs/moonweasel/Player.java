@@ -1,7 +1,7 @@
 package org.atcs.moonweasel;
 
 import org.atcs.moonweasel.entities.Entity;
-import org.atcs.moonweasel.entities.Ship;
+import org.atcs.moonweasel.entities.ships.Ship;
 
 public class Player extends Entity
 {

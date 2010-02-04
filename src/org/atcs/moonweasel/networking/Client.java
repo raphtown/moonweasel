@@ -52,7 +52,6 @@ public class Client implements IClient
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
 			registry.rebind(CLIENT_OBJECT_NAME, stub);
 			findAndConnectToServer();
-			server.chooseShip(hostname, SNOWFLAKE.type); // only snowflake available
 		}
 		catch (RemoteException e)
 		{
@@ -78,6 +77,16 @@ public class Client implements IClient
     	Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
         server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
         server.connect(myIP);
+    }
+    
+    public void chooseShip()
+    {
+    	try {
+			server.chooseShip(hostname, SNOWFLAKE.type);// only snowflake available
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
     }
     
     /**
