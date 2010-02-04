@@ -51,7 +51,9 @@ public class Moonweasel implements ActionListener
 	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
 		
-		server = new Server("MoonweaselServer");
+		System.out.print("Enter server name: ");
+		String serverName = new java.util.Scanner(System.in).nextLine();
+		server = new Server(serverName);
 		server.addActionListener(this);
 		this.client = new Client();
 		client.chooseShip();

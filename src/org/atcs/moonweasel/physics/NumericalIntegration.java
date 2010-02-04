@@ -57,8 +57,11 @@ public class NumericalIntegration
 	
 		if (curEntity instanceof Ship) {
 			Range<UserCommand> commands = ((Ship)curEntity).getPilot().getCommandsBefore(t);
-			while (commands.hasNext()) {
-				control(((Ship)curEntity).getData(), commands.next(), state, output);				
+			synchronized(commands)
+			{
+				while (commands.hasNext()) {
+					control(((Ship)curEntity).getData(), commands.next(), state, output);				
+				}
 			}
 		}
 	}

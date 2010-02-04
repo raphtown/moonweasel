@@ -42,21 +42,30 @@ public class Player extends Entity {
 	}
 	
 	public void addCommand(UserCommand command) {
-		this.commands.add(command);
+		synchronized(commands)
+		{
+			this.commands.add(command);
+		}
 	}
 	
 	public void clearCommandsBefore(long t) {
-		while (!commands.isEmpty() &&
-				commands.peek().getTime() < t) {
-			commands.remove();
-		}
+		synchronized(commands)
+		{
+			while (!commands.isEmpty() &&
+					commands.peek().getTime() < t) {
+				commands.remove();
+			}
+		}	
 	}
 	
 	public void destroy() {
 	}
 	
 	public Range<UserCommand> getCommandsBefore(long t) {
-		return new TimeRange<UserCommand>(0, t, commands.iterator());
+		synchronized(commands)
+		{
+			return new TimeRange<UserCommand>(0, t, commands.iterator());
+		}
 	}
 	
 	public void spawn() {
