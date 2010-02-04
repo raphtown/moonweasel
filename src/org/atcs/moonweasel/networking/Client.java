@@ -119,20 +119,28 @@ public class Client implements IClient
 		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
     
-    public Object sendPacket(String command)
+    public Object sendPacket(String command, String[][] parameters)
     {
-    	String[] parameters = Protocol.parameters(command);
-    	Object[] values = new Object[parameters.length];
-    	for(int i = 0; i < parameters.length; i = i + 2)
+    	String[][] expectedParameters = Protocol.parameters(command);
+    	Object[] values = new Object[expectedParameters.length];
+    	for(int i = 0; i < expectedParameters.length; i = i + 2)
     	{
     		try
 			{
-				values[i] = this.getClass().getField(parameters[i]);
+				values[i] = this.getClass().getField(expectedParameters[i][0]).get(this);
 			} catch (SecurityException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchFieldException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -178,16 +178,9 @@ public class Server extends ActionSource implements IServer
 		try
 		{
 			String method = Protocol.methodName(command);
-			int numParams = Protocol.parameters(method).length / 2;
-			Class[] parameterClasses = new Class[numParams];
-			String[] parameterNames = new String[numParams];
+			int numParams = Protocol.parameters(method).length;
 			
-			String[] expectedParameters = Protocol.parameters(method);
-			for(int i = 0; i < numParams; i++)
-			{
-				parameterClasses[i] = expectedParameters[1].getClass();
-				parameterNames[i] = expectedParameters[0];
-			}
+			String[][] expectedParameters = Protocol.parameters(method);
 			
 			System.out.println("----------------");
 			System.out.println("Received packet!");
@@ -197,7 +190,7 @@ public class Server extends ActionSource implements IServer
 			System.out.println("	Number: " + numParams);
 			for(int i = 0; i < numParams; i++)
 			{
-				System.out.println("	Parameter class: " + parameterClasses[i].getSimpleName() + "  Parameter name: " + parameterNames[i] + "  Parameter value: " + parameters[i]);
+				System.out.println("	Parameter class: " + expectedParameters[i][1].getClass().getSimpleName() + "  Parameter name: " + expectedParameters[i][0] + "  Parameter value: " + parameters[i]);
 			}
 			System.out.println("----------------");
 			
