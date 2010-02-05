@@ -44,4 +44,5 @@ public interface IServer extends Remote
 	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
 	public void chooseShip(final String clientHostname, final byte shipType) throws RemoteException;
+	public Object sendPacket(short command, Object... parameters) throws RemoteException;
 }

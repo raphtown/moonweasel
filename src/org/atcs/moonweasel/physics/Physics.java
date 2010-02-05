@@ -18,7 +18,6 @@ public class Physics {
 	{
 		
 	}
-
 	
 	public void update(long t, int dt) //updates all models
 	{

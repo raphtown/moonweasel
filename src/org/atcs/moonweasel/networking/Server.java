@@ -2,6 +2,7 @@ package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
 
+import java.lang.reflect.Method;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -11,6 +12,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
@@ -36,6 +38,14 @@ public class Server extends ActionSource implements IServer
 	 * The clients that have called the connect() method remotely.
 	 */
 	private final List<String> connectedClients = new ArrayList<String>();
+	
+	public static void main(String args[])
+	{
+		Scanner console = new Scanner(System.in);
+		System.out.print("Input Server Name...");
+		String name = console.nextLine();
+		new Server(name);
+	}
 
 	/**
 	 * Creates a new Server instance with the given name. Starts an announcer announce its presence and attempts to register itself in the RMI registry.
@@ -64,6 +74,7 @@ public class Server extends ActionSource implements IServer
 	{
 		Remote stub = UnicastRemoteObject.exportObject(object, 0);
 		registry.rebind(name, stub);
+		
 		if (RMI_DEBUG)
 			System.out.println(name + " bound");
 	}
@@ -140,8 +151,8 @@ public class Server extends ActionSource implements IServer
 	{
 		for (String clientName : connectedClients)
 		{
-			try
-			{
+	        try
+	        {
 				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
 				((IClient)registry.lookup(CLIENT_OBJECT_NAME)).forceUpdate();
 			}
@@ -158,6 +169,46 @@ public class Server extends ActionSource implements IServer
 				disconnectClient(clientName);
 			}
 		}
+	}
+
+	@Override
+	public Object sendPacket(short command, Object... parameters) throws RemoteException
+	{
+
+		try
+		{
+			String method = Protocol.getMethodName(command);
+			int numParams = Protocol.getParameters(method).length;
+			
+			String[][] expectedParameters = Protocol.getParameters(method);
+			
+			System.out.println("----------------");
+			System.out.println("Received packet!");
+			System.out.println("Short: " + command);
+			System.out.println("Command: " + method);
+			System.out.println("Parameters:");
+			System.out.println("	Number: " + numParams);
+			for(int i = 0; i < numParams; i++)
+			{
+				System.out.println("	Parameter class: " + expectedParameters[i][1].getClass().getSimpleName() + "  Parameter name: " + expectedParameters[i][0] + "  Parameter value: " + parameters[i]);
+			}
+			System.out.println("----------------");
+			
+//			Class<?> lol = command.getClass();
+//			Method[] methList = lol.getMethods();
+//			methList[0].getParameterTypes(); 
+//			Class<?> partypes[] = new Class[0];
+//			Method m = lol.getMethod("toString", partypes);
+//			Object arglist[] = new Object[0];
+//			m.invoke(command, arglist);
+		} 
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	/**

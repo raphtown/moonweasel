@@ -8,7 +8,6 @@ import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Vector;
 
 public class Ship extends ModelEntity implements Vulnerable {
-	private static final long serialVersionUID = 5440936489329535269L;
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	
 	private ShipData data;
