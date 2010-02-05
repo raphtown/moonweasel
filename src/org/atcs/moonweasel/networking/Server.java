@@ -177,10 +177,10 @@ public class Server extends ActionSource implements IServer
 
 		try
 		{
-			String method = Protocol.methodName(command);
-			int numParams = Protocol.parameters(method).length;
+			String method = Protocol.getMethodName(command);
+			int numParams = Protocol.getParameters(method).length;
 			
-			String[][] expectedParameters = Protocol.parameters(method);
+			String[][] expectedParameters = Protocol.getParameters(method);
 			
 			System.out.println("----------------");
 			System.out.println("Received packet!");

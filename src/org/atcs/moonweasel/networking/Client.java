@@ -119,15 +119,27 @@ public class Client implements IClient
 		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
     
-    public Object sendPacket(String command, String[][] parameters)
+    public Object sendPacket(String command)
     {
-    	String[][] expectedParameters = Protocol.parameters(command);
-    	Object[] values = new Object[expectedParameters.length];
-    	for(int i = 0; i < expectedParameters.length; i = i + 2)
+    	return this.sendPacket(command, new Object[Protocol.getNumParams(command)]);
+    }
+    
+    public Object sendPacket(String command, Object[] parameters)
+    {
+    	String[][] expectedParameters = Protocol.getParameters(command);
+    	Object[] values = new Object[Protocol.getNumParams(command)];
+    	for(int i = 0; i < expectedParameters.length; i++)
     	{
     		try
 			{
-				values[i] = this.getClass().getField(expectedParameters[i][0]).get(this);
+    			if(parameters[i] == null)
+    			{
+    				values[i] = this.getClass().getField(expectedParameters[i][Protocol.PARAMETER_NAME_POSITION]).get(this);
+    			}
+    			else
+    			{
+    				values[i] = parameters[i];
+    			}
 			} catch (SecurityException e)
 			{
 				// TODO Auto-generated catch block
@@ -148,7 +160,7 @@ public class Client implements IClient
     	}
     	try
 		{
-			return server.sendPacket(Protocol.shortValue(command), values);
+			return server.sendPacket(Protocol.getShortValue(command), values);
 		} catch (RemoteException e)
 		{
 			// TODO Auto-generated catch block
