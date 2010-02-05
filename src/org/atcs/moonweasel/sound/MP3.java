@@ -2,7 +2,6 @@ package org.atcs.moonweasel.sound;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.util.Scanner;
 
 import javazoom.jl.player.Player;
 

@@ -2,10 +2,6 @@ package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
 import static org.atcs.moonweasel.entities.ships.ShipType.*;
-import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
-import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
-import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
-import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
 
 import java.io.IOException;
 import java.net.InetAddress;

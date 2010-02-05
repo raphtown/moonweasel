@@ -1,7 +1,5 @@
 package org.atcs.moonweasel.gui;
 
-
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -263,13 +261,13 @@ public class WeaselView extends View {
         	gl.glPopMatrix();
         }
         
-   		gl.glMatrixMode(gl.GL_PROJECTION);
+   		gl.glMatrixMode(GL2.GL_PROJECTION);
    		gl.glPushMatrix();
-   		gl.glPushAttrib(gl.GL_LIGHTING_BIT);
-   			gl.glDisable(gl.GL_LIGHTING);
+   		gl.glPushAttrib(GL2.GL_LIGHTING_BIT);
+   			gl.glDisable(GL2.GL_LIGHTING);
    			gl.glLoadIdentity();
    			glu.gluOrtho2D(0, width, 0, height);
-   			gl.glMatrixMode(gl.GL_MODELVIEW);
+   			gl.glMatrixMode(GL2.GL_MODELVIEW);
    			gl.glLoadIdentity();
    			
    			for(UIElement e : uiElements)
@@ -278,7 +276,7 @@ public class WeaselView extends View {
    				e.draw(gl);
    			}
    		gl.glPopAttrib();
-   		gl.glMatrixMode(gl.GL_PROJECTION);
+   		gl.glMatrixMode(GL2.GL_PROJECTION);
    		gl.glPopMatrix();
    		
         

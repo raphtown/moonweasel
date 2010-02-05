@@ -2,7 +2,6 @@ package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
 
-import java.lang.reflect.Method;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;

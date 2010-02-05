@@ -13,8 +13,6 @@ public class HealthBar extends UIElement
 	private int ymin = 0;
 	private int ymax = 20;
 	
-	private int muchacho; // test
-	
 	private Player p;
 	
 	private float healthPercent;
@@ -23,7 +21,7 @@ public class HealthBar extends UIElement
 	{
 		super(v);
 		p = pl;
-		healthPercent = (float) 0.5; // testing purpose
+		healthPercent = (float)(p.getShip().getHealth()) / p.getShip().MAX_HEALTH;
 	}
 	
 	public void setHealthPercent(float p)
@@ -37,8 +35,8 @@ public class HealthBar extends UIElement
 		// healthPercent = p.health();
 		
 		gl.glPushMatrix();
-			gl.glPushAttrib(gl.GL_CURRENT_BIT);
-			gl.glBegin(gl.GL_TRIANGLE_FAN);
+			gl.glPushAttrib(GL2.GL_CURRENT_BIT);
+			gl.glBegin(GL2.GL_TRIANGLE_FAN);
 			gl.glColor3f(1, 0, 0);
 				gl.glVertex3f(xmin, ymin, 0);
 				gl.glVertex3f(xmax, ymin, 0);
@@ -47,7 +45,7 @@ public class HealthBar extends UIElement
 				gl.glVertex3f(xmin, ymax, 0);
 			gl.glEnd();
 			
-			gl.glBegin(gl.GL_TRIANGLE_FAN);
+			gl.glBegin(GL2.GL_TRIANGLE_FAN);
 			gl.glColor3f(0, 1, 0);
 				gl.glVertex3f(xmin, ymin, 1);
 				gl.glVertex3f((xmax*healthPercent), ymin, 1);

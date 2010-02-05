@@ -8,10 +8,13 @@ import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Vector;
 
 public class Ship extends ModelEntity implements Vulnerable {
+	private static final long serialVersionUID = 6162008933132397822L;
+
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	
 	private ShipData data;
 	private int health;
+	public final int MAX_HEALTH;
 	
 	private Player pilot;
 	private Player[] gunners;
@@ -22,6 +25,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 		this.data = data;
 		this.health = this.data.health;
+		this.MAX_HEALTH = this.health;
 		
 		this.gunners = new Player[data.gunners.length];
 		this.gunnerPositions = data.gunners;

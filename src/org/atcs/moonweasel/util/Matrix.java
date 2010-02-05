@@ -1,7 +1,5 @@
 package org.atcs.moonweasel.util;
 
-import javax.sql.rowset.CachedRowSet;
-
 //a 4x4 matrix class that should do pretty much everything useful
 //convention is row-col ordering
 
