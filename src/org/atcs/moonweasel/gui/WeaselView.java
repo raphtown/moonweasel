@@ -1,7 +1,10 @@
 package org.atcs.moonweasel.gui;
 
+
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -16,6 +19,8 @@ import org.atcs.moonweasel.physics.BoundingSphere;
 import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
+
+
 
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureCoords;
@@ -35,6 +40,9 @@ public class WeaselView extends View {
 	
     /* OpenGL objects */
 	private static GLU glu;
+	
+	/* UI components */
+	private ArrayList<UIElement> uiElements;
 	
 	/* Camera parameters */
 	private static final double CAMERA_FOV_ANGLE = 60.0;		/* Camera (vertical) field of view angle */
@@ -110,7 +118,17 @@ public class WeaselView extends View {
         gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_DEPTH_TEST);
         gl.glShadeModel(GL2.GL_SMOOTH);
+        
+        initComponents();
+        
 	}
+	
+	public void initComponents()
+	{
+		uiElements = new ArrayList<UIElement>();
+		uiElements.add(new HealthBar(new Vector(10, 10, 0), me));
+	}
+	
 	
 	private void setUpLighting(GL2 gl)
 	{
@@ -220,6 +238,7 @@ public class WeaselView extends View {
         	gl.glEnable(GL2.GL_LIGHTING);
         gl.glPopAttrib();
         	
+        
         EntityManager em = EntityManager.getEntityManager();
         State interpolated;
         AxisAngle rotation;
@@ -243,6 +262,25 @@ public class WeaselView extends View {
 	        	entity.draw(gl);
         	gl.glPopMatrix();
         }
+        
+   		gl.glMatrixMode(gl.GL_PROJECTION);
+   		gl.glPushMatrix();
+   		gl.glPushAttrib(gl.GL_LIGHTING_BIT);
+   			gl.glDisable(gl.GL_LIGHTING);
+   			gl.glLoadIdentity();
+   			glu.gluOrtho2D(0, width, 0, height);
+   			gl.glMatrixMode(gl.GL_MODELVIEW);
+   			gl.glLoadIdentity();
+   			
+   			for(UIElement e : uiElements)
+   			{
+   				gl.glTranslated(e.pos.x,e.pos.y,e.pos.z);
+   				e.draw(gl);
+   			}
+   		gl.glPopAttrib();
+   		gl.glMatrixMode(gl.GL_PROJECTION);
+   		gl.glPopMatrix();
+   		
         
         gl.glFlush();
 	}
