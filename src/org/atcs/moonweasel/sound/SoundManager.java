@@ -3,13 +3,12 @@ package org.atcs.moonweasel.sound;
 public class SoundManager 
 {
 	private enum Sounds {
-		MUSIC("data/MUSIC/MUSIC.mp3"),
-		LASER("data/MUSIC/LASER.mp3"),
-		BOOST("data/MUSIC/BOOST.mp3"),
-		EXPLOSION("data/MUSIC/EXPLOSION.mp3"),
-		TAUNT("data/MUSIC/TAUNT.mp3");
+		MUSIC("data/music/music.mp3"),
+		LASER("data/music/laser.mp3"),
+		BOOST("data/music/boost.mp3"),
+		EXPLOSION("data/music/explosion.mp3"),
+		TAUNT("data/music/taunt.mp3");
 		
-		private final String filename;
 		private final MP3 effect;
 		
 		private Sounds(String filename)
@@ -31,7 +30,7 @@ public class SoundManager
 	public void playExplosion(){
 		Sounds.EXPLOSION.play();
 	}
-	public void playTAUNT(){
+	public void playTaunt(){
 		Sounds.TAUNT.play();
 	}
 }
