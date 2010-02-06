@@ -38,7 +38,7 @@ public class WeaselView extends View {
 	
 	/* Camera parameters */
 	private static final double CAMERA_FOV_ANGLE = 60.0;		/* Camera (vertical) field of view angle */
-	private static final float CAMERA_PILOT_OFFSET_SCALAR = 5.f;
+	private static final float CAMERA_PILOT_OFFSET_SCALAR = 1.5f;
 	private static final double CAMERA_CLIPPING_NEAR = 0.1;
 	private static final double CAMERA_CLIPPING_FAR = 10000;
 	
