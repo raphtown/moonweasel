@@ -13,15 +13,24 @@ public abstract class Entity implements Identifiable {
 	}
 	
 	private final int id;
+	private boolean destroyed;
 	
 	protected Entity() {
 		this.id = getNextID();
+		this.destroyed = false;
 	}
 	
 	public <T extends Entity> T createEntity(String type) {
 		return EntityManager.getEntityManager().create(type);
 	}
-	public abstract void destroy();
+	
+	public boolean isDestroyed() {
+		return destroyed;
+	}
+	
+	public void destroy() {
+		this.destroyed = true;
+	}
 	
 	public final String getEntityType() {
 		return this.getClass().getSimpleName().toLowerCase();
@@ -34,7 +43,7 @@ public abstract class Entity implements Identifiable {
 	protected void scheduleThink(int ms) {
 		EntityManager.getEntityManager().registerThink(this, ms);
 	}
-	
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 	public abstract void spawn();
 	
 	public void think() {

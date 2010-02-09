@@ -3,6 +3,7 @@ package org.atcs.moonweasel.entities.ships;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.Vulnerable;
+import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Vector;
@@ -30,16 +31,31 @@ public class Ship extends ModelEntity implements Vulnerable {
 	@Override
 	public void damage(int damage) {
 		health -= damage;
+		
+		if (health <= 0) {
+			destroy();
+		}
 	}
 	
 	@Override
 	public void destroy() {
+		super.destroy();
+		
+		pilot.died();
+		for (Player gunner : gunners) {
+			gunner.died();
+		}
+		
 		EntityManager manager = EntityManager.getEntityManager();
+
+		Explosion explosion = manager.create("explosion");
+		explosion.setPosition(this.getPosition());
+
 		float distance = getState().mass / 1000;
 		float damage;
 		for (Ship ship : manager.getAllShipsInSphere(
 				getState().position, distance)) {
-			if (ship == this) {
+			if (ship == this || ship.isDestroyed()) {
 				continue;
 			}
 			
