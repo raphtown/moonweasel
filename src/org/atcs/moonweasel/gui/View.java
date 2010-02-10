@@ -1,7 +1,6 @@
 package org.atcs.moonweasel.gui;
 
 import javax.media.nativewindow.NativeWindowFactory;
-
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -18,7 +17,7 @@ import com.sun.javafx.newt.WindowEvent;
 import com.sun.javafx.newt.WindowListener;
 import com.sun.javafx.newt.opengl.GLWindow;
 
-public abstract class View implements GLEventListener, WindowListener, KeyListener {
+public abstract class View implements GLEventListener, KeyListener, WindowListener {
 	private GLWindow window;
 	
 	private volatile boolean quit;
@@ -41,6 +40,7 @@ public abstract class View implements GLEventListener, WindowListener, KeyListen
 		window.setFullscreen(fullscreen);
 		
 		window.addGLEventListener(this);
+		window.addKeyListener(this);
 		window.addWindowListener(this);
 		
 		window.setVisible(true);
@@ -65,6 +65,18 @@ public abstract class View implements GLEventListener, WindowListener, KeyListen
 		display(drawable.getGL().getGL2(), alpha);
 	}
 
+	public void keyPressed(KeyEvent e) {
+	}
+
+	public void keyReleased(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			this.quit = true;
+		}
+	}
+
+	public void keyTyped(KeyEvent e) {
+	}
+	
 	public boolean shouldQuit() {
 		return quit;
 	}
@@ -89,16 +101,4 @@ public abstract class View implements GLEventListener, WindowListener, KeyListen
 
 	@Override
 	public void windowResized(WindowEvent arg0) { }
-	
-	@Override
-	public void keyPressed(KeyEvent arg0) {
-		if (arg0.isMetaDown() && arg0.getKeyCode() == KeyEvent.VK_Q)
-			quit = true;
-	}
-
-	@Override
-	public void keyReleased(KeyEvent arg0) { }
-
-	@Override
-	public void keyTyped(KeyEvent arg0) { }
 }

@@ -25,9 +25,16 @@ public class EntityManager extends Manager<Entity> {
 	private EntityManager() {
 		this.thoughts = new TreeMap<Long, Entity>();
 	}
+	
+	@Override
+	public <E extends Entity> E create(String type) {
+		E ent = super.create(type);
+		ent.spawn();
+		return ent;
+	}
 
 	protected Class<? extends Entity> getClass(String type) {
-		return Moonweasel.ENTITY_MAP.get(type);
+		return Moonweasel.getEntityClassByName(type);
 	}
 	
 	public SphericalRange<ModelEntity> getAllInSphere(Vector center, float radius) {
