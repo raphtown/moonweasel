@@ -50,7 +50,7 @@ public abstract class Protocol
 			ismap.put(i, commands[i]);
 			simap.put(commands[i][COMMAND_POSITION], i);
 			
-			int numParams = getNumParams(commands[i][COMMAND_POSITION]);
+			int numParams = (commands[i].length - PARAMETER_POSITION) / 2;
 			String[][] parameters = new String[numParams][2];
 			for(int j = 0; j < numParams; j++)
 			{
