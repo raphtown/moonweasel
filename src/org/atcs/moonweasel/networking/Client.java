@@ -56,7 +56,7 @@ public class Client implements IClient
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
 			registry.rebind(CLIENT_OBJECT_NAME, stub);
 			findAndConnectToServer();
-			sendPacket("sendInput");
+			Protocol.sendPacket("sendInput", server, this);
 		}
 		catch (RemoteException e)
 		{
@@ -81,7 +81,7 @@ public class Client implements IClient
     {
     	Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
         server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
-        sendPacket("connect");
+        Protocol.sendPacket("connect", server, this);
     }
     
     public void chooseShip()
@@ -129,55 +129,7 @@ public class Client implements IClient
 		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
     
-    public Object sendPacket(String command)
-    {
-    	return this.sendPacket(command, new Object[Protocol.getNumParams(command)]);
-    }
-    
-    public Object sendPacket(String command, Object[] parameters)
-    {
-    	String[][] expectedParameters = Protocol.getParameters(command);
-    	Object[] values = new Object[Protocol.getNumParams(command)];
-    	for(int i = 0; i < expectedParameters.length; i++)
-    	{
-    		try
-			{
-    			if(parameters[i] == null)
-    			{
-    				values[i] = this.getClass().getField(expectedParameters[i][Protocol.PARAMETER_NAME_POSITION]).get(this);
-    			}
-    			else
-    			{
-    				values[i] = parameters[i];
-    			}
-			} catch (SecurityException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchFieldException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}
-    	try
-		{
-			return server.sendPacket(Protocol.getShortValue(command), values);
-		} catch (RemoteException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-    }
+   
     
     public void forceUpdate() throws RemoteException
     {

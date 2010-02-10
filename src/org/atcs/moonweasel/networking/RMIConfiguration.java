@@ -44,8 +44,7 @@ public final class RMIConfiguration
 		System.setSecurityManager(new SecurityManager());
 		
 		try
-		{
-//			
+		{		
 			registry = LocateRegistry.createRegistry(RMI_PORT);
 		} 
 		catch (RemoteException e)
