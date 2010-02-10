@@ -15,7 +15,7 @@ public abstract class ParticleEntity extends Entity implements Positional {
 		return this.position;
 	}
 	
-	public void teleport(Vector position) {
+	public void setPosition(Vector position) {
 		this.position = position;
 	}
 }

@@ -83,7 +83,7 @@ public class InputController implements KeyListener, MouseListener {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			command.set(Commands.ATTACK_1, true);			
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			command.set(Commands.ROLLING, true);
+			command.set(Commands.ROLLING, false);
 		}
 	}
 
@@ -92,7 +92,7 @@ public class InputController implements KeyListener, MouseListener {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			command.set(Commands.ATTACK_1, false);			
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			command.set(Commands.ROLLING, false);
+			command.set(Commands.ROLLING, true);
 		}
 	}
 	

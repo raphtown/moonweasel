@@ -29,6 +29,7 @@ public class UserCommand implements Timed {
 	public UserCommand() {
 		this.commands = new boolean[Commands.NUM_COMMANDS.ordinal()];
 		set(Commands.AUTOMATIC_THRUSTER_CONTROL, true);
+		set(Commands.ROLLING, true);
 	}
 	
 	public void copyKeyState(UserCommand o) {
