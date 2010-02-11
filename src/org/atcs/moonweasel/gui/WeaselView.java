@@ -2,6 +2,10 @@ package org.atcs.moonweasel.gui;
 
 
 
+import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +17,7 @@ import javax.media.opengl.glu.GLU;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.physics.BoundingBox;
 import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.physics.BoundingSphere;
@@ -47,10 +52,13 @@ public class WeaselView extends View {
 	/* Camera parameters */
 	private static final double CAMERA_FOV_ANGLE = 60.0;		/* Camera (vertical) field of view angle */
 	private static final float CAMERA_PILOT_OFFSET_SCALAR = 5.f;
+	private static final float SNOWFLAKE_CAMERA_PILOT_Z_OFFSET_SCALAR = 11.f;
+	private static final float SNOWFLAKE_CAMERA_PILOT_Y_OFFSET_SCALAR = 2.5f;
 	private static final double CAMERA_CLIPPING_NEAR = 0.1;
 	private static final double CAMERA_CLIPPING_FAR = 10000;
 	
 	private static void drawCubeFace(TextureCoords tc, float radius, GL2 gl) {
+		
     	gl.glBegin(GL2.GL_QUADS);
 			gl.glTexCoord2f(tc.left() * 5, tc.bottom() * 5);
 	    	gl.glVertex3f(radius, -radius, 0.f);
@@ -121,12 +129,17 @@ public class WeaselView extends View {
         
         initComponents();
         
+//        Image cursorImage = Toolkit.getDefaultToolkit().getImage("xparent.gif");
+//        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, new Point( 0, 0), "" );
+//        setCursor( blankCursor );
+        
+        
 	}
 	
 	public void initComponents()
 	{
 		uiElements = new ArrayList<UIElement>();
-		uiElements.add(new HealthBar(new Vector(10, 10, 0)));
+		uiElements.add(new HealthBar(new Vector(10, 10, 0), me));
 	}
 	
 	
@@ -165,7 +178,7 @@ public class WeaselView extends View {
         		CAMERA_CLIPPING_NEAR,
         		CAMERA_CLIPPING_FAR);
         
-        ModelEntity ent = me.getShip();
+        Ship ent = me.getShip();
         BoundingShape shape = ent.getBoundingShape();
         float radius;
         if (shape instanceof BoundingBox) {
@@ -179,14 +192,20 @@ public class WeaselView extends View {
         }
         
         State interp = State.interpolate(ent.getLastRenderState(), ent.getState(), alpha);
+//        Vector relative = interp.orientation.rotate(
+//        		new Vector(0, radius*CAMERA_PILOT_OFFSET_SCALAR, radius * CAMERA_PILOT_OFFSET_SCALAR));
         Vector relative = interp.orientation.rotate(
-        		new Vector(0, 0, radius * CAMERA_PILOT_OFFSET_SCALAR));
-        Vector camera = interp.position.add(relative);
+        		new Vector(ent.cameraPos.x, ent.cameraPos.y, ent.cameraPos.z));
+        Vector look = interp.orientation.rotate(
+        		new Vector(ent.cameraLook.x, ent.cameraLook.y, ent.cameraLook.z));
+        
+        Vector cameraPos = interp.position.add(relative);
+        Vector cameraLook = interp.position.add(look);
         Vector up = interp.orientation.rotate(new Vector(0, 1, 0));
 
         glu.gluLookAt(
-        		camera.x, camera.y, camera.z,
-        		interp.position.x, interp.position.y, interp.position.z,
+        		cameraPos.x, cameraPos.y, cameraPos.z,
+        		cameraLook.x, cameraLook.y, cameraLook.z,
         		up.x, up.y, up.z);
     }
 
@@ -215,23 +234,23 @@ public class WeaselView extends View {
         	tex.bind();
         	
         	gl.glPushMatrix();
-	        	gl.glTranslatef(0, 0, 200.f);
-	        	drawCubeFace(tc, 200.f, gl);
+	        	gl.glTranslatef(0, 0, 2000.f);
+	        	drawCubeFace(tc, 2000.f, gl);
         	gl.glPopMatrix();
         	gl.glPushMatrix();
-	        	gl.glTranslatef(200.f, 0, 0);
+	        	gl.glTranslatef(2000.f, 0, 0);
 	        	gl.glRotatef(90, 0, 1, 0);
-	        	drawCubeFace(tc, 200.f, gl);
+	        	drawCubeFace(tc, 2000.f, gl);
 	        gl.glPopMatrix();
 	    	gl.glPushMatrix();
-		    	gl.glTranslatef(-200.f, 0, 0);
+		    	gl.glTranslatef(-2000.f, 0, 0);
 		    	gl.glRotatef(90, 0, 1, 0);
-		    	drawCubeFace(tc, 200.f, gl);
+		    	drawCubeFace(tc, 2000.f, gl);
 		    gl.glPopMatrix();
 			gl.glPushMatrix();
-				gl.glTranslatef(0, 0, -200.f);
+				gl.glTranslatef(0, 0, -2000.f);
 				gl.glRotatef(0, 0, 1, 0);
-				drawCubeFace(tc, 200.f, gl);
+				drawCubeFace(tc, 2000.f, gl);
 			gl.glPopMatrix();
         	
         	gl.glDisable(GL2.GL_TEXTURE_2D);
@@ -265,23 +284,22 @@ public class WeaselView extends View {
         
    		gl.glMatrixMode(gl.GL_PROJECTION);
    		gl.glPushMatrix();
-   		gl.glPushAttrib(gl.GL_LIGHTING_BIT);
-   			gl.glDisable(gl.GL_LIGHTING);
-   			gl.glLoadIdentity();
-   			glu.gluOrtho2D(0, width, 0, height);
-   			gl.glMatrixMode(gl.GL_MODELVIEW);
-   			gl.glLoadIdentity();
-   			
-   			for(UIElement e : uiElements)
-   			{
-   				gl.glTranslated(e.pos.x,e.pos.y,e.pos.z);
-   				e.draw(gl);
-   			}
-   		gl.glPopAttrib();
+	   		gl.glPushAttrib(gl.GL_LIGHTING_BIT);
+	   			gl.glDisable(gl.GL_LIGHTING);
+	   			gl.glLoadIdentity();
+	   			glu.gluOrtho2D(0, width, 0, height);
+	   			gl.glMatrixMode(gl.GL_MODELVIEW);
+	   			gl.glLoadIdentity();
+	   			
+	   			for(UIElement e : uiElements)
+	   			{
+	   				gl.glTranslated(e.pos.x,e.pos.y,e.pos.z);
+	   				e.draw(gl);
+	   			}
+	   		gl.glPopAttrib();
    		gl.glMatrixMode(gl.GL_PROJECTION);
    		gl.glPopMatrix();
    		
-        
         gl.glFlush();
 	}
 }
