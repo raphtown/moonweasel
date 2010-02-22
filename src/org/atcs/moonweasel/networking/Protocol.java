@@ -33,16 +33,21 @@ public abstract class Protocol
 		{"requestMap",
 			"boolean",
 			"ip", "String"},
-		{"requestMap",
-			"boolean",
-			"ip", "String"},
 		{"chooseShip",
 			"void",
 			"ip", "String",
 			"type", "ShipType"},
+		{"doCommand",
+			"void",
+			"command","short",
+			"mouse","Vector",
+			"ip", "String"},
 		{"dostuff",
 			"void",
-			"stuff", "String"}
+			"stuff", "String"},
+		{"requestUpdate",
+			"List<Entity>",
+			"ip", "String"}
 	};
 	private static HashMap<Integer, String[]> ismap;
 	private static HashMap<String, Integer> simap;
@@ -103,6 +108,12 @@ public abstract class Protocol
 	public static Object sendPacket(String command, IServer server, Object self)
 	{
 		return sendPacket(command, new Object[getNumParams(command)], server, self);
+	}
+	
+	public static Object[] getEmptyParamList(String command)
+	{
+		Object[] params = new Object[Protocol.getNumParams(command)];
+		return params;
 	}
 	
 	public static Object sendPacket(String command, Object[] parameters, IServer server, Object self)

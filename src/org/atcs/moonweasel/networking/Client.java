@@ -18,6 +18,7 @@ import java.util.Scanner;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.UserCommand;
+import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 
 /**
@@ -37,20 +38,20 @@ public class Client implements IClient
 	private IServer server = null;
 	private final String hostname;
 	public String ip;
-    public static void main(String args[])
-    {
-        new Client();
-    }
-    
-    public Client()
-    {
-    	try {
+	public static void main(String args[])
+	{
+		new Client();
+	}
+
+	public Client()
+	{
+		try {
 			ip = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
 		hostname = ip;
-		
+
 		try 
 		{
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
@@ -62,45 +63,43 @@ public class Client implements IClient
 		{
 			e.printStackTrace();
 		}
-    }
-    
-    public void findAndConnectToServer()
-    {
-    	try
-        {
-        	String serverHostname = getConnectionHostname();
-        	connectToServer(serverHostname);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-    
-    public void connectToServer(String serverHostName) throws RemoteException, NotBoundException
-    {
-    	Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
-        server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
-        Protocol.sendPacket("connect", server, this);
-    }
-    
-    public void chooseShip()
-    {
-    	try {
-			server.chooseShip(hostname, SNOWFLAKE.type);// only snowflake available
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+	}
+
+	public void findAndConnectToServer()
+	{
+		try
+		{
+			String serverHostname = getConnectionHostname();
+			connectToServer(serverHostname);
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-		} 
-    }
-    
-    /**
-     * Serves to get a hostname out of the ServerAnnouncer, splitting out the 
-     * server name so that nothing but an IP or DNS is left.
-     * @return The appropriate hostname that should be connected to.
-     * @throws IOException If we fail to properly get the server list.
-     */
-    private static String getConnectionHostname() throws IOException
+		}
+	}
+
+	public void connectToServer(String serverHostName) throws RemoteException, NotBoundException
+	{
+		Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
+		server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
+		Protocol.sendPacket("connect", server, this);
+	}
+
+	public void chooseShip()
+	{
+		String command = "chooseShip";
+		Object[] params = Protocol.getEmptyParamList(command);
+		params[1] = ShipType.SNOWFLAKE;
+		Protocol.sendPacket(command, params, server, this); 
+	}
+
+	/**
+	 * Serves to get a hostname out of the ServerAnnouncer, splitting out the 
+	 * server name so that nothing but an IP or DNS is left.
+	 * @return The appropriate hostname that should be connected to.
+	 * @throws IOException If we fail to properly get the server list.
+	 */
+	private static String getConnectionHostname() throws IOException
 	{
 		List<String> hostnames = ServerAnnouncer.getServerList();
 
@@ -128,38 +127,37 @@ public class Client implements IClient
 		}
 		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
-    
-   
-    
-    public void forceUpdate() throws RemoteException
-    {
-    	// problems can be foreseen here...
-    	List<Entity> entityList = server.requestUpdate(hostname);
-    	EntityManager mgr = EntityManager.getEntityManager();
-    	for (Entity entity : entityList)
-    	{
-    		mgr.delete(entity);
-    		mgr.add(entity);
-    	}
-    }
-    
-    public IServer getServer()
-    {
-    	return server;
-    }
-    
-    public String getIP()
-    {
-    	return ip;
-    }
-    
-    public void sendCommandToServer(UserCommand command)
-    {
-    	try {
-			server.doCommand(command.getAsBitmask(), command.getMouse(), ip);
-		} catch (RemoteException e) {
-			System.err.println("Server went away!");
-			//e.printStackTrace();
+
+
+
+	@SuppressWarnings("unchecked")
+	public void forceUpdate() throws RemoteException
+	{
+		// problems can be foreseen here...
+		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", server, this);
+		EntityManager mgr = EntityManager.getEntityManager();
+		for (Entity entity : entityList)
+		{
+			mgr.delete(entity);
+			mgr.add(entity);
 		}
-    }
+	}
+
+	public IServer getServer()
+	{
+		return server;
+	}
+
+	public String getIP()
+	{
+		return ip;
+	}
+
+	public void sendCommandToServer(UserCommand command)
+	{
+		Object[] params = Protocol.getEmptyParamList("doCommand");
+		params[0] = command.getAsBitmask();
+		params[1] = command.getMouse();
+		Protocol.sendPacket("doCommand", params, server, this);
+	}
 }
