@@ -30,6 +30,9 @@ public abstract class ModelEntity extends Entity implements Positional {
 		this.state = new State(mass, inertiaTensor);
 	}
 	
+	public void collidedWith(ModelEntity other) {
+	}
+	
 	public void draw(GL2 gl) {
 		assert DISPLAY_LISTS.containsKey(this.getClass());
 		

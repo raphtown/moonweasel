@@ -97,9 +97,9 @@ public class NumericalIntegration
 		// Damp that angular motion!!!
 		if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
 			Vector dampTorque = new Vector(
-					0.1f * state.angularVelocity.x,
-					0.1f * state.angularVelocity.y,
-					0.1f * state.angularVelocity.z);
+					0.05f * state.angularVelocity.x,
+					0.05f * state.angularVelocity.y,
+					0.05f * state.angularVelocity.z);
 			output.torque= output.torque.subtract(dampTorque);
 		}
 
@@ -120,7 +120,7 @@ public class NumericalIntegration
 		} else if (input.get(Commands.RIGHT)) {
 			relativeForce.x += f;
 		} else if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
-			relativeForce.x -= 10 * relativeVelocity.x;
+			relativeForce.x -= 20 * relativeVelocity.x;
 		}
 		
 		if (input.get(Commands.UP) && input.get(Commands.DOWN)) {
@@ -129,7 +129,12 @@ public class NumericalIntegration
 		} else if (input.get(Commands.DOWN)) {
 			relativeForce.y -= f;
 		} else if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
-			relativeForce.y -= 10 * relativeVelocity.y;
+			relativeForce.y -= 20 * relativeVelocity.y;
+		}
+		
+		// A little forward thrust.
+		if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+			relativeForce.z -= f / 2;
 		}
 		
 		output.force = output.force.add(state.orientation.rotate(relativeForce.toVector()));
@@ -150,8 +155,8 @@ public class NumericalIntegration
         Derivative d = evaluate(state.clone(), t, dt, c);
         
         state.position = state.position.add(
-        		Vector.add(a.velocity, b.velocity, b.velocity, b.velocity, 
-        				c.velocity, c.velocity, d.velocity).scale(dt / 6));
+        		Vector.add(a.velocity, b.velocity, b.velocity, c.velocity, c.velocity, 
+        				d.velocity).scale(dt / 6));
         state.momentum = state.momentum.add(
         		Vector.add(a.force, b.force, b.force, c.force, c.force, d.force).scale(dt/6));
         state.orientation = state.orientation.add(
