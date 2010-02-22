@@ -4,9 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Ship;
@@ -19,12 +21,32 @@ import org.atcs.moonweasel.physics.Physics;
 
 public class Moonweasel implements ActionListener
 {
-	public static final Map<String, Class<? extends Entity>> ENTITY_MAP;
+	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
+	private static final Map<Integer, Class<? extends Entity>> ENTITY_TYPE_ID_MAP;
 
+	private static void addEntityClass(Class<? extends Entity> clazz) {
+		ENTITY_MAP.put(Entity.getEntityType(clazz), clazz);
+		ENTITY_TYPE_ID_MAP.put(clazz.toString().hashCode(), clazz);
+	}
+	
+	public static int getTypeID(Class<? extends Entity> clazz) {
+		return clazz.toString().hashCode();
+	}
+	
+	public static Class<? extends Entity> getEntityClassByID(int id) {
+		return ENTITY_TYPE_ID_MAP.get(id);
+	}
+	
+	public static Class<? extends Entity> getEntityClassByName(String name) {
+		return ENTITY_MAP.get(name);
+	}
+	
 	static {
-		ENTITY_MAP = new HashMap<String, Class<? extends Entity>>();
-		ENTITY_MAP.put(Entity.getEntityType(Player.class), Player.class);
-		ENTITY_MAP.put(Entity.getEntityType(Snowflake.class), Snowflake.class);
+		ENTITY_MAP = new TreeMap<String, Class<? extends Entity>>();
+		ENTITY_TYPE_ID_MAP = new TreeMap<Integer, Class<? extends Entity>>();
+		addEntityClass(Player.class);
+		addEntityClass(Snowflake.class);
+		addEntityClass(Explosion.class);
 	}
 
 	public static void main(String[] args) {

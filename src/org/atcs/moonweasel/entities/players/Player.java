@@ -58,7 +58,8 @@ public class Player extends Entity {
 		}	
 	}
 	
-	public void destroy() {
+	public void died() {
+		deaths++;
 	}
 	
 	public Range<UserCommand> getCommandsBefore(long t) {
@@ -66,6 +67,14 @@ public class Player extends Entity {
 		{
 			return new TimeRange<UserCommand>(0, t, commands.iterator());
 		}
+	}
+	
+	public void killedPlayer() {
+		kills++;
+	}
+	
+	public void killedPlayerAssist() {
+		assists++;
 	}
 	
 	public void spawn() {
