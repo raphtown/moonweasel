@@ -57,7 +57,6 @@ public class Client implements IClient
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
 			registry.rebind(CLIENT_OBJECT_NAME, stub);
 			findAndConnectToServer();
-			Protocol.sendPacket("sendInput", server, this);
 		}
 		catch (RemoteException e)
 		{

@@ -2,6 +2,7 @@ package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
 
+import java.lang.reflect.Method;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -192,6 +193,15 @@ public class Server extends ActionSource implements IServer
 				System.out.println("	Parameter class: " + expectedParameters[i][1].getClass().getSimpleName() + "  Parameter name: " + expectedParameters[i][0] + "  Parameter value: " + parameters[i]);
 			}
 			System.out.println("----------------");
+			
+			Class<?> server = this.getClass();
+			Class<?>[] parameterTypes = new Class[Protocol.getNumParams(method)];
+			for(int i = 0; i < parameterTypes.length; i++)
+			{
+				parameterTypes[i] = expectedParameters[i][1].getClass();
+			}
+			Method m = server.getMethod(method, parameterTypes);
+			m.invoke(this, parameters);
 			
 //			Class<?> lol = command.getClass();
 //			Method[] methList = lol.getMethods();
