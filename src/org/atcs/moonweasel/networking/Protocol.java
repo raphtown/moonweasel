@@ -26,19 +26,19 @@ public abstract class Protocol
 	private final static String[][] commands = {
 		{"connect",
 			"boolean",
-			"ip", "String"}, 
+			"ip", "java.lang.String"}, 
 		{"chooseShip",
 			"void",
-			"ip", "String",
-			"type", "ShipType"},
+			"ip", "java.lang.String",
+			"type", "org.atcs.moonweasel.entities.ships.ShipType"},
 		{"doCommand",
 			"void",
-			"command","short",
-			"mouse","Vector",
-			"ip", "String"},
+			"command","java.lang.Short",
+			"mouse","org.atcs.moonweasel.util.Vector",
+			"ip", "java.lang.String"},
 		{"requestUpdate",
 			"List<Entity>",
-			"ip", "String"}
+			"ip", "java.lang.String"}
 	};
 	private static HashMap<Integer, String[]> ismap;
 	private static HashMap<String, Integer> simap;
@@ -146,6 +146,14 @@ public abstract class Protocol
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	
+	public static Class<?> autoUnBox(Class<?> c)
+	{
+		if(c.getSimpleName().equals("Short")) return short.class;
+		if(c.getSimpleName().equals("Integer")) return int.class;
+		else return c;
 	}
 
 }

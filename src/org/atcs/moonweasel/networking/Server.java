@@ -16,6 +16,7 @@ import java.util.Scanner;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Vector;
@@ -100,7 +101,7 @@ public class Server extends ActionSource implements IServer
 	 * @param shipType The type of ship that the client has chosen.
 	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
-	public void chooseShip(final String clientHostname, final byte shipType) throws RemoteException
+	public void chooseShip(final String clientHostname, final ShipType shipType) throws RemoteException
 	{
 		if(!connectedClients.contains(clientHostname))
 			throw new RemoteException("Unconnected client trying to choose ship!");
@@ -182,23 +183,24 @@ public class Server extends ActionSource implements IServer
 			
 			String[][] expectedParameters = Protocol.getParameters(method);
 			
-			System.out.println("----------------");
-			System.out.println("Received packet!");
-			System.out.println("Short: " + command);
-			System.out.println("Command: " + method);
-			System.out.println("Parameters:");
-			System.out.println("	Number: " + numParams);
-			for(int i = 0; i < numParams; i++)
-			{
-				System.out.println("	Parameter class: " + expectedParameters[i][1].getClass().getSimpleName() + "  Parameter name: " + expectedParameters[i][0] + "  Parameter value: " + parameters[i]);
-			}
-			System.out.println("----------------");
+//			System.out.println("----------------");
+//			System.out.println("Received packet!");
+//			System.out.println("Short: " + command);
+//			System.out.println("Command: " + method);
+//			System.out.println("Parameters:");
+//			System.out.println("	Number: " + numParams);
+//			for(int i = 0; i < numParams; i++)
+//			{
+//				System.out.println("	Parameter class: " + Class.forName(expectedParameters[i][1]).getSimpleName() + "  Parameter name: " + expectedParameters[i][0] + "  Parameter value: " + parameters[i]);
+//			}
+//			System.out.println("----------------");
 			
 			Class<?> server = this.getClass();
 			Class<?>[] parameterTypes = new Class[Protocol.getNumParams(method)];
 			for(int i = 0; i < parameterTypes.length; i++)
 			{
-				parameterTypes[i] = expectedParameters[i][1].getClass();
+				System.out.println(expectedParameters[i][1]);
+				parameterTypes[i] = Protocol.autoUnBox(Class.forName(expectedParameters[i][1]));
 			}
 			Method m = server.getMethod(method, parameterTypes);
 			m.invoke(this, parameters);

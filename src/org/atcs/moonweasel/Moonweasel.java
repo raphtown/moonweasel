@@ -151,11 +151,11 @@ public class Moonweasel implements ActionListener
 			}
 			else if (parts[0].equals("shipChosen"))
 			{
-				byte shipChoice = Byte.parseByte(parts[1]);
+				ShipType st = ShipType.valueOf(parts[1]);
 				String clientHostname = parts[2];
 				if (!clientHostname.equals(client.getIP()))
 				{
-					String shipTypeName = ShipType.getFromType(shipChoice).typeName;
+					String shipTypeName = st.typeName;
 					Player plr = playerMap.get(clientHostname);
 					Ship ship = this.entityManager.create(shipTypeName);
 					ship.setPilot(plr);
