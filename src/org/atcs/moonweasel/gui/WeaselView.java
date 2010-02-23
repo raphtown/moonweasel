@@ -144,8 +144,8 @@ public class WeaselView extends View {
 	{
 		uiElements = new ArrayList<UIElement>();
 		uiElements.add(new HealthBar(new Vector(10, 10, 0), me));
+		uiElements.add(new Crosshairs(new Vector(width/2, height/2, 0)));
 	}
-	
 	
 	private void setUpLighting(GL2 gl)
 	{
@@ -289,19 +289,21 @@ public class WeaselView extends View {
         
    		gl.glMatrixMode(gl.GL_PROJECTION);
    		gl.glPushMatrix();
-	   		gl.glPushAttrib(gl.GL_LIGHTING_BIT);
-	   			gl.glDisable(gl.GL_LIGHTING);
-	   			gl.glLoadIdentity();
-	   			glu.gluOrtho2D(0, width, 0, height);
-	   			gl.glMatrixMode(gl.GL_MODELVIEW);
-	   			gl.glLoadIdentity();
-	   			
-	   			for(UIElement e : uiElements)
-	   			{
-	   				gl.glTranslated(e.pos.x,e.pos.y,e.pos.z);
-	   				e.draw(gl);
-	   			}
-	   		gl.glPopAttrib();
+   		gl.glPushAttrib(gl.GL_LIGHTING_BIT);
+   			gl.glDisable(gl.GL_LIGHTING);
+   			gl.glLoadIdentity();
+   			glu.gluOrtho2D(0, width, 0, height);
+   			gl.glMatrixMode(gl.GL_MODELVIEW);
+   			gl.glLoadIdentity();
+   			
+   			for(UIElement e : uiElements)
+   			{
+   				gl.glPushMatrix();
+   					gl.glTranslated(e.pos.x,e.pos.y,e.pos.z);
+   					e.draw(gl);
+   				gl.glPopMatrix();
+   			}
+   		gl.glPopAttrib();
    		gl.glMatrixMode(gl.GL_PROJECTION);
    		gl.glPopMatrix();
    		
