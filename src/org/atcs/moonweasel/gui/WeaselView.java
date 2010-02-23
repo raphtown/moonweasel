@@ -198,10 +198,11 @@ public class WeaselView extends View {
         State interp = State.interpolate(ent.getLastRenderState(), ent.getState(), alpha);
 //        Vector relative = interp.orientation.rotate(
 //        		new Vector(0, radius*CAMERA_PILOT_OFFSET_SCALAR, radius * CAMERA_PILOT_OFFSET_SCALAR));
+        
         Vector relative = interp.orientation.rotate(
-        		new Vector(ent.cameraPos.x, ent.cameraPos.y, ent.cameraPos.z));
+        		new Vector(ent.getData().cameraPosOffset.x, ent.getData().cameraPosOffset.y, ent.getData().cameraPosOffset.z));
         Vector look = interp.orientation.rotate(
-        		new Vector(ent.cameraLook.x, ent.cameraLook.y, ent.cameraLook.z));
+        		new Vector(ent.getData().cameraLookOffset.x, ent.getData().cameraLookOffset.y, ent.getData().cameraLookOffset.z));
         
         Vector cameraPos = interp.position.add(relative);
         Vector cameraLook = interp.position.add(look);
