@@ -48,12 +48,30 @@ public class ShipData {
 				gunners.add(new Vector(
 						((Double)position.get(0)).floatValue(),
 						((Double)position.get(1)).floatValue(), 
-						((Double)position.get(3)).floatValue()));
+						((Double)position.get(2)).floatValue()));
 			}
 			
 			factory.gunners = gunners.toArray(new Vector[0]);
 		} else {
 			factory.gunners = new Vector[0];
+		}
+				
+		if (object.containsKey("cameraPosOffset"))
+		{
+			JSONArray position = (JSONArray)object.get("cameraPosOffset");
+			factory.cameraPosOffset = (new Vector(
+					((Double)position.get(0)).floatValue(),
+					((Double)position.get(1)).floatValue(), 
+					((Double)position.get(2)).floatValue()));
+		}
+		
+		if (object.containsKey("cameraLookOffset"))
+		{
+			JSONArray position = (JSONArray)object.get("cameraLookOffset");
+			factory.cameraLookOffset = (new Vector(
+					((Double)position.get(0)).floatValue(),
+					((Double)position.get(1)).floatValue(), 
+					((Double)position.get(2)).floatValue()));
 		}
 		
 		return factory.build();
@@ -66,10 +84,12 @@ public class ShipData {
 		private int attack;
 		private float thrust;
 		private Vector[] gunners;
+		private Vector cameraPosOffset;
+		private Vector cameraLookOffset;
 		
 		
 		public ShipData build() {
-			return new ShipData(name, mass, health, attack, thrust, gunners);
+			return new ShipData(name, mass, health, attack, thrust, gunners, cameraPosOffset, cameraLookOffset);
 		}
 	}
 	
@@ -79,10 +99,12 @@ public class ShipData {
 	public final int attack;
 	public final float thrust;
 	public final Vector[] gunners;
-	
+	public final Vector cameraPosOffset;
+	public final Vector cameraLookOffset;
 	
 	private ShipData(String name, float mass, int health, int attack,
-			float thrust, Vector[] gunners) {
+			float thrust, Vector[] gunners, Vector cameraPosOffset, 
+			Vector cameraLookOffset) {
 		assert name != null && name.length() > 0;
 		assert mass > 0;
 		assert health > 0;
@@ -96,5 +118,9 @@ public class ShipData {
 		this.attack = attack;
 		this.thrust = thrust;
 		this.gunners = gunners;
+
+
+		this.cameraPosOffset = cameraPosOffset;
+		this.cameraLookOffset = cameraLookOffset;
 	}
 }
