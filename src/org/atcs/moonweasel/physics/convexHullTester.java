@@ -24,16 +24,16 @@ public class convexHullTester extends JFrame
 	}
 	
 	
-	public void paint(Graphics g)
+	/* public void paint(Graphics g)
 	{
 		System.out.println("attempting to paint");
 		//super.paint(g);
 		g.setColor(Color.white);
 		g.fillRect(0,0,this.getBounds().width,this.getBounds().height);
 		
-		ArrayList<Vector> cubeVecs = Physics.cubeVectors;
-		ArrayList<Vector> projVecs = Physics.projectedVectors;
-		ArrayList<Vector> convexVecs = Physics.convexHullVectors;
+		//ArrayList<Vector> cubeVecs = Physics.cubeVectors;
+		//ArrayList<Vector> projVecs = Physics.projectedVectors;
+		//ArrayList<Vector> convexVecs = Physics.convexHullVectors;
 		
 		g.setColor(Color.red);
 		for(Vector v : projVecs)
@@ -55,5 +55,5 @@ public class convexHullTester extends JFrame
 		g.drawPolygon(xPoints, yPoints, convexVecs.size());
 		
 		
-	}
+	} */
 }
