@@ -16,6 +16,7 @@ import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
+import org.atcs.moonweasel.networking.Debug;
 import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.physics.Physics;
 
@@ -136,7 +137,7 @@ public class Moonweasel implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		String actionCommand = e.getActionCommand();
-		System.out.println("Action performed: " + actionCommand);
+		Debug.print("Action performed: " + actionCommand);
 		String[] parts = actionCommand.split(" ");
 		if (parts.length > 0)
 		{
