@@ -1,74 +1,34 @@
 package org.atcs.moonweasel.networking;
 
+import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
 public abstract class Protocol
 {
-	private final static int COMMAND_POSITION = 0;
-	private final static int RETURN_POSITION = 1;
-	private final static int PARAMETER_POSITION = 2;
 
-	public final static int PARAMETER_NAME_POSITION = 0;
-	public final static int PARAMETER_CLASS_POSITION = 1;
-
-	/*
-	 *	To define a new command, you must obey the following protocol.
-	 *
-	 * String 1: method name
-	 * String 2: return value
-	 * 
-	 * Optional:
-	 * String 3: first parameter name
-	 * String 4: first parameter class type
-	 * etc...
-	 */
-	private final static String[][] commands = {
-		{"connect",
-			"boolean",
-			"ip", "java.lang.String"}, 
-		{"chooseShip",
-			"void",
-			"ip", "java.lang.String",
-			"type", "org.atcs.moonweasel.entities.ships.ShipType"},
-		{"doCommand",
-			"void",
-			"command","java.lang.Short",
-			"mouse","org.atcs.moonweasel.util.Vector",
-			"ip", "java.lang.String"},
-		{"requestUpdate",
-			"List<Entity>",
-			"ip", "java.lang.String"}
-	};
-	private static HashMap<Integer, String[]> ismap;
-	private static HashMap<String, Integer> simap;
-	private static HashMap<String, String[][]> parammap;
-	private static HashMap<String, Class<?>> returnmap;
+	private static HashMap<Integer, String> ismap = new HashMap<Integer, String>();
+	private static HashMap<String, Integer> simap = new HashMap<String, Integer>();
+	private static HashMap<String,  Class<?>[]> parammap = new HashMap<String, Class<?>[]>();
+	private static HashMap<String, Class<?>> returnmap = new HashMap<String, Class<?>>();
 
 	static
 	{
-		ismap = new HashMap<Integer, String[]>();
-		simap = new HashMap<String, Integer>();
-		parammap = new HashMap<String, String[][]>();
-		returnmap = new HashMap<String, Class<?>>();
-
-		for(int i = 0; i < commands.length; i++)
+		Method[] methods = IServer.class.getMethods();
+		
+		for(int i = 0; i < methods.length; i++)
 		{
-			ismap.put(i, commands[i]);
-			simap.put(commands[i][COMMAND_POSITION], i);
-
-			int numParams = getNumParams(commands[i][COMMAND_POSITION]);
-			String[][] parameters = new String[numParams][2];
-			for(int j = 0; j < numParams; j++)
-			{
-				parameters[j][PARAMETER_NAME_POSITION] = commands[i][PARAMETER_POSITION + j * 2];
-				parameters[j][PARAMETER_CLASS_POSITION] = commands[i][PARAMETER_POSITION + j * 2 + 1];
-			}
-
-			parammap.put(commands[i][COMMAND_POSITION], parameters);
-			returnmap.put(commands[i][COMMAND_POSITION], commands[i][RETURN_POSITION].getClass());
+			String methodName = methods[i].getName();
+			Class<?>[] parameters = methods[i].getParameterTypes();
+			Class<?> returnType = methods[i].getReturnType();
+			
+			ismap.put(i, methodName);
+			simap.put(methodName, i);
+			parammap.put(methodName, parameters);
+			returnmap.put(methodName, returnType);
 		}
 	}
+	
 
 	public static short getShortValue(String command)
 	{
@@ -77,23 +37,22 @@ public abstract class Protocol
 
 	public static String getMethodName(short command)
 	{
-		return ismap.get(Integer.valueOf(command))[COMMAND_POSITION];
+		return ismap.get(command);
 	}
 
-	public static String[][] getParameters(String command)
+	public static Class<?>[] getParameters(String command)
 	{
 		return parammap.get(command);
 	}
 
-	public static String getReturnValue(String command)
+	public static Class<?> getReturnValue(String command)
 	{
-		return ismap.get(simap.get(command))[RETURN_POSITION];
+		return returnmap.get(command);
 	}
 
 	public static int getNumParams(String command)
 	{
-		int num = simap.get(command);
-		return (commands[num].length - PARAMETER_POSITION) / 2;
+		return parammap.get(command).length;
 	}
 
 	public static Object sendPacket(String command, IServer server, Object self)
@@ -109,7 +68,7 @@ public abstract class Protocol
 	
 	public static Object sendPacket(String command, Object[] parameters, IServer server, Object self)
 	{
-		String[][] expectedParameters = Protocol.getParameters(command);
+		Class<?>[] expectedParameters = Protocol.getParameters(command);
 		Object[] values = new Object[Protocol.getNumParams(command)];
 		for(int i = 0; i < expectedParameters.length; i++)
 		{

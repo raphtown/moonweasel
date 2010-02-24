@@ -76,8 +76,7 @@ public class Server extends ActionSource implements IServer
 		Remote stub = UnicastRemoteObject.exportObject(object, 0);
 		registry.rebind(name, stub);
 		
-		if (RMI_DEBUG)
-			System.out.println(name + " bound");
+		Debug.print(name + " bound");
 	}
 	
 	/**
@@ -90,8 +89,7 @@ public class Server extends ActionSource implements IServer
 	public void connect(final String c) throws RemoteException
 	{
 		connectedClients.add(c);
-		if (RMI_DEBUG)
-			System.out.println("Client " + c + " connected!");
+		Debug.print("Client " + c + " connected!");
 		fireActionEvent("newClient " + c);
 	}
 	
@@ -101,13 +99,12 @@ public class Server extends ActionSource implements IServer
 	 * @param shipType The type of ship that the client has chosen.
 	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
-	public void chooseShip(final String clientHostname, final ShipType shipType) throws RemoteException
+	public void chooseShip(final String clientHostname, final byte shipType) throws RemoteException
 	{
 		if(!connectedClients.contains(clientHostname))
 			throw new RemoteException("Unconnected client trying to choose ship!");
 		
-		if (RMI_DEBUG)
-			System.out.println("Received ship choice " + shipType + " from " + clientHostname + ".");
+		Debug.print("Received ship choice " + shipType + " from " + clientHostname + ".");
 		
 		fireActionEvent("shipChosen " + shipType + " " + clientHostname);
 	}
@@ -122,8 +119,7 @@ public class Server extends ActionSource implements IServer
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to execute command!");
 
-		if (RMI_DEBUG)
-			System.out.println("Received command " + command + " from " + c + ".");
+		Debug.print("Received command " + command + " from " + c + ".");
 		
 		fireActionEvent("commRec " + command + " " + mouse.x + " " + mouse.y + " " + c);
 	}
@@ -199,7 +195,6 @@ public class Server extends ActionSource implements IServer
 			Class<?>[] parameterTypes = new Class[Protocol.getNumParams(method)];
 			for(int i = 0; i < parameterTypes.length; i++)
 			{
-				System.out.println(expectedParameters[i][1]);
 				parameterTypes[i] = Protocol.autoUnBox(Class.forName(expectedParameters[i][1]));
 			}
 			Method m = server.getMethod(method, parameterTypes);

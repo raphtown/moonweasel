@@ -4,6 +4,7 @@ import static org.atcs.moonweasel.networking.RMIConfiguration.*;
 import static org.atcs.moonweasel.entities.ships.ShipType.*;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
@@ -154,9 +155,25 @@ public class Client implements IClient
 
 	public void sendCommandToServer(UserCommand command)
 	{
-		Object[] params = Protocol.getEmptyParamList("doCommand");
-		params[0] = command.getAsBitmask();
-		params[1] = command.getMouse();
-		Protocol.sendPacket("doCommand", params, server, this);
+		
+		try
+		{
+			Class<?>[] parameters = Protocol.getParameters("doCommand");
+			Method m = server.getClass().getDeclaredMethod("doCommand", parameters);
+			Object[] params = Protocol.getEmptyParamList("doCommand");
+			params[0] = command.getAsBitmask();
+			params[1] = command.getMouse();
+			Protocol.sendPacket("doCommand", params, server, this);
+		} catch (SecurityException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
 	}
 }
