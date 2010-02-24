@@ -1,7 +1,6 @@
 package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
-import static org.atcs.moonweasel.entities.ships.ShipType.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -36,7 +35,6 @@ import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 public class Client implements IClient
 {
 	private IServer server = null;
-	private final String hostname;
 	public String ip;
 	public static void main(String args[])
 	{
@@ -50,13 +48,11 @@ public class Client implements IClient
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		hostname = ip;
 
 		try 
 		{
 			Remote stub = UnicastRemoteObject.exportObject(this, 0);
 			registry.rebind(CLIENT_OBJECT_NAME, stub);
-			findAndConnectToServer();
 		}
 		catch (RemoteException e)
 		{

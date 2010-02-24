@@ -1,10 +1,10 @@
 package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
+import static org.atcs.moonweasel.networking.actions.ActionMessages.*;
 
 import java.lang.reflect.Method;
 import java.rmi.AccessException;
-import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -17,6 +17,7 @@ import java.util.Scanner;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ships.ShipType;
+import org.atcs.moonweasel.networking.actions.ActionSource;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Vector;
@@ -92,7 +93,7 @@ public class Server extends ActionSource implements IServer
 		connectedClients.add(c);
 		if (RMI_DEBUG)
 			System.out.println("Client " + c + " connected!");
-		fireActionEvent("newClient " + c);
+		fireActionEvent(CLIENT_CONNECT + " " + c);
 	}
 	
 	/**
@@ -109,7 +110,7 @@ public class Server extends ActionSource implements IServer
 		if (RMI_DEBUG)
 			System.out.println("Received ship choice " + shipType + " from " + clientHostname + ".");
 		
-		fireActionEvent("shipChosen " + shipType + " " + clientHostname);
+		fireActionEvent(CHOOSE_SHIP + " " + shipType + " " + clientHostname);
 	}
 
 	/**
@@ -125,7 +126,7 @@ public class Server extends ActionSource implements IServer
 		if (RMI_DEBUG)
 			System.out.println("Received command " + command + " from " + c + ".");
 		
-		fireActionEvent("commRec " + command + " " + mouse.x + " " + mouse.y + " " + c);
+		fireActionEvent(COMMAND_RECEIVED + " " + command + " " + mouse.x + " " + mouse.y + " " + c);
 	}
 	
 	/**
@@ -148,24 +149,16 @@ public class Server extends ActionSource implements IServer
 	/**
 	 * Forces all of the server's clients to request (and receive) an update.
 	 */
-	public void update()
+	public void forceUpdateAllClients()
 	{
 		for (String clientName : connectedClients)
 		{
 	        try
 	        {
 				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
-				((IClient)registry.lookup(CLIENT_OBJECT_NAME)).forceUpdate();
+				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).forceUpdate();
 			}
-			catch (AccessException e)
-			{
-				disconnectClient(clientName);
-			}
-			catch (RemoteException e)
-			{
-				disconnectClient(clientName);
-			}
-			catch (NotBoundException e)
+			catch (Exception e)
 			{
 				disconnectClient(clientName);
 			}
@@ -178,23 +171,9 @@ public class Server extends ActionSource implements IServer
 
 		try
 		{
-			String method = Protocol.getMethodName(command);
-			int numParams = Protocol.getParameters(method).length;
-			
+			String method = Protocol.getMethodName(command);			
 			String[][] expectedParameters = Protocol.getParameters(method);
-			
-//			System.out.println("----------------");
-//			System.out.println("Received packet!");
-//			System.out.println("Short: " + command);
-//			System.out.println("Command: " + method);
-//			System.out.println("Parameters:");
-//			System.out.println("	Number: " + numParams);
-//			for(int i = 0; i < numParams; i++)
-//			{
-//				System.out.println("	Parameter class: " + Class.forName(expectedParameters[i][1]).getSimpleName() + "  Parameter name: " + expectedParameters[i][0] + "  Parameter value: " + parameters[i]);
-//			}
-//			System.out.println("----------------");
-			
+
 			Class<?> server = this.getClass();
 			Class<?>[] parameterTypes = new Class[Protocol.getNumParams(method)];
 			for(int i = 0; i < parameterTypes.length; i++)
@@ -204,21 +183,11 @@ public class Server extends ActionSource implements IServer
 			}
 			Method m = server.getMethod(method, parameterTypes);
 			m.invoke(this, parameters);
-			
-//			Class<?> lol = command.getClass();
-//			Method[] methList = lol.getMethods();
-//			methList[0].getParameterTypes(); 
-//			Class<?> partypes[] = new Class[0];
-//			Method m = lol.getMethod("toString", partypes);
-//			Object arglist[] = new Object[0];
-//			m.invoke(command, arglist);
 		} 
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 
@@ -228,6 +197,6 @@ public class Server extends ActionSource implements IServer
 	private void disconnectClient(String clientName)
 	{
 		connectedClients.remove(clientName);
-		fireActionEvent("discClient " + clientName);
+		fireActionEvent(CLIENT_DISCONNECT + " " + clientName);
 	}
 }

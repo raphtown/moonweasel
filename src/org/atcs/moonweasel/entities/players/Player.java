@@ -88,4 +88,8 @@ public class Player extends Entity {
 	public Ship getShip() {
 		return ship;
 	}
+	
+	public Status getStatus() {
+		return status;
+	}
 }

@@ -2,7 +2,6 @@ package org.atcs.moonweasel.physics;
 
 import java.util.ArrayList;
 
-import org.atcs.moonweasel.entities.*;
 import org.atcs.moonweasel.util.*;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -197,6 +196,7 @@ public class Physics
 		double bestAlpha = tempAlpha;
 		
 		Vector tempEdge = null;
+		@SuppressWarnings("unused")
 		Vector bestEdge = null;
 		Vector bestPoint = null;
 		for(Vector v : projcomps)
