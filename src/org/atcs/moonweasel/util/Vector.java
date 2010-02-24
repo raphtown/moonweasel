@@ -115,7 +115,7 @@ public class Vector implements Serializable
 		return new Vector(x, y, 0);
 	}
 	
-	public Vector projectIntoXZ()
+	public Vector projectIntoZX()
 	{
 		return new Vector(x, 0, z);
 	}
