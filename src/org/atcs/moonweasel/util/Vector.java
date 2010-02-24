@@ -30,6 +30,8 @@ public class Vector implements Serializable
 		this.z = z;
 	}
 	
+	
+	
 	public Vector add(Vector o) 
 	{
 		return new Vector(x + o.x, y + o.y, z + o.z);
@@ -88,19 +90,16 @@ public class Vector implements Serializable
 		return new Vector(x / length, y / length, z / length);
 	}
 	
-	public Vector projectIntoXY(Vector o)
+	public Vector roundMe(int decimalPrecision)
 	{
-		return new Vector(x, y, 0);
+		return new Vector(
+				
+	(float) (Math.floor(x*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)),
+	(float) (Math.floor(y*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)),
+	(float) (Math.floor(z*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)) 	
+		);
 	}
 	
-	public Vector projectIntoXZ(Vector o)
-	{
-		return new Vector(x, 0, z);
-	}
-	public Vector projectIntoYZ(Vector o)
-	{
-		return new Vector(0, y, z);
-	}
 	public Vector scale(float scalar) 
 	{
 		return new Vector(scalar * x, scalar * y, scalar * z);
@@ -109,6 +108,26 @@ public class Vector implements Serializable
 	public Vector subtract(Vector o)
 	{
 		return new Vector(x - o.x, y - o.y, z - o.z);
+	}
+	
+	public Vector projectIntoXY()
+	{
+		return new Vector(x, y, 0);
+	}
+	
+	public Vector projectIntoZX()
+	{
+		return new Vector(x, 0, z);
+	}
+	public Vector projectIntoYZ()
+	{
+		return new Vector(0, y, z);
+	}
+	
+	public float angleBetween(Vector v)
+	{
+		
+		return (float) Math.acos(this.dot(v) / (v.length() * this.length()));
 	}
 	
 	@Override

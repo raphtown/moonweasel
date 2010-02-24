@@ -1,10 +1,10 @@
 package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
+import static org.atcs.moonweasel.networking.actions.ActionMessages.*;
 
 import java.lang.reflect.Method;
 import java.rmi.AccessException;
-import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -17,6 +17,7 @@ import java.util.Scanner;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ships.ShipType;
+import org.atcs.moonweasel.networking.actions.ActionSource;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Vector;
@@ -106,7 +107,7 @@ public class Server extends ActionSource implements IServer
 		
 		Debug.print("Received ship choice " + shipType + " from " + clientHostname + ".");
 		
-		fireActionEvent("shipChosen " + shipType + " " + clientHostname);
+		fireActionEvent(CHOOSE_SHIP + " " + shipType + " " + clientHostname);
 	}
 
 	/**
@@ -121,7 +122,7 @@ public class Server extends ActionSource implements IServer
 
 		Debug.print("Received command " + command + " from " + c + ".");
 		
-		fireActionEvent("commRec " + command + " " + mouse.x + " " + mouse.y + " " + c);
+		fireActionEvent(COMMAND_RECEIVED + " " + command + " " + mouse.x + " " + mouse.y + " " + c);
 	}
 	
 	/**
@@ -144,24 +145,16 @@ public class Server extends ActionSource implements IServer
 	/**
 	 * Forces all of the server's clients to request (and receive) an update.
 	 */
-	public void update()
+	public void forceUpdateAllClients()
 	{
 		for (String clientName : connectedClients)
 		{
 	        try
 	        {
 				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
-				((IClient)registry.lookup(CLIENT_OBJECT_NAME)).forceUpdate();
+				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).forceUpdate();
 			}
-			catch (AccessException e)
-			{
-				disconnectClient(clientName);
-			}
-			catch (RemoteException e)
-			{
-				disconnectClient(clientName);
-			}
-			catch (NotBoundException e)
+			catch (Exception e)
 			{
 				disconnectClient(clientName);
 			}
@@ -174,9 +167,7 @@ public class Server extends ActionSource implements IServer
 
 		try
 		{
-			String method = Protocol.getMethodName(command);
-			int numParams = Protocol.getParameters(method).length;
-			
+			String method = Protocol.getMethodName(command);			
 			String[][] expectedParameters = Protocol.getParameters(method);
 			
 //			System.out.println("----------------");
@@ -210,10 +201,8 @@ public class Server extends ActionSource implements IServer
 		} 
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 
@@ -223,6 +212,6 @@ public class Server extends ActionSource implements IServer
 	private void disconnectClient(String clientName)
 	{
 		connectedClients.remove(clientName);
-		fireActionEvent("discClient " + clientName);
+		fireActionEvent(CLIENT_DISCONNECT + " " + clientName);
 	}
 }

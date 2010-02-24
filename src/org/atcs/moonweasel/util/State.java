@@ -1,5 +1,7 @@
 package org.atcs.moonweasel.util;
 
+import java.util.ArrayList;
+
 public class State 
 {
 	// interpolation used for animating in between states
@@ -29,7 +31,7 @@ public class State
 	public Quaternion spin;
 	public Matrix bodyToWorld;
 	public Matrix worldToBody;
-	public Vector[] verticesOfBoundingRegion;
+	public ArrayList<Vector> verticesOfBoundingRegion;
 	public float dangerZoneRadius;
 	
 	// constant
