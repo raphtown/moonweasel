@@ -236,8 +236,6 @@ public class WeaselView extends View {
             gl.glPushMatrix();
 	        	gl.glTranslatef(interpolated.position.x, interpolated.position.y,
 	        			interpolated.position.z);
-	        	gl.glRotatef(180, 0, 1, 0);
-	        	gl.glScaled(0.1, 0.1, 0.1);
 	        	if (!rotation.axis.equals(Vector.ZERO)) {
 		        	gl.glRotated(Math.toDegrees(rotation.angle), rotation.axis.x, rotation.axis.y,
 		        			rotation.axis.z);

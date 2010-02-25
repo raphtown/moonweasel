@@ -181,8 +181,7 @@ public class ObjLoader extends Loader
 					vn = normals.get(Integer.parseInt(phrase.group(3)));
 				}
 				
-				System.out.println(vt.subtract(vn));
-				applyFace(gl, v, vt, vt);
+				applyFace(gl, v, vt, vn);
 			}
 		gl.glEnd();	
 	}
@@ -190,9 +189,9 @@ public class ObjLoader extends Loader
 	private void applyFace(GL2 gl, Vector v, Vector vt, Vector normal) {
 		if (vt != null) {
 			if (vt.y != Float.NaN && vt.z != Float.NaN) {
-				gl.glTexCoord3f(vt.x, vt.y, vt.z);
+				gl.glTexCoord3f(vt.x, 1 - vt.y, vt.z);
 			} else if (vt.y != Float.NaN) {
-				gl.glTexCoord2f(vt.x, vt.y);
+				gl.glTexCoord2f(vt.x, 1 - vt.y);
 			} else {
 				gl.glTexCoord1f(vt.x);
 			}
