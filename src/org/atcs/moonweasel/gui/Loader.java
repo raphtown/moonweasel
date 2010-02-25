@@ -2,6 +2,7 @@ package org.atcs.moonweasel.gui;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.media.opengl.GL2;
 
@@ -13,19 +14,15 @@ public abstract class Loader {
 			loader = new ObjLoader();
 		}
 		
-		String filename = String.format("data/models/%s.%s", name, loader.getExtension());
-		FileInputStream stream;
+		String path = String.format("data/models/%s/", name);
 		
 		try {
-			stream = new FileInputStream(filename);
-		} catch (FileNotFoundException e) {
-			System.out.println("err");
-			return false;
+			return loader.loadModel(path, "snowflake", gl);			
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to import " + name, e);
 		}
-		
-		return loader.loadModel(stream, gl);
 	}
 	
 	protected abstract String getExtension();
-	protected abstract boolean loadModel(FileInputStream stream, GL2 gl);
+	protected abstract boolean loadModel(String path, String name, GL2 gl) throws IOException;
 }
