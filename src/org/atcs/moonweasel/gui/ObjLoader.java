@@ -31,7 +31,6 @@ public class ObjLoader extends Loader
 	protected boolean loadModel(String path, String name, GL2 gl) throws IOException
 	{
 		Map<String, Material> materials = new HashMap<String, Material>();
-		loadMaterials(materials, path, name);
 		Scanner sc = new Scanner(new File(path + name + ".obj"));
 		ArrayList<Vector> vertices = new ArrayList<Vector>();
 		vertices.add(null);
@@ -83,6 +82,11 @@ public class ObjLoader extends Loader
 				useMaterial.applyMaterial(gl);
 				lastTexture = useMaterial.texture;
 			}
+			else if(nextToken.equals("mtllib"))
+			{
+				String mtlFileName = sc.next();
+				loadMaterials(materials, path, mtlFileName);
+			}
 			
 			if(sc.hasNextLine())
 			{
@@ -94,7 +98,7 @@ public class ObjLoader extends Loader
 	
 	public void loadMaterials(Map<String, Material> materials, String path, String name) throws IOException
 	{
-		Scanner sc = new Scanner(new File(path + name + ".mtl"));
+		Scanner sc = new Scanner(new File(path + name));
 		Material x = null;
 		while(sc.hasNext())
 		{
