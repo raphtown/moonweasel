@@ -89,8 +89,6 @@ public class Physics
 
 	}
 
-	NumericalIntegration Integrator = new NumericalIntegration();
-
 	public void update(long t, int dt) //updates all models
 	{
 		EntityManager em = EntityManager.getEntityManager();
@@ -152,7 +150,7 @@ public class Physics
 		futureState.orientation = me.getState().orientation;
 		futureState.position = me.getState().position;
 		futureState.recalculate();
-		Integrator.integrate(me, futureState,0,dt);
+		integrator.integrate(me, futureState,0,dt);
 
 		return futureState;
 	}

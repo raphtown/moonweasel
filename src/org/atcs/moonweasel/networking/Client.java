@@ -3,6 +3,7 @@ package org.atcs.moonweasel.networking;
 import static org.atcs.moonweasel.networking.RMIConfiguration.*;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -39,7 +40,7 @@ public class Client implements IClient
 	public String ip;
 	public static void main(String args[])
 	{
-		new Client();
+		new Client().findAndConnectToServer();
 	}
 
 	public Client()
@@ -78,15 +79,15 @@ public class Client implements IClient
 	{
 		Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
 		server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
-		Protocol.sendPacket("connect", server, this);
+		
+		Object[] parameters = {getIP()};
+		Protocol.sendPacket("connect", parameters, server);
 	}
 
 	public void chooseShip()
 	{
-		String command = "chooseShip";
-		Object[] params = Protocol.getEmptyParamList(command);
-		params[1] = ShipType.SNOWFLAKE;
-		Protocol.sendPacket(command, params, server, this); 
+		Object[] parameters = {ShipType.SNOWFLAKE, getIP()};
+		Protocol.sendPacket("chooseShip", parameters, server);
 	}
 
 	/**
@@ -130,7 +131,9 @@ public class Client implements IClient
 	public void forceUpdate() throws RemoteException
 	{
 		// problems can be foreseen here...
-		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", server, this);
+		Object[] parameters = {getIP()};
+		
+		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
 		for (Entity entity : entityList)
 		{
@@ -151,25 +154,7 @@ public class Client implements IClient
 
 	public void sendCommandToServer(UserCommand command)
 	{
-		
-		try
-		{
-			Class<?>[] parameters = Protocol.getParameters("doCommand");
-			Method m = server.getClass().getDeclaredMethod("doCommand", parameters);
-			Object[] params = Protocol.getEmptyParamList("doCommand");
-			params[0] = command.getAsBitmask();
-			params[1] = command.getMouse();
-			Protocol.sendPacket("doCommand", params, server, this);
-		} catch (SecurityException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	
+		Object[] parameters = {command.getAsBitmask(), command.getMouse(), getIP()};
+		Protocol.sendPacket("doCommand", parameters, server);
 	}
 }
