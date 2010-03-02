@@ -3,7 +3,7 @@ package org.atcs.moonweasel.entities.players;
 import org.atcs.moonweasel.Timed;
 import org.atcs.moonweasel.util.Vector;
 
-public class UserCommand implements Timed {
+public class UserCommand implements Timed, Comparable<UserCommand> {
 	public enum Commands {
 		UP((short)0x1),
 		DOWN((short)0x2),
@@ -43,9 +43,7 @@ public class UserCommand implements Timed {
 	}
 	
 	public void copyKeyState(UserCommand o) {
-		for(int i = 0; i < Commands.NUM_COMMANDS.ordinal(); i++) {
-			commands[i] = o.commands[i];
-		}
+		setKeysAsBitmask(o.getAsBitmask());
 	}
 	
 	public boolean get(Commands command) {
@@ -105,15 +103,18 @@ public class UserCommand implements Timed {
 		{
 			if (command.ordinal() >= Commands.NUM_COMMANDS.ordinal())
 				break;
-			if ((bitmask & command.bitmask) != 0)
-				commands[command.ordinal()] = true;
-			else
-				commands[command.ordinal()] = false;
+			commands[command.ordinal()] = ((bitmask & command.bitmask) != 0);
 		}
 	}
 	
 	public void setMouse(float x, float y)
 	{
 		setMouse(new Vector(x, y, 0));
+	}
+
+	@Override
+	public int compareTo(UserCommand o)
+	{
+		return (int)(getTime() - o.getTime());
 	}
 }

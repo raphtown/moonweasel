@@ -2,11 +2,8 @@ package org.atcs.moonweasel.physics;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeSet;
 
-import org.atcs.moonweasel.entities.*;
 import org.atcs.moonweasel.util.*;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
