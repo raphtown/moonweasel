@@ -1,7 +1,6 @@
 package org.atcs.moonweasel.networking;
 
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 
 public abstract class Protocol
