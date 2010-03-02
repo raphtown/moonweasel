@@ -31,9 +31,7 @@ public class HealthBar extends UIElement
 
 	@Override
 	public void draw(GL2 gl) 
-	{
-		// healthPercent = p.health();
-		
+	{		
 		gl.glPushMatrix();
 			gl.glPushAttrib(GL2.GL_CURRENT_BIT);
 			gl.glBegin(GL2.GL_TRIANGLE_FAN);

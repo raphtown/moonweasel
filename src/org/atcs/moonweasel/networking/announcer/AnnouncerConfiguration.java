@@ -8,13 +8,6 @@ public final class AnnouncerConfiguration
 {
 	// only purpose for this is to make it un-initializable
 	private AnnouncerConfiguration() {}
-
-	/**
-	 * Whether or not the print out the debug strings.
-	 * 
-	 * Not currently useful, as the announcer is known to work.
-	 */
-	public static final boolean ANNOUNCER_DEBUG = false;
 	
 	/**
 	 * The address that the announcer will broadcast to. Multicast groups are 

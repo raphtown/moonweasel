@@ -36,7 +36,7 @@ public class Player extends Entity {
 				new Comparator<UserCommand>() {
 					@Override
 					public int compare(UserCommand o1, UserCommand o2) {
-						return (int)(o1.getTime() - o2.getTime());
+						return o1.compareTo(o2);
 					}
 				});
 	}

@@ -19,6 +19,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	private Player pilot;
 	private Player[] gunners;
+	@SuppressWarnings("unused")
 	private Vector[] gunnerPositions;
 	
 	protected Ship(ShipData data) {

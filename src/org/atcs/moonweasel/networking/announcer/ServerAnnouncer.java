@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.atcs.moonweasel.Destructible;
+import org.atcs.moonweasel.networking.Debug;
 
 /**
  * Handles listening to server announcements as well as creating them, in order to tell clients they exist. 
@@ -34,8 +35,7 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 	{
 		try 
 		{
-			if (ANNOUNCER_DEBUG)
-				System.out.println("Preparing for announcement...");				
+			Debug.print("Preparing for announcement...");				
 			
 			final InetAddress myaddr = InetAddress.getLocalHost();
 			final String txt = myaddr.getHostAddress() + " " + serverName;
@@ -45,8 +45,7 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 			while (running)
 			{
 // 				this is annoying
-				if (ANNOUNCER_DEBUG)
-					System.out.println("Sending packet");
+				Debug.print("Sending packet");
 
 				socket.send(packet);
 				Thread.sleep(ANNOUNCER_SLEEP_TIME);
@@ -54,8 +53,7 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 		} 
 		catch (Exception e)
 		{
-			if (ANNOUNCER_DEBUG)
-				System.out.println("Error: " + e.getMessage());
+			Debug.print("Error: " + e.getMessage());
 		}
 	}
 
@@ -70,8 +68,7 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 
 		final MulticastSocket socket = new MulticastSocket(ANNOUNCER_MULTICAST_PORT);
 
-		if (ANNOUNCER_DEBUG)
-			System.out.println("Opened multicast socket on " + socket.getInterface().toString());
+		Debug.print("Opened multicast socket on " + socket.getInterface().toString());
 
 		final InetAddress group = InetAddress.getByName(ANNOUNCER_MULTICAST_ADDRESS);
 		socket.joinGroup(group);
@@ -87,8 +84,7 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 			socket.receive(packet);
 			String received = new String(packet.getData(), 0, packet.getLength());
 
-			if (ANNOUNCER_DEBUG)
-				System.out.println("Got announcement: " + received);
+			Debug.print("Got announcement: " + received);
 
 			if (!(done = servers.contains(received)))
 				servers.add(received);
