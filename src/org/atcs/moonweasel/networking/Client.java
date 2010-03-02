@@ -154,7 +154,15 @@ public class Client implements IClient
 
 	public void sendCommandToServer(UserCommand command)
 	{
-		Object[] parameters = {command.getAsBitmask(), command.getMouse(), getIP()};
-		Protocol.sendPacket("doCommand", parameters, server);
+		//Object[] parameters = {command.getAsBitmask(), command.getMouse(), getIP()};
+		try
+		{
+			server.doCommand(command.getAsBitmask(), command.getMouse(), getIP());
+		} catch (RemoteException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//Protocol.sendPacket("doCommand", parameters, server);
 	}
 }

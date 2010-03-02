@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.Moonweasel;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
@@ -36,7 +37,7 @@ public class ServerActionListener implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		String actionCommand = e.getActionCommand();
-		System.out.println("Action performed: " + actionCommand);
+		Debug.print("Action performed: " + actionCommand);
 		String[] parts = actionCommand.split(" ");
 		if (parts.length > 0)
 		{

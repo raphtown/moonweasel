@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ships.ShipType;
@@ -105,9 +106,9 @@ public class Server extends ActionSource implements IServer
 		if(!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to choose ship!");
 		
-		Debug.print("Received ship choice " + shipType.type + " from " + c + ".");
+		Debug.print("Received ship choice " + shipType.typeName + " from " + c + ".");
 		
-		fireActionEvent(CHOOSE_SHIP + " " + shipType.type + " " + c);
+		fireActionEvent(CHOOSE_SHIP + " " + shipType + " " + c);
 	}
 
 	/**

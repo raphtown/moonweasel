@@ -1,8 +1,10 @@
 package org.atcs.moonweasel.networking;
 
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
+
 import java.util.HashMap;
+
+import org.atcs.moonweasel.util.Vector;
 
 public abstract class Protocol
 {
@@ -68,9 +70,20 @@ public abstract class Protocol
 	{
 		try
 		{
-			Class<?>[] paramClasses = getParameters(command);
-			Method m = server.getClass().getDeclaredMethod(command, paramClasses);
-			return m.invoke(server, parameters);
+			
+			if(command.equals("doCommand"))
+			{
+				server.doCommand(((Short)parameters[0]), (Vector)parameters[1], (String)parameters[2]);
+				return null;
+			}
+			else
+			{
+				Class<?>[] paramClasses = getParameters(command);
+				Method m = server.getClass().getDeclaredMethod(command, paramClasses);
+
+				return m.invoke(server, parameters);
+			}
+			
 		} 
 		catch (Exception e)
 		{
