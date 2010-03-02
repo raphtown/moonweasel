@@ -2,13 +2,11 @@ package org.atcs.moonweasel.networking;
 
 public final class Debug
 {
-	public static boolean debug = true;
+	public static final boolean DEBUG = true;
 	
 	public static void print(String s)
 	{
-		if(debug)
-		{
+		if(DEBUG)
 			System.out.println(s);
-		}
 	}
 }

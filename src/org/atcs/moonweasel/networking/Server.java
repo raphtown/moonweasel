@@ -160,49 +160,6 @@ public class Server extends ActionSource implements IServer
 		}
 	}
 
-//	@Override
-//	public Object sendPacket(short command, Object... parameters) throws RemoteException
-//	{
-//
-//		try
-//		{
-//			
-////			System.out.println("----------------");
-////			System.out.println("Received packet!");
-////			System.out.println("Short: " + command);
-////			System.out.println("Command: " + method);
-////			System.out.println("Parameters:");
-////			System.out.println("	Number: " + numParams);
-////			for(int i = 0; i < numParams; i++)
-////			{
-////				System.out.println("	Parameter class: " + Class.forName(expectedParameters[i][1]).getSimpleName() + "  Parameter name: " + expectedParameters[i][0] + "  Parameter value: " + parameters[i]);
-////			}
-////			System.out.println("----------------");
-//			
-////			Class<?> server = this.getClass();
-////			Class<?>[] parameterTypes = new Class[Protocol.getNumParams(method)];
-////			for(int i = 0; i < parameterTypes.length; i++)
-////			{
-////				parameterTypes[i] = Protocol.autoUnBox(Class.forName(expectedParameters[i][1]));
-////			}
-////			Method m = server.getMethod(method, parameterTypes);
-////			m.invoke(this, parameters);
-//			
-////			Class<?> lol = command.getClass();
-////			Method[] methList = lol.getMethods();
-////			methList[0].getParameterTypes(); 
-////			Class<?> partypes[] = new Class[0];
-////			Method m = lol.getMethod("toString", partypes);
-////			Object arglist[] = new Object[0];
-////			m.invoke(command, arglist);
-//		} 
-//		catch (Exception e)
-//		{
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
-
 	/**
 	 * Disconnects the given client, telling all listeners of the event as well.
 	 */
