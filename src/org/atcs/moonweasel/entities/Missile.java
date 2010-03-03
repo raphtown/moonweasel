@@ -2,7 +2,8 @@ package org.atcs.moonweasel.entities;
 
 import org.atcs.moonweasel.physics.BoundingBox;
 import org.atcs.moonweasel.physics.BoundingShape;
-import org.atcs.moonweasel.util.Matrix;
+import org.atcs.moonweasel.util.*;
+
 
 public class Missile extends ModelEntity 
 {
@@ -10,6 +11,7 @@ public class Missile extends ModelEntity
 	private Missile() 
 	{
 		super(new BoundingBox(1,2,3), 120, Matrix.IDENTITY);
+		scheduleThink(15);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -28,6 +30,20 @@ public class Missile extends ModelEntity
 	{
 		target = x;
 		
+	}
+	public void think()
+	{
+		float targetX = target.getPosition().x;
+		float targetY = target.getPosition().y;
+		float targetZ = target.getPosition().z;
+		
+		float mX = this.getPosition().x;
+		float mY = this.getPosition().y;
+		float mZ = this.getPosition().z;
+		
+		setVelocity(new Vector(targetX - mX, targetY - mY, targetZ - mZ));
+		
+		scheduleThink(15);
 	}
 
 }
