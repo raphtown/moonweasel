@@ -1,6 +1,8 @@
 package org.atcs.moonweasel.networking.announcer;
 
-import static org.atcs.moonweasel.networking.announcer.AnnouncerConfiguration.*;
+import static org.atcs.moonweasel.networking.announcer.AnnouncerConfiguration.ANNOUNCER_MULTICAST_ADDRESS;
+import static org.atcs.moonweasel.networking.announcer.AnnouncerConfiguration.ANNOUNCER_MULTICAST_PORT;
+import static org.atcs.moonweasel.networking.announcer.AnnouncerConfiguration.ANNOUNCER_SLEEP_TIME;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -10,8 +12,8 @@ import java.net.MulticastSocket;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.Destructible;
-import org.atcs.moonweasel.networking.Debug;
 
 /**
  * Handles listening to server announcements as well as creating them, in order to tell clients they exist. 
