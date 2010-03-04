@@ -94,10 +94,9 @@ public class Moonweasel {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
-				entityManager.update();
+				entityManager.update(t);
 				physics.update(t, SKIP_TICKS);
 				player.addCommand(input.poll(t));
-				player.clearCommandsBefore(t);
 
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
