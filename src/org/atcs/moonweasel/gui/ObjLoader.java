@@ -1,8 +1,11 @@
 package org.atcs.moonweasel.gui;
 
-import java.io.FileInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,19 +14,24 @@ import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.util.Vector;
 
+import com.sun.opengl.util.texture.Texture;
+
 public class ObjLoader extends Loader 
 {
 	private static final String EXTENSION = "obj";
 	private static final Pattern FACE_PHRASE = Pattern.compile("(\\d+)/?(\\d+)?/?(\\d+)?");
+	
+	private Texture lastTexture = null;
 	
 	protected String getExtension() {
 		return EXTENSION;
 	}
 	
 	@Override
-	protected boolean loadModel(FileInputStream stream, GL2 gl) 
+	protected boolean loadModel(String path, String name, GL2 gl) throws IOException
 	{
-		Scanner sc = new Scanner(stream);
+		Map<String, Material> materials = new HashMap<String, Material>();
+		Scanner sc = new Scanner(new File(path + name + ".obj"));
 		ArrayList<Vector> vertices = new ArrayList<Vector>();
 		vertices.add(null);
 		ArrayList<Vector> normals = new ArrayList<Vector>();
@@ -45,7 +53,7 @@ public class ObjLoader extends Loader
 			}
 			else if(nextToken.equals("vt"))//Texture
 			{
-				float[] coordinates = new float[3];
+				float[] coordinates = new float[2];
 				coordinates[0] = sc.nextFloat();
 				coordinates[1] = sc.nextFloat();
 				Vector insertVertex = new Vector(coordinates[0], coordinates[1], -1);
@@ -64,6 +72,21 @@ public class ObjLoader extends Loader
 			{
 				handleFace(sc, gl, vertices, textures, normals);
 			}
+			else if(nextToken.equals("usemtl"))
+			{
+				if (lastTexture != null) 
+					lastTexture.disable();
+				
+				String materialName = sc.next();
+				Material useMaterial = materials.get(materialName);
+				useMaterial.applyMaterial(gl);
+				lastTexture = useMaterial.texture;
+			}
+			else if(nextToken.equals("mtllib"))
+			{
+				String mtlFileName = sc.next();
+				loadMaterials(materials, path, mtlFileName);
+			}
 			
 			if(sc.hasNextLine())
 			{
@@ -71,6 +94,78 @@ public class ObjLoader extends Loader
 			}
 		}
 		return true;
+	}
+	
+	public void loadMaterials(Map<String, Material> materials, String path, String name) throws IOException
+	{
+		Scanner sc = new Scanner(new File(path + name));
+		Material x = null;
+		while(sc.hasNext())
+		{
+			String nextToken = sc.next();
+			if(nextToken.equals("newmtl"))
+			{
+				String materialName = sc.next();
+				x = new Material();
+				x.setFilePath(path);
+				x.setName(materialName);
+				materials.put(materialName, x);
+			}
+			else if(nextToken.equals("Ka"))
+			{
+				float[] insertFloats = new float[3];
+				insertFloats[0] = sc.nextFloat();
+				insertFloats[1] = sc.nextFloat();
+				insertFloats[2] = sc.nextFloat();
+				x.setAmbient(insertFloats);
+			}
+			else if(nextToken.equals("Kd"))
+			{
+				float[] insertFloats = new float[3];
+				insertFloats[0] = sc.nextFloat();
+				insertFloats[1] = sc.nextFloat();
+				insertFloats[2] = sc.nextFloat();
+				x.setAmbient(insertFloats);
+			}
+			else if(nextToken.equals("Ks"))
+			{
+				float[] insertFloats = new float[3];
+				insertFloats[0] = sc.nextFloat();
+				insertFloats[1] = sc.nextFloat();
+				insertFloats[2] = sc.nextFloat();
+				x.setSpecular(insertFloats);
+			}
+			else if(nextToken.equals("d"))
+			{
+				float insertFloat = sc.nextFloat();
+				x.setD(insertFloat);
+			}
+			else if(nextToken.equals("Ns"))
+			{
+				float insertFloat = sc.nextFloat();
+				x.setPhong(insertFloat);
+			}
+			else if(nextToken.equals("Ni"))
+			{
+				float insertFloat = sc.nextFloat();
+				x.setOpticalDensity(insertFloat);
+			}
+			else if(nextToken.equals("illum"))
+			{
+				int insertInt = sc.nextInt();
+				x.setIllum(insertInt);
+			}
+			else if(nextToken.equals("map_Kd"))
+			{
+				String textureFileName = sc.next();
+				x.setTextureFileName(textureFileName);
+			}
+			else if(nextToken.equals("bump"))
+			{
+				String fileName = sc.next();
+				x.setBumpFileName(fileName);
+			}
+		}
 	}
 	
 	private void handleFace(Scanner sc, GL2 gl, List<Vector> vertices, 
@@ -89,6 +184,7 @@ public class ObjLoader extends Loader
 				if (phrase.group(3) != null) {
 					vn = normals.get(Integer.parseInt(phrase.group(3)));
 				}
+				
 				applyFace(gl, v, vt, vn);
 			}
 		gl.glEnd();	
@@ -97,9 +193,9 @@ public class ObjLoader extends Loader
 	private void applyFace(GL2 gl, Vector v, Vector vt, Vector normal) {
 		if (vt != null) {
 			if (vt.y != Float.NaN && vt.z != Float.NaN) {
-				gl.glTexCoord3f(vt.x, vt.y, vt.z);
+				gl.glTexCoord3f(vt.x, 1 - vt.y, vt.z);
 			} else if (vt.y != Float.NaN) {
-				gl.glTexCoord2f(vt.x, vt.y);
+				gl.glTexCoord2f(vt.x, 1 - vt.y);
 			} else {
 				gl.glTexCoord1f(vt.x);
 			}

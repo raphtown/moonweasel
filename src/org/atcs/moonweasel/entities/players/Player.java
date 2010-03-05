@@ -39,6 +39,8 @@ public class Player extends Entity {
 						return o1.compareTo(o2);
 					}
 				});
+		
+		scheduleThink(50);
 	}
 	
 	public void addCommand(UserCommand command) {
@@ -87,6 +89,17 @@ public class Player extends Entity {
 	
 	public Ship getShip() {
 		return ship;
+	}
+	
+	public void think() {
+		if (ship != null) {
+			for (UserCommand command : getCommandsBefore(getTime())) {
+				ship.apply(command);				
+			}
+		}
+		clearCommandsBefore(getTime());
+		
+		scheduleThink(50);
 	}
 	
 	public Status getStatus() {

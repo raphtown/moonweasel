@@ -21,6 +21,7 @@ public class EntityManager extends Manager<Entity> {
 	}
 
 	private final TreeMap<Long, Entity> thoughts;
+	private long offset;
 
 	private EntityManager() {
 		this.thoughts = new TreeMap<Long, Entity>();
@@ -44,12 +45,18 @@ public class EntityManager extends Manager<Entity> {
 	public TypeRange<Ship> getAllShipsInSphere(Vector center, float radius) {
 		return new TypeRange<Ship>(Ship.class, getAllInSphere(center, radius));
 	}
+	
+	public long getTime() {
+		return System.currentTimeMillis() + offset;
+	}
 
 	public void registerThink(Entity entity, int ms) {
 		this.thoughts.put(System.currentTimeMillis() + ms, entity);
 	}
 
-	public void update() {
+	public void update(long t) {
+		offset = t - System.currentTimeMillis();
+		
 		while (thoughts.size() > 0
 				&& thoughts.firstKey() < System.currentTimeMillis()) {
 			thoughts.remove(thoughts.firstKey()).think();

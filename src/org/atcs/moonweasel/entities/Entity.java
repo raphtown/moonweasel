@@ -22,10 +22,6 @@ public abstract class Entity implements Identifiable, Serializable {
 		this.destroyed = false;
 	}
 	
-	public <T extends Entity> T createEntity(String type) {
-		return EntityManager.getEntityManager().create(type);
-	}
-	
 	public boolean isDestroyed() {
 		return destroyed;
 	}
@@ -42,7 +38,11 @@ public abstract class Entity implements Identifiable, Serializable {
 		return this.id;
 	}
 	
-	protected void scheduleThink(int ms) {
+	public final long getTime() {
+		return EntityManager.getEntityManager().getTime();
+	}
+	
+	protected final void scheduleThink(int ms) {
 		EntityManager.getEntityManager().registerThink(this, ms);
 	}
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      

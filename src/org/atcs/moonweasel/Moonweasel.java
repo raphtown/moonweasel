@@ -113,27 +113,10 @@ public class Moonweasel
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
-				
-				entityManager.update();
+				entityManager.update(t);
 				physics.update(t, SKIP_TICKS);
-				temp = System.currentTimeMillis();
-				delta = temp - time;
-				time = temp;
-				System.out.print("Mini: " + delta);
-				UserCommand command = input.poll(t);
-				player.addCommand(command);
-				temp = System.currentTimeMillis();
-				delta = temp - time;
-				time = temp;
-				System.out.print(" " + delta);
-				if (command.getAsBitmask() != lastCommand)
-					client.sendCommandToServer(command);
-				lastCommand = command.getAsBitmask();
-				temp = System.currentTimeMillis();
-				delta = temp - time;
-				time = temp;
-				System.out.print(" " + delta);
-				player.clearCommandsBefore(t);
+				player.addCommand(input.poll(t));
+
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;

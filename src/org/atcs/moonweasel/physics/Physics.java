@@ -91,7 +91,7 @@ public class Physics
 		EntityManager em = EntityManager.getEntityManager();
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
-			integrator.integrate(e, t, dt);
+			integrator.integrate(e.getState(), t, dt);
 			e.getState().setDangerZone(dt);
 		}
 	}
