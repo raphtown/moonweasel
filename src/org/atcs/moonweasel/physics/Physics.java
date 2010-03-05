@@ -147,7 +147,7 @@ public class Physics
 		futureState.orientation = me.getState().orientation;
 		futureState.position = me.getState().position;
 		futureState.recalculate();
-		integrator.integrate(me, futureState,0,dt);
+		integrator.integrate(futureState,0,dt);
 
 		return futureState;
 	}

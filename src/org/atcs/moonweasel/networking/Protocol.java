@@ -30,7 +30,7 @@ public abstract class Protocol
 			returnmap.put(methodName, returnType);
 		}
 	}
-	
+
 	/*
 
 	public static short getShortValue(String command)
@@ -58,9 +58,9 @@ public abstract class Protocol
 		Object[] params = new Object[Protocol.getNumParams(command)];
 		return params;
 	}
-	
-	*/
-	
+
+	 */
+
 	public static Class<?>[] getParameters(String command)
 	{
 		return parammap.get(command);
@@ -70,20 +70,11 @@ public abstract class Protocol
 	{
 		try
 		{
+			Class<?>[] paramClasses = getParameters(command);
+			Method m = server.getClass().getDeclaredMethod(command, paramClasses);
 			
-			if(command.equals("doCommand"))
-			{
-				server.doCommand(((Short)parameters[0]), (Vector)parameters[1], (String)parameters[2]);
-				return null;
-			}
-			else
-			{
-				Class<?>[] paramClasses = getParameters(command);
-				Method m = server.getClass().getDeclaredMethod(command, paramClasses);
+			Object o =  m.invoke(server, parameters);
 
-				return m.invoke(server, parameters);
-			}
-			
 		} 
 		catch (Exception e)
 		{

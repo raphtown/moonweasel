@@ -14,6 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Scanner;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.UserCommand;
@@ -77,7 +78,7 @@ public class Client implements IClient
 	{
 		Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
 		server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
-		
+
 		Object[] parameters = {getIP()};
 		Protocol.sendPacket("connect", parameters, server);
 	}
@@ -130,7 +131,7 @@ public class Client implements IClient
 	{
 		// problems can be foreseen here...
 		Object[] parameters = {getIP()};
-		
+
 		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
 		for (Entity entity : entityList)
@@ -152,15 +153,11 @@ public class Client implements IClient
 
 	public void sendCommandToServer(UserCommand command)
 	{
-		//Object[] parameters = {command.getAsBitmask(), command.getMouse(), getIP()};
-		try
-		{
-			server.doCommand(command.getAsBitmask(), command.getMouse(), getIP());
-		} catch (RemoteException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//Protocol.sendPacket("doCommand", parameters, server);
+		Object[] parameters = {command.getAsBitmask(), command.getMouse(), getIP()};
+		long start = System.currentTimeMillis();
+		Protocol.sendPacket("doCommand", parameters, server);
+		long end = System.currentTimeMillis() - start;
+		Debug.print("RMI delay: " + end);
+
 	}
 }

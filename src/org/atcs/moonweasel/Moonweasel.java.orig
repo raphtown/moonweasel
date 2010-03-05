@@ -12,7 +12,6 @@ import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
-import org.atcs.moonweasel.networking.Debug;
 import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.networking.actions.ServerActionListener;
 import org.atcs.moonweasel.physics.Physics;
@@ -104,96 +103,63 @@ public class Moonweasel
 		t = 0;
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
+		long time = System.currentTimeMillis();
+		long delta = 0;
+		long temp = 0;
 		float interpolation;
 		short lastCommand = 0;
 		while (!view.shouldQuit()) {
+			time = System.currentTimeMillis();
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
+<<<<<<< HEAD
+				
 				entityManager.update();
 				physics.update(t, SKIP_TICKS);
+				temp = System.currentTimeMillis();
+				delta = temp - time;
+				time = temp;
+				System.out.print("Mini: " + delta);
 				UserCommand command = input.poll(t);
 				player.addCommand(command);
+				temp = System.currentTimeMillis();
+				delta = temp - time;
+				time = temp;
+				System.out.print(" " + delta);
 				if (command.getAsBitmask() != lastCommand)
 					client.sendCommandToServer(command);
 				lastCommand = command.getAsBitmask();
+				temp = System.currentTimeMillis();
+				delta = temp - time;
+				time = temp;
+				System.out.print(" " + delta);
 				player.clearCommandsBefore(t);
+=======
+				entityManager.update(t);
+				physics.update(t, SKIP_TICKS);
+				player.addCommand(input.poll(t));
 
+>>>>>>> master
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
+				System.out.println();
 			}
-
+			time = System.currentTimeMillis();
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
 				/ SKIP_TICKS;
 			view.render(interpolation);
+			temp = System.currentTimeMillis();
+			delta = temp - time;
+			time = temp;
+			System.out.print("Big: " + delta);
+			System.out.println();
 		}
 	}
 	
 	public long getT()
 	{
-<<<<<<< HEAD
-		String actionCommand = e.getActionCommand();
-		Debug.print("Action performed: " + actionCommand);
-		String[] parts = actionCommand.split(" ");
-		if (parts.length > 0)
-		{
-			if (parts[0].equals("newClient"))
-			{
-				String clientHostname = parts[1];
-				
-				Player plr = this.entityManager.create("player");
-				plr.spawn();
-				
-				playerMap.put(clientHostname, plr);
-			}
-			else if (parts[0].equals("shipChosen"))
-			{
-				ShipType st = ShipType.valueOf(parts[1]);
-				String clientHostname = parts[2];
-				if (!clientHostname.equals(client.getIP()))
-				{
-					String shipTypeName = st.typeName;
-					Player plr = playerMap.get(clientHostname);
-					Ship ship = this.entityManager.create(shipTypeName);
-					ship.setPilot(plr);
-					ship.spawn();
-					plr.setShip(ship);
-				}
-			}
-			else if (parts[0].equals("commRec"))
-			{
-				short command = Short.parseShort(parts[1]);
-				float mouseX = Float.parseFloat(parts[2]);
-				float mouseY = Float.parseFloat(parts[3]);
-				String clientHostname = parts[4];
-				if (!clientHostname.equals(client.getIP()))
-				{
-					Player plr = playerMap.get(clientHostname);
-					if (playerCommandMap.get(plr) != null)
-						if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
-							return;
-					UserCommand ucommand = new UserCommand();
-					ucommand.setKeysAsBitmask(command);
-					ucommand.setMouse(mouseX, mouseY);
-					ucommand.setTime(t);
-					plr.addCommand(ucommand);
-					playerCommandMap.put(plr, new Long(command));
-				}
-			}
-			else if (parts[0].equals("discClient"))
-			{
-				String hostname = parts[1];
-				Player plr = playerMap.get(hostname);
-				this.entityManager.delete(plr);
-				playerMap.remove(hostname);
-				plr.getShip().destroy();
-				plr.destroy();
-				((Server)(e.getSource())).update();
-			}
-		}
-=======
 		return t;
->>>>>>> aa0b1d535520b04602fa7714c7f535fdd9108ca3
 	}
 }

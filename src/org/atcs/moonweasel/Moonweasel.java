@@ -25,19 +25,19 @@ public class Moonweasel
 		ENTITY_MAP.put(Entity.getEntityType(clazz), clazz);
 		ENTITY_TYPE_ID_MAP.put(clazz.toString().hashCode(), clazz);
 	}
-	
+
 	public static int getTypeID(Class<? extends Entity> clazz) {
 		return clazz.toString().hashCode();
 	}
-	
+
 	public static Class<? extends Entity> getEntityClassByID(int id) {
 		return ENTITY_TYPE_ID_MAP.get(id);
 	}
-	
+
 	public static Class<? extends Entity> getEntityClassByName(String name) {
 		return ENTITY_MAP.get(name);
 	}
-	
+
 	static {
 		ENTITY_MAP = new TreeMap<String, Class<? extends Entity>>();
 		ENTITY_TYPE_ID_MAP = new TreeMap<Integer, Class<? extends Entity>>();
@@ -68,7 +68,7 @@ public class Moonweasel
 
 	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
-		
+
 		System.out.print("Enter server name: ");
 		String serverName = new java.util.Scanner(System.in).nextLine();
 		server = new Server(serverName);
@@ -85,7 +85,7 @@ public class Moonweasel
 		snowflake.setPilot(player);
 		snowflake.spawn();
 		player.setShip(snowflake);
-		
+
 		this.physics = new Physics();
 		this.input = new InputController(view.getWindow());
 	}
@@ -94,7 +94,7 @@ public class Moonweasel
 		physics.destroy();
 		view.destroy();
 	}
-	
+
 	private void run() {
 		final int TICKS_PER_SECOND = 25;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
@@ -115,25 +115,54 @@ public class Moonweasel
 					loops < MAX_FRAMESKIP) {
 				entityManager.update(t);
 				physics.update(t, SKIP_TICKS);
-				player.addCommand(input.poll(t));
+				temp = System.currentTimeMillis();
+				delta = temp - time;
+				time = temp;
+				if(delta > 10)
+				{
+					System.out.println("Mini1: " + delta);
+				}
+				UserCommand command = input.poll(t);
+				player.addCommand(command);
+				temp = System.currentTimeMillis();
+				delta = temp - time;
+				time = temp;
+				if(delta > 10)
+				{
+					System.out.println("Mini2: " + delta);
+				}
+				if (command.getAsBitmask() != lastCommand)
+					client.sendCommandToServer(command);
+				lastCommand = command.getAsBitmask();
+				temp = System.currentTimeMillis();
+				delta = temp - time;
+				time = temp;
+				if(delta > 10)
+				{
+					System.out.println("Mini3: " + delta);
+				}
+				player.clearCommandsBefore(t);
 
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
-				System.out.println();
 			}
 			time = System.currentTimeMillis();
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
-				/ SKIP_TICKS;
+			/ SKIP_TICKS;
 			view.render(interpolation);
 			temp = System.currentTimeMillis();
 			delta = temp - time;
 			time = temp;
-			System.out.print("Big: " + delta);
-			System.out.println();
+			if(delta > 20)
+			{
+				System.out.print("Big: " + delta);
+				System.out.println();
+			}
+
 		}
 	}
-	
+
 	public long getT()
 	{
 		return t;
