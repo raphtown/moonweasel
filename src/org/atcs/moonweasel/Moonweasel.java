@@ -109,57 +109,59 @@ public class Moonweasel
 		float interpolation;
 		short lastCommand = 0;
 		while (!view.shouldQuit()) {
-			time = System.currentTimeMillis();
-			loops = 0;
-			while (System.currentTimeMillis() > next_logic_tick &&
-					loops < MAX_FRAMESKIP) {
-				entityManager.update(t);
-				physics.update(t, SKIP_TICKS);
-				temp = System.currentTimeMillis();
-				delta = temp - time;
-				time = temp;
-				if(delta > 10)
-				{
-					System.out.println("Mini1: " + delta);
-				}
-				UserCommand command = input.poll(t);
-				player.addCommand(command);
-				temp = System.currentTimeMillis();
-				delta = temp - time;
-				time = temp;
-				if(delta > 10)
-				{
-					System.out.println("Mini2: " + delta);
-				}
-				if (command.getAsBitmask() != lastCommand)
-					client.sendCommandToServer(command);
-				lastCommand = command.getAsBitmask();
-				temp = System.currentTimeMillis();
-				delta = temp - time;
-				time = temp;
-				if(delta > 10)
-				{
-					System.out.println("Mini3: " + delta);
-				}
-				player.clearCommandsBefore(t);
-
-				t += SKIP_TICKS;
-				next_logic_tick += SKIP_TICKS;
-				loops++;
-			}
-			time = System.currentTimeMillis();
-			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
-			/ SKIP_TICKS;
-			view.render(interpolation);
-			temp = System.currentTimeMillis();
-			delta = temp - time;
-			time = temp;
-			if(delta > 20)
+			synchronized(this.entityManager)
 			{
-				System.out.print("Big: " + delta);
-				System.out.println();
-			}
+				time = System.currentTimeMillis();
+				loops = 0;
+				while (System.currentTimeMillis() > next_logic_tick &&
+						loops < MAX_FRAMESKIP) {
+					entityManager.update(t);
+					physics.update(t, SKIP_TICKS);
+					temp = System.currentTimeMillis();
+					delta = temp - time;
+					time = temp;
+					if(delta > 10)
+					{
+						Debug.print("Mini1: " + delta);
+					}
+					UserCommand command = input.poll(t);
+					player.addCommand(command);
+					temp = System.currentTimeMillis();
+					delta = temp - time;
+					time = temp;
+					if(delta > 10)
+					{
+						Debug.print("Mini2: " + delta);
+					}
+					if (command.getAsBitmask() != lastCommand)
+						client.sendCommandToServer(command);
+					lastCommand = command.getAsBitmask();
+					temp = System.currentTimeMillis();
+					delta = temp - time;
+					time = temp;
+					if(delta > 10)
+					{
+						Debug.print("Mini3: " + delta);
+					}
+					player.clearCommandsBefore(t);
 
+					t += SKIP_TICKS;
+					next_logic_tick += SKIP_TICKS;
+					loops++;
+				}
+				time = System.currentTimeMillis();
+				interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
+				/ SKIP_TICKS;
+				view.render(interpolation);
+				temp = System.currentTimeMillis();
+				delta = temp - time;
+				time = temp;
+				if(delta > 20)
+				{
+					Debug.print("Rendering delay: " + delta);
+
+				}
+			}
 		}
 	}
 

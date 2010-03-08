@@ -134,10 +134,13 @@ public class Client implements IClient
 
 		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
-		for (Entity entity : entityList)
+		synchronized(mgr)
 		{
-			mgr.delete(entity);
-			mgr.add(entity);
+			for (Entity entity : entityList)
+			{
+				mgr.delete(entity);
+				mgr.add(entity);
+			}
 		}
 	}
 
