@@ -48,7 +48,6 @@ public class Moonweasel
 
 	public static void main(String[] args) {
 		Moonweasel weasel = new Artemis(800, 600, false);
-
 		weasel.run();
 		weasel.destroy(); // eaten
 
@@ -56,43 +55,29 @@ public class Moonweasel
 	}
 
 	protected Physics physics;
-	protected WeaselView view;
-	protected InputController input;
-	protected Client client;
+
+
+
 	protected Server server;
 
 	private EntityManager entityManager;
-	private Player player;
+
 	private Map<String, Player> playerMap = new HashMap<String, Player>();
 	protected long t;
 
 	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
-
 		System.out.print("Enter server name: ");
 		String serverName = new java.util.Scanner(System.in).nextLine();
 		server = new Server(serverName);
-		this.client = new Client();
-		server.addActionListener(new ServerActionListener(entityManager, playerMap, client, this));
-		client.findAndConnectToServer();
-		client.chooseShip();
-		player = this.entityManager.create("player");
-		player.spawn();
-		playerMap.put(client.getIP(), player);
-		this.view = new WeaselView(width, height, fullscreen, player);
 
-		Snowflake snowflake = this.entityManager.create("snowflake");
-		snowflake.setPilot(player);
-		snowflake.spawn();
-		player.setShip(snowflake);
+		server.addActionListener(new ServerActionListener(entityManager, playerMap, this));
 
 		this.physics = new Physics();
-		this.input = new InputController(view.getWindow());
 	}
 
 	private void destroy() {
 		physics.destroy();
-		view.destroy();
 	}
 
 	private void run() {
@@ -106,61 +91,27 @@ public class Moonweasel
 		long time = System.currentTimeMillis();
 		long delta = 0;
 		long temp = 0;
-		float interpolation;
-		short lastCommand = 0;
-		while (!view.shouldQuit()) {
-			synchronized(this.entityManager)
+
+		while (true) {
+			
+			loops = 0;
+			while (System.currentTimeMillis() > next_logic_tick &&
+					loops < MAX_FRAMESKIP) 
 			{
 				time = System.currentTimeMillis();
-				loops = 0;
-				while (System.currentTimeMillis() > next_logic_tick &&
-						loops < MAX_FRAMESKIP) {
-					entityManager.update(t);
-					physics.update(t, SKIP_TICKS);
-					temp = System.currentTimeMillis();
-					delta = temp - time;
-					time = temp;
-					if(delta > 10)
-					{
-						Debug.print("Mini1: " + delta);
-					}
-					UserCommand command = input.poll(t);
-					player.addCommand(command);
-					temp = System.currentTimeMillis();
-					delta = temp - time;
-					time = temp;
-					if(delta > 10)
-					{
-						Debug.print("Mini2: " + delta);
-					}
-					if (command.getAsBitmask() != lastCommand)
-						client.sendCommandToServer(command);
-					lastCommand = command.getAsBitmask();
-					temp = System.currentTimeMillis();
-					delta = temp - time;
-					time = temp;
-					if(delta > 10)
-					{
-						Debug.print("Mini3: " + delta);
-					}
-					player.clearCommandsBefore(t);
-
-					t += SKIP_TICKS;
-					next_logic_tick += SKIP_TICKS;
-					loops++;
-				}
-				time = System.currentTimeMillis();
-				interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
-				/ SKIP_TICKS;
-				view.render(interpolation);
+				entityManager.update(t);
+				physics.update(t, SKIP_TICKS);
 				temp = System.currentTimeMillis();
 				delta = temp - time;
 				time = temp;
-				if(delta > 20)
+				if(delta > 10)
 				{
-					Debug.print("Rendering delay: " + delta);
-
+					Debug.print("Mini: " + delta);
 				}
+				
+				t += SKIP_TICKS;
+				next_logic_tick += SKIP_TICKS;
+				loops++;
 			}
 		}
 	}

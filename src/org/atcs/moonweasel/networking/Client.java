@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
+import org.atcs.moonweasel.InputController;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.UserCommand;
@@ -33,10 +34,12 @@ import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
  * This is a work in progress and is not currently working.
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Client implements IClient
+public class Client implements IClient, Runnable
 {
 	private IServer server = null;
 	public String ip;
+	
+	
 	public static void main(String args[])
 	{
 		new Client().findAndConnectToServer();
@@ -59,6 +62,15 @@ public class Client implements IClient
 		{
 			e.printStackTrace();
 		}
+		
+		
+	}
+	
+	@Override
+	public void run()
+	{
+		
+		
 	}
 
 	public void findAndConnectToServer()
@@ -134,14 +146,13 @@ public class Client implements IClient
 
 		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
-		synchronized(mgr)
+
+		for (Entity entity : entityList)
 		{
-			for (Entity entity : entityList)
-			{
-				mgr.delete(entity);
-				mgr.add(entity);
-			}
+			mgr.delete(entity);
+			mgr.add(entity);
 		}
+
 	}
 
 	public IServer getServer()
@@ -163,4 +174,6 @@ public class Client implements IClient
 		Debug.print("RMI delay: " + end);
 
 	}
+
+
 }
