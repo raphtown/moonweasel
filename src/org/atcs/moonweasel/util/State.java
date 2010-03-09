@@ -1,6 +1,12 @@
 package org.atcs.moonweasel.util;
 
+
 import java.util.ArrayList;
+import java.util.PriorityQueue;
+
+import org.atcs.moonweasel.entities.players.UserCommand;
+import org.atcs.moonweasel.ranges.Range;
+import org.atcs.moonweasel.ranges.TimeRange;
 
 public class State 
 {
@@ -46,6 +52,8 @@ public class State
 	
 	
 	
+	private PriorityQueue<TimedDerivative> derivatives;
+	
 	public State(float mass, Matrix inertia) 
 	{
 		this(Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
@@ -65,20 +73,49 @@ public class State
 		this.inertiaTensor = inertiaTensor;
 		this.inverseInertiaTensor = inverseInertiaTensor;
 		recalculate();
+		
+		this.derivatives = new PriorityQueue<TimedDerivative>();
+	}
+	
+	private State(State other) {
+		this.position = other.position;
+		this.momentum = other.momentum;
+		this.orientation = other.orientation;
+		this.angularMomentum = other.angularMomentum;
+
+		this.velocity = other.velocity;
+		this.angularVelocity = other.angularVelocity;
+		this.spin = other.spin;
+		this.bodyToWorld = other.bodyToWorld;
+		this.worldToBody = other.worldToBody;
+		this.verticesOfBoundingRegion = other.verticesOfBoundingRegion;
+		this.dangerZoneRadius = other.dangerZoneRadius;
+		
+		this.mass = other.mass;
+		this.inverseMass = other.inverseMass;
+		this.inertiaTensor = other.inertiaTensor;
+		this.inverseInertiaTensor = other.inverseInertiaTensor;
+		
+		this.derivatives = other.derivatives;
+	}
+	
+	public void addDerivative(TimedDerivative derivative) {
+		this.derivatives.add(derivative);
+	}
+	
+	public void clearDerivativesBefore(long t) {
+		while (!derivatives.isEmpty() &&
+				derivatives.peek().getTime() < t) {
+			derivatives.remove();
+		}
 	}
 	
 	public State clone() {
-		State clone = new State(
-				position,
-				momentum,
-				orientation,
-				angularMomentum,
-				mass, 
-				inverseMass,
-				inertiaTensor,
-				inverseInertiaTensor);
-		clone.recalculate();
-		return clone;
+		return new State(this);
+	}
+	
+	public Range<TimedDerivative> getDerivativesBefore(long t) {
+		return new TimeRange<TimedDerivative>(0, t, derivatives.iterator());
 	}
 	
 	public void recalculate() {

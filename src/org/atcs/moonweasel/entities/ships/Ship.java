@@ -3,8 +3,14 @@ package org.atcs.moonweasel.entities.ships;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.Vulnerable;
+import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.players.UserCommand;
+import org.atcs.moonweasel.entities.players.UserCommand.Commands;
 import org.atcs.moonweasel.util.Matrix;
+import org.atcs.moonweasel.util.MutableVector;
+import org.atcs.moonweasel.util.State;
+import org.atcs.moonweasel.util.TimedDerivative;
 import org.atcs.moonweasel.util.Vector;
 
 public class Ship extends ModelEntity implements Vulnerable {
@@ -26,20 +32,104 @@ public class Ship extends ModelEntity implements Vulnerable {
 		this.gunners = new Player[data.gunners.length];
 		this.gunnerPositions = data.gunners;
 	}
+	
+	public void apply(UserCommand command) {
+		State state = getState();
+		float f = data.thrust * 0.00001f; //50 newtons or 50 newton-meters, depending on context
+		Vector relativeVelocity = state.orientation.inverse().rotate(state.velocity);
+		
+		MutableVector force = new MutableVector();
+		MutableVector relativeForce = new MutableVector();
+		MutableVector torque = new MutableVector();
+		MutableVector relativeTorque = new MutableVector();
+		
+		// Mouse movement in x axis.
+		if (command.get(Commands.ROLLING)) { // User wants to roll.
+			relativeTorque.z += 0.001 * command.getMouse().x; // Scale mouse position. 
+		} else { // Turn rather than roll.
+			relativeTorque.y += 0.001 * command.getMouse().x;			
+		}
+
+		// Mouse movement in y axis.
+		relativeTorque.x += 0.001 * command.getMouse().y;
+				
+		// Damp that angular motion!!!
+		if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+			Vector dampTorque = new Vector(
+					0.05f * state.angularVelocity.x,
+					0.05f * state.angularVelocity.y,
+					0.05f * state.angularVelocity.z);
+			torque.minus(dampTorque);
+		}
+
+		// Thrusters
+		if (command.get(Commands.FORWARD)) {
+			relativeForce.z -= f;
+		} 
+		if (command.get(Commands.BACKWARD)) {
+			relativeForce.z += f;
+		}
+		if (command.get(Commands.BOOST)) {
+			relativeForce.z *= 5;
+		}
+		
+		if (command.get(Commands.LEFT) && command.get(Commands.RIGHT)) {
+		} else if (command.get(Commands.LEFT)) {
+			relativeForce.x -= f;
+		} else if (command.get(Commands.RIGHT)) {
+			relativeForce.x += f;
+		} else if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+			relativeForce.x -= 20 * relativeVelocity.x;
+		}
+		
+		if (command.get(Commands.UP) && command.get(Commands.DOWN)) {
+		} else if (command.get(Commands.UP)) {
+			relativeForce.y += f;
+		} else if (command.get(Commands.DOWN)) {
+			relativeForce.y -= f;
+		} else if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+			relativeForce.y -= 20 * relativeVelocity.y;
+		}
+		
+		// A little forward thrust.
+		if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+			relativeForce.z -= f / 2;
+		}
+		
+		force.sum(state.orientation.rotate(relativeForce.toVector()));
+		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
+		state.addDerivative(new TimedDerivative(getTime(), 
+				force.toVector(), torque.toVector()));
+	}
 
 	@Override
 	public void damage(int damage) {
 		health -= damage;
+		
+		if (health <= 0) {
+			destroy();
+		}
 	}
 	
 	@Override
 	public void destroy() {
+		super.destroy();
+		
+		pilot.died();
+		for (Player gunner : gunners) {
+			gunner.died();
+		}
+		
 		EntityManager manager = EntityManager.getEntityManager();
+
+		Explosion explosion = manager.create("explosion");
+		explosion.setPosition(this.getPosition());
+
 		float distance = getState().mass / 1000;
 		float damage;
 		for (Ship ship : manager.getAllShipsInSphere(
 				getState().position, distance)) {
-			if (ship == this) {
+			if (ship == this || ship.isDestroyed()) {
 				continue;
 			}
 			

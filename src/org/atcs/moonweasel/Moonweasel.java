@@ -1,10 +1,11 @@
 package org.atcs.moonweasel;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
@@ -12,12 +13,32 @@ import org.atcs.moonweasel.networking.Networking;
 import org.atcs.moonweasel.physics.Physics;
 
 public class Moonweasel {
-	public static final Map<String, Class<? extends Entity>> ENTITY_MAP;
+	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
+	private static final Map<Integer, Class<? extends Entity>> ENTITY_TYPE_ID_MAP;
 
+	private static void addEntityClass(Class<? extends Entity> clazz) {
+		ENTITY_MAP.put(Entity.getEntityType(clazz), clazz);
+		ENTITY_TYPE_ID_MAP.put(clazz.toString().hashCode(), clazz);
+	}
+	
+	public static int getTypeID(Class<? extends Entity> clazz) {
+		return clazz.toString().hashCode();
+	}
+	
+	public static Class<? extends Entity> getEntityClassByID(int id) {
+		return ENTITY_TYPE_ID_MAP.get(id);
+	}
+	
+	public static Class<? extends Entity> getEntityClassByName(String name) {
+		return ENTITY_MAP.get(name);
+	}
+	
 	static {
-		ENTITY_MAP = new HashMap<String, Class<? extends Entity>>();
-		ENTITY_MAP.put(Entity.getEntityType(Player.class), Player.class);
-		ENTITY_MAP.put(Entity.getEntityType(Snowflake.class), Snowflake.class);
+		ENTITY_MAP = new TreeMap<String, Class<? extends Entity>>();
+		ENTITY_TYPE_ID_MAP = new TreeMap<Integer, Class<? extends Entity>>();
+		addEntityClass(Player.class);
+		addEntityClass(Snowflake.class);
+		addEntityClass(Explosion.class);
 	}
 
 	public static void main(String[] args) {
@@ -73,10 +94,9 @@ public class Moonweasel {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
-				entityManager.update();
+				entityManager.update(t);
 				physics.update(t, SKIP_TICKS);
 				player.addCommand(input.poll(t));
-				player.clearCommandsBefore(t);
 
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
