@@ -10,9 +10,6 @@ import javax.media.opengl.glu.GLU;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
-import org.atcs.moonweasel.physics.BoundingBox;
-import org.atcs.moonweasel.physics.BoundingShape;
-import org.atcs.moonweasel.physics.BoundingSphere;
 import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
@@ -148,17 +145,7 @@ public class WeaselView extends View {
         		CAMERA_CLIPPING_FAR);
         
         ModelEntity ent = me.getShip();
-        BoundingShape shape = ent.getBoundingShape();
-        float radius;
-        if (shape instanceof BoundingBox) {
-        	radius = ((BoundingBox)shape).maxZ;
-        } else if (shape instanceof BoundingSphere) {
-        	radius = ((BoundingSphere)shape).radius;
-        } else {
-        	throw new RuntimeException(String.format(
-        			"Unknown bounding shape of type %s.", 
-        			shape.getClass().getName()));
-        }
+        float radius = 10;
         
         State interp = State.interpolate(ent.getLastRenderState(), ent.getState(), alpha);
         Vector relative = interp.orientation.rotate(

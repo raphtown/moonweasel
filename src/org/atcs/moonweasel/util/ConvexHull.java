@@ -178,15 +178,17 @@ public class ConvexHull
 	{
 		Vector point = remainingPoints.get(0);
 		remainingPoints.remove(0);
+	
 		
-		if (Physics.pointInPolygon(point, toPolygon(), p))
+		ArrayList<Edge> visibleEdges = new ArrayList<Edge>();
+		int index = findIndexOfNonvisibleEdge(point);
+		
+		if(index == -1)
 		{
 			//System.out.println("Point " + point + " inside convex hull, not added.");
 			return;
 		}
 		
-		ArrayList<Edge> visibleEdges = new ArrayList<Edge>();
-		int index = findIndexOfNonvisibleEdge(point);
 		for(int i = 0; i < CH.size(); i++)
 		{
 			if (CH.get((index+i) % CH.size()).visibleFromPoint(point, plane))
@@ -212,7 +214,7 @@ public class ConvexHull
 				return CH.indexOf(e);
 			}
 		}
-		System.out.println("oh damn, " + p + " can see every single edge in CH");
+		//System.out.println("oh damn, " + p + " can see every single edge in CH");
 		return -1;
 	}
 }

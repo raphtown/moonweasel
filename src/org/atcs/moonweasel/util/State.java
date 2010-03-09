@@ -39,13 +39,19 @@ public class State
 	public final float inverseMass;
 	public final Matrix inertiaTensor;
 	public final Matrix inverseInertiaTensor;
+
+	public ArrayList<Vector> XYConvexHull;
+	public ArrayList<Vector> YZConvexHull;
+	public ArrayList<Vector> ZXConvexHull;
+	
+	
 	
 	public State(float mass, Matrix inertia) 
 	{
-		this(Vector.ZERO, Vector.ZERO, Quaternion.ZERO,
-				Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
+		this(Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
+		
+
 	}
-	
 	public State(Vector position, Vector momentum, Quaternion orientation, 
 			Vector angularMomentum, float mass, float inverseMass, Matrix inertiaTensor,
 			Matrix inverseInertiaTensor) {
@@ -91,5 +97,12 @@ public class State
 	public void setDangerZone(float dt)
 	{
 		dangerZoneRadius = velocity.scale(dt).length();
+	}
+	
+	public void setInitialConvexHull(ArrayList<Vector> boundingPoints)
+	{
+		XYConvexHull = (new ConvexHull(boundingPoints, "xy")).toPolygon();
+		YZConvexHull = (new ConvexHull(boundingPoints, "yz")).toPolygon();
+		ZXConvexHull = (new ConvexHull(boundingPoints, "zx")).toPolygon();
 	}
 }

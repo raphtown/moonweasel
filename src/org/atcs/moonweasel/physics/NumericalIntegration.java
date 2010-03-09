@@ -53,16 +53,17 @@ public class NumericalIntegration
 	public void forces(State state, long t, Derivative output)
 	{
 		damping(state, output);
-		//collisionResponse();
 	
-		if (curEntity instanceof Ship) {
+		if (curEntity != null && curEntity instanceof Ship) 
+		{
 			Range<UserCommand> commands = ((Ship)curEntity).getPilot().getCommandsBefore(t);
-			for (UserCommand command : commands) {
+			for (UserCommand command : commands) 
+			{
 				control(((Ship)curEntity).getData(), command, state, output);				
 			}
 		}
+		
 	}
-
 	
 	public void damping(State state, Derivative output)
 	{
@@ -71,9 +72,12 @@ public class NumericalIntegration
 		output.torque = output.torque.subtract(state.angularVelocity.scale(0.001f));
 	}
 	
-	public void collisionResponse()
+	public void collisionResponse(State s1, State s2)
 	{
-		
+		//for testing purposes, just zero the velocity and forces
+		s1.angularMomentum = Vector.ZERO;
+		s1.momentum = Vector.ZERO;
+		//this should actually MOVE the stuff
 	}
 	
 	public void control(ShipData data, UserCommand input, State state, Derivative output)
@@ -85,9 +89,12 @@ public class NumericalIntegration
 		MutableVector relativeTorque = new MutableVector();
 		
 		// Mouse movement in x axis.
-		if (input.get(Commands.ROLLING)) { // User wants to roll.
+		if (input.get(Commands.ROLLING)) 
+		{ // User wants to roll.
 			relativeTorque.z += 0.001 * input.getMouse().x; // Scale mouse position. 
-		} else { // Turn rather than roll.
+		} 
+		else 
+		{ // Turn rather than roll.
 			relativeTorque.y += 0.001 * input.getMouse().x;			
 		}
 
@@ -95,7 +102,8 @@ public class NumericalIntegration
 		relativeTorque.x += 0.001 * input.getMouse().y;
 				
 		// Damp that angular motion!!!
-		if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+		if (input.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) 
+		{
 			Vector dampTorque = new Vector(
 					0.1f * state.angularVelocity.x,
 					0.1f * state.angularVelocity.y,
@@ -104,13 +112,16 @@ public class NumericalIntegration
 		}
 
 		// Thrusters
-		if (input.get(Commands.FORWARD)) {
+		if (input.get(Commands.FORWARD)) 
+		{
 			relativeForce.z -= f;
 		} 
-		if (input.get(Commands.BACKWARD)) {
+		if (input.get(Commands.BACKWARD)) 
+		{
 			relativeForce.z += f;
 		}
-		if (input.get(Commands.BOOST)) {
+		if (input.get(Commands.BOOST)) 
+		{
 			relativeForce.z *= 5;
 		}
 		
@@ -136,8 +147,25 @@ public class NumericalIntegration
 		output.torque = output.torque.add(state.orientation.rotate(relativeTorque.toVector()));
 	}
 	
-	public void integrate(ModelEntity entity, long t, int dt) {
+	public void integrate(ModelEntity entity, long t, int dt) 
+	{
 		integrate(entity, entity.getState(), t, dt);
+	}
+	
+	public void integrate(State state, long t, int dt)
+	{
+		this.curEntity = null;
+		
+        Derivative a = evaluate(state.clone(), t);
+        Derivative b = evaluate(state.clone(), t, dt / 2, a);
+        Derivative c = evaluate(state.clone(), t, dt / 2, b);
+        Derivative d = evaluate(state.clone(), t, dt, c);
+        
+        state.position = state.position.add(Vector.add(a.velocity, b.velocity, b.velocity, c.velocity, c.velocity, d.velocity).scale(dt / 6));
+        state.momentum = state.momentum.add(Vector.add(a.force, b.force, b.force, c.force, c.force, d.force).scale(dt/6));
+        state.orientation = state.orientation.add(Quaternion.add(a.spin, b.spin, b.spin, c.spin, c.spin, d.spin).scale(dt/6));
+        state.angularMomentum = state.angularMomentum.add(Vector.add(a.torque, b.torque, b.torque, c.torque, c.torque, d.torque).scale(dt/6));
+        state.recalculate();
 	}
 	
 	public void integrate(ModelEntity entity, State state, long t, int dt)
@@ -149,15 +177,10 @@ public class NumericalIntegration
         Derivative c = evaluate(state.clone(), t, dt / 2, b);
         Derivative d = evaluate(state.clone(), t, dt, c);
         
-        state.position = state.position.add(
-        		Vector.add(a.velocity, b.velocity, b.velocity, c.velocity, c.velocity, 
-        				d.velocity).scale(dt / 6));
-        state.momentum = state.momentum.add(
-        		Vector.add(a.force, b.force, b.force, c.force, c.force, d.force).scale(dt/6));
-        state.orientation = state.orientation.add(
-        		Quaternion.add(a.spin, b.spin, b.spin, c.spin, c.spin, d.spin).scale(dt/6));
-        state.angularMomentum = state.angularMomentum.add(
-        		Vector.add(a.torque, b.torque, b.torque, c.torque, c.torque, d.torque).scale(dt/6));
+        state.position = state.position.add(Vector.add(a.velocity, b.velocity, b.velocity, c.velocity, c.velocity, d.velocity).scale(dt / 6));
+        state.momentum = state.momentum.add(Vector.add(a.force, b.force, b.force, c.force, c.force, d.force).scale(dt/6));
+        state.orientation = state.orientation.add(Quaternion.add(a.spin, b.spin, b.spin, c.spin, c.spin, d.spin).scale(dt/6));
+        state.angularMomentum = state.angularMomentum.add(Vector.add(a.torque, b.torque, b.torque, c.torque, c.torque, d.torque).scale(dt/6));
         state.recalculate();
    }
 }

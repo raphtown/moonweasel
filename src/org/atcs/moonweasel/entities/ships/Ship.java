@@ -18,7 +18,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private Vector[] gunnerPositions;
 	
 	protected Ship(ShipData data) {
-		super(data.bounds, data.mass, BASE_TENSOR.scale(data.mass / 100));
+		super(data.mass, BASE_TENSOR.scale(data.mass / 100));
 
 		this.data = data;
 		this.health = this.data.health;

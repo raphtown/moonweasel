@@ -1,8 +1,10 @@
 package org.atcs.moonweasel.physics;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -14,70 +16,11 @@ import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Vector;
 
 public class Physics 
-{
-	public static ArrayList<Vector> blah1;
-	public static ArrayList<Vector> blah2;
-	
-	public static void main(String[] args)
-	{
-		blah1 = new ArrayList<Vector>();
-		for(int i = 0; i < 100; i++)
-		{
-			blah1.add(new Vector((int) (Math.random()*700 + 25),(int) (Math.random()*700 + 25),(int) (Math.random()*700 + 25)));
-		}
-		removeDuplicates(blah1);
-		
-		//convexHullTester ctest = new convexHullTester();
-		
-		ArrayList<Vector> cube1 = new ArrayList<Vector>();
-		cube1.add(new Vector(0,0,0));
-		cube1.add(new Vector(200,200,200));
-		cube1.add(new Vector(0,200,0));
-		cube1.add(new Vector(200,0,200));
-		cube1.add(new Vector(200,0,0));
-		cube1.add(new Vector(200,200,0));
-		cube1.add(new Vector(0,0,200));
-		cube1.add(new Vector(0,200,200));
-		
-		ArrayList<Vector> cube2 = new ArrayList<Vector>();
-		cube2.add(new Vector(400,400,400));
-		cube2.add(new Vector(600,600,600));
-		cube2.add(new Vector(400,600,400));
-		cube2.add(new Vector(600,400,600));
-		cube2.add(new Vector(600,400,400));
-		cube2.add(new Vector(600,600,400));
-		cube2.add(new Vector(400,400,600));
-		cube2.add(new Vector(400,600,600));
-		
-		ArrayList<Vector> shiftedCube = new ArrayList<Vector>();
-		shiftedCube.add(new Vector(100,100,100));
-		shiftedCube.add(new Vector(300,100,100));
-		shiftedCube.add(new Vector(100,300,100));
-		shiftedCube.add(new Vector(200,200,300)); //inside
-		shiftedCube.add(new Vector(300,300,100)); //inside
-		shiftedCube.add(new Vector(400,200,300));
-		shiftedCube.add(new Vector(200,400,300));
-		shiftedCube.add(new Vector(400,400,300));
-		
-		
-		ConvexHull obj1xy = new ConvexHull(projectOntoXY(cube1), "xy");
-		System.out.println(obj1xy.toPolygon());
-		ConvexHull obj2xy = new ConvexHull(projectOntoXY(cube2), "xy");
-		System.out.println(obj2xy.toPolygon());
-		ConvexHull obj1yz = new ConvexHull(projectOntoYZ(cube1), "yz");
-		System.out.println(obj1yz.toPolygon());
-		ConvexHull obj2yz = new ConvexHull(projectOntoYZ(cube2), "yz");
-		System.out.println(obj2yz.toPolygon());
-		ConvexHull obj1zx = new ConvexHull(projectOntoZX(cube1), "zx");
-		System.out.println(obj1zx.toPolygon());
-		ConvexHull obj2zx = new ConvexHull(projectOntoZX(cube2), "zx");
-		System.out.println(obj2zx.toPolygon());
-		
-		System.out.println("doing polyhedral collision");
-		System.out.println(polyhedralCollision(cube1, shiftedCube));
-	}
+{	
 	
 	private NumericalIntegration integrator;
+	
+	public static Map<State, State> collidingStates = new HashMap<State, State>();
 	
 	public Physics() 
 	{
@@ -94,15 +37,72 @@ public class Physics
 	public void update(long t, int dt) //updates all models
 	{
 		EntityManager em = EntityManager.getEntityManager();
+		ArrayList<State> allStates = new ArrayList<State>();
+		ArrayList<State> statesToPredict = new ArrayList<State>();
+		
+		
+		
+		//Generating the macro list of all of the states, pre split
+		//we split this list into "possible colliders" and "definitely safe"
+		//possible colliders are handled with more precision later
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
-			integrator.integrate(e, t, dt);
-			e.getState().setDangerZone(dt);
+			allStates.add(e.getState());
+		}
+		
+		//Separation based on "danger zone" concept
+		for(State s : allStates)
+		{
+			for(State check : statesToPredict)
+			{
+				if(!s.equals(check))
+				{
+					if(s.position.squareDistance(check.position) < Math.pow((s.dangerZoneRadius + check.dangerZoneRadius), 2))
+					{
+						//DANGER WILL ROBINSON
+						statesToPredict.add(s.clone());
+						allStates.remove(s);
+					}
+				}
+			}
+		}
+		
+		//integrate the safe states like normal
+		for(State s : allStates)
+		{
+			integrator.integrate(s, t, dt);
+		}
+		
+		//integrate the dangerous states
+		for(State s : statesToPredict)
+		{
+			integrator.integrate(s, t, dt);
+		}
+		
+		for(State s : statesToPredict)
+		{
+			for(State check : statesToPredict)
+			{
+				if(!s.equals(check))
+				{
+					if(polyhedralCollision(s.verticesOfBoundingRegion, check.verticesOfBoundingRegion))
+					{
+						collidingStates.put(s, check);
+					}
+				}
+			}
+		}
+		
+		for(State s : collidingStates.keySet())
+		{
+			integrator.collisionResponse(s, collidingStates.get(s));
 		}
 	}
 	
+	
+	
 	//ASSUMPTION: uniform mass distribution over all objects
-
+	
 	public Vector computeCentroid(ArrayList<Vector> vertexList)
 	{
 		Vector returnVector = new Vector(0,0,0);
@@ -209,13 +209,6 @@ public class Physics
 		{
 			if(v.equals(tp)) return true;
 		}
-		
-		/*int crossings = 0
-    	for (each line segment of the polygon)
-        if (ray down from (x,y) crosses segment)
-            crossings++;
-    	if (crossings is odd) return true; //the point is inside
-    	else return false;*/
 		
 		int crossings = 0;
 		int n = polygon.size();
@@ -367,9 +360,9 @@ public class Physics
 		
 		boolean b3 = polygonCollision(obj1zx.toPolygon(), obj2zx.toPolygon(), "zx");
 		
-		System.out.println(b1);
-		System.out.println(b2);
-		System.out.println(b3);
+//		System.out.println(b1);
+//		System.out.println(b2);
+//		System.out.println(b3);
 		return (b1 && b2 && b3);
 			
 	}

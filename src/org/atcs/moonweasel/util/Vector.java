@@ -44,6 +44,11 @@ public class Vector
 		return this.subtract(o).length();
 	}
 	
+	public float squareDistance(Vector o)
+	{
+		return (x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) + (z-o.z)*(z-o.z);
+	}
+	
 	public float dot(Vector o) 
 	{
 		return x * o.x + y * o.y + x * o.z;
@@ -119,6 +124,11 @@ public class Vector
 	public Vector projectIntoYZ()
 	{
 		return new Vector(0, y, z);
+	}
+	
+	public Vector projectOnto(Vector v)
+	{
+		return v.normalize().scale(this.dot(v.normalize()));
 	}
 	
 	public float angleBetween(Vector v)

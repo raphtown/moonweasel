@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/moonweasel/src/org/atcs/moonweasel/physics/Physics.java"/>
+<listEntry value="/moonweasel/src/org/atcs/moonweasel/Moonweasel.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.atcs.moonweasel.physics.Physics"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.atcs.moonweasel.Moonweasel"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="moonweasel"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
 </launchConfiguration>
