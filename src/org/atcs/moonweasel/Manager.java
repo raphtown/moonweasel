@@ -52,5 +52,5 @@ public abstract class Manager<T extends Identifiable> implements Iterable<T> {
 		return Collections.unmodifiableCollection(elements.values()).iterator();
 	}
 	
-	public abstract void update();
+	public abstract void update(long t);
 }

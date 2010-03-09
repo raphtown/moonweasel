@@ -13,6 +13,18 @@ public class MutableVector {
 		this.z = z;
 	}
 	
+	public void minus(Vector v) {
+		this.x -= v.x;
+		this.y -= v.y;
+		this.z -= v.z;
+	}
+	
+	public void sum(Vector v) {
+		this.x += v.x;
+		this.y += v.y;
+		this.z += v.z;
+	}
+	
 	public Vector toVector() {
 		return new Vector(x, y, z);
 	}

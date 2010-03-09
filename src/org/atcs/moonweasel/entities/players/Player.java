@@ -38,24 +38,35 @@ public class Player extends Entity {
 						return (int)(o1.getTime() - o2.getTime());
 					}
 				});
+		
+		scheduleThink(50);
 	}
 	
 	public void addCommand(UserCommand command) {
 		this.commands.add(command);
 	}
 	
-	public void clearCommandsBefore(long t) {
+	private void clearCommandsBefore(long t) {
 		while (!commands.isEmpty() &&
 				commands.peek().getTime() < t) {
 			commands.remove();
 		}
 	}
 	
-	public void destroy() {
+	public void died() {
+		deaths++;
 	}
 	
-	public Range<UserCommand> getCommandsBefore(long t) {
+	private Range<UserCommand> getCommandsBefore(long t) {
 		return new TimeRange<UserCommand>(0, t, commands.iterator());
+	}
+	
+	public void killedPlayer() {
+		kills++;
+	}
+	
+	public void killedPlayerAssist() {
+		assists++;
 	}
 	
 	public void spawn() {
@@ -68,5 +79,16 @@ public class Player extends Entity {
 	
 	public Ship getShip() {
 		return ship;
+	}
+	
+	public void think() {
+		if (ship != null) {
+			for (UserCommand command : getCommandsBefore(getTime())) {
+				ship.apply(command);				
+			}
+		}
+		clearCommandsBefore(getTime());
+		
+		scheduleThink(50);
 	}
 }
