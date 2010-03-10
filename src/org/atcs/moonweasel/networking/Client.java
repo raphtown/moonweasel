@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,6 +22,7 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
+import org.atcs.moonweasel.ranges.Range;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 
@@ -146,10 +148,12 @@ public class Client implements IClient, Runnable
 
 		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
-
+		System.out.println(entityList.size());
+		
 		for (Entity entity : entityList)
 		{
-			mgr.delete(entity);
+			
+//			mgr.delete(entity);
 			mgr.add(entity);
 		}
 

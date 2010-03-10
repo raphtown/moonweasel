@@ -98,8 +98,8 @@ public class Lycanthrope
 				//view.toggleUpdating();
 				int id = view.getMe().getID();
 				client.requestUpdate();
-				Player p = (Player)(entityManager.get(id));
-				view.setMe(p);
+//				Player p = (Player)(entityManager.get(id));
+//				view.setMe(p);
 				//view.toggleUpdating();
 			}
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
