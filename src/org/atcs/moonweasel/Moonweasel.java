@@ -8,12 +8,8 @@ import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
-import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Snowflake;
-import org.atcs.moonweasel.gui.WeaselView;
-import org.atcs.moonweasel.networking.Client;
 import org.atcs.moonweasel.networking.Server;
-import org.atcs.moonweasel.networking.actions.ServerActionListener;
 import org.atcs.moonweasel.physics.Physics;
 
 public class Moonweasel
@@ -60,18 +56,14 @@ public class Moonweasel
 
 	protected Server server;
 
-	private EntityManager entityManager;
+	protected EntityManager entityManager;
 
-	private Map<String, Player> playerMap = new HashMap<String, Player>();
+	protected Map<String, Player> playerMap = new HashMap<String, Player>();
 	protected long t;
 
 	protected Moonweasel(int width, int height, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
-		System.out.print("Enter server name: ");
-		String serverName = new java.util.Scanner(System.in).nextLine();
-		server = new Server(serverName);
 
-		server.addActionListener(new ServerActionListener(entityManager, playerMap, this));
 
 		this.physics = new Physics();
 	}
