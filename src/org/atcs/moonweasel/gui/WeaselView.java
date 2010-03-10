@@ -69,6 +69,7 @@ public class WeaselView extends View {
 	
     /* Game objects */
     private Player me;
+    //private boolean updating = false;
 	
 	public WeaselView(int w, int h, boolean fullscreen, Player p) {
 		super(w, h, fullscreen);
@@ -78,6 +79,21 @@ public class WeaselView extends View {
 		
 		textures = new Texture[BaseTextures.NUM_TEXTURES.ordinal()];
 		
+		me = p;
+	}
+	
+//	public void toggleUpdating()
+//	{
+//		updating = !updating;
+//	}
+//	
+	public Player getMe()
+	{
+		return me;
+	}
+	
+	public void setMe(Player p)
+	{
 		me = p;
 	}
 
@@ -196,7 +212,8 @@ public class WeaselView extends View {
 	
 	@Override
 	public void display(GL2 gl, float alpha) {
-		setProjection(gl, alpha);
+	//	if (!updating)
+			setProjection(gl, alpha);
 		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();

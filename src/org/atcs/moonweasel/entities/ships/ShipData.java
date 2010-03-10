@@ -2,6 +2,7 @@ package org.atcs.moonweasel.entities.ships;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,7 +14,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-public class ShipData {
+public class ShipData implements Serializable {
+	private static final long serialVersionUID = -567266895678864864L;
+
 	public static ShipData loadShipData(String type) {
 		JSONObject object;
 		try {

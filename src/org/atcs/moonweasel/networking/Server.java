@@ -152,7 +152,7 @@ public class Server extends ActionSource implements IServer
 	        try
 	        {
 				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
-				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).forceUpdate();
+				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).requestUpdate();
 			}
 			catch (Exception e)
 			{

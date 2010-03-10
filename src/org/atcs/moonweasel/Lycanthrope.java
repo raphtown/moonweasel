@@ -68,6 +68,8 @@ public class Lycanthrope
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		float interpolation;
+		int curr = 0;
+		int currmax = 10;
 		
 		while (!view.shouldQuit()) 
 		{
@@ -85,13 +87,20 @@ public class Lycanthrope
 			t = System.currentTimeMillis();
 			UserCommand command = input.poll(t);
 			player.addCommand(command);
-			
 			if (command.getAsBitmask() != lastCommand)
 				client.sendCommandToServer(command);
 			lastCommand = command.getAsBitmask();
 			
 			player.clearCommandsBefore(t);
-			
+			if ((++curr) % currmax == 0)
+			{
+				//view.toggleUpdating();
+				int id = view.getMe().getID();
+				client.requestUpdate();
+				Player p = (Player)(entityManager.get(id));
+				view.setMe(p);
+				//view.toggleUpdating();
+			}
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
 			/ SKIP_TICKS;
 			view.render(interpolation);

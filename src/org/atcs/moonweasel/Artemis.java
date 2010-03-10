@@ -61,6 +61,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 			}
 			else if (parts[0].equals(COMMAND_RECEIVED))
 			{
+				Debug.print("Artemis to Lycanthrope ... we have lift-off");
 				short command = Short.parseShort(parts[1]);
 				float mouseX = Float.parseFloat(parts[2]);
 				float mouseY = Float.parseFloat(parts[3]);

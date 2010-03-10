@@ -139,7 +139,7 @@ public class Client implements IClient, Runnable
 
 
 	@SuppressWarnings("unchecked")
-	public void forceUpdate() throws RemoteException
+	public void requestUpdate()
 	{
 		// problems can be foreseen here...
 		Object[] parameters = {getIP()};

@@ -1,4 +1,6 @@
 package org.atcs.moonweasel.physics;
 
-public interface BoundingShape {
+import java.io.Serializable;
+
+public interface BoundingShape extends Serializable{
 }

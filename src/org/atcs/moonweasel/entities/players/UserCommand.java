@@ -1,9 +1,16 @@
 package org.atcs.moonweasel.entities.players;
 
+import java.io.Serializable;
+
 import org.atcs.moonweasel.Timed;
 import org.atcs.moonweasel.util.Vector;
 
-public class UserCommand implements Timed, Comparable<UserCommand> {
+public class UserCommand implements Timed, Comparable<UserCommand>, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public enum Commands {
 		UP((short)0x1),
 		DOWN((short)0x2),

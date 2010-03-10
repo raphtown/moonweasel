@@ -1,13 +1,15 @@
 package org.atcs.moonweasel.util;
 
+import java.io.Serializable;
 import java.util.PriorityQueue;
 
-import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
-public class State 
+public class State implements Serializable
 {
+	private static final long serialVersionUID = 1954935768443886969L;
+
 	// interpolation used for animating in between states
 	public static State interpolate(State a, State b, float alpha) 
 	{

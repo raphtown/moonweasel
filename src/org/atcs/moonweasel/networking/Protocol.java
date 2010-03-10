@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import java.util.HashMap;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.util.Vector;
 
 public abstract class Protocol
@@ -72,9 +73,7 @@ public abstract class Protocol
 		{
 			Class<?>[] paramClasses = getParameters(command);
 			Method m = server.getClass().getDeclaredMethod(command, paramClasses);
-			
-			Object o =  m.invoke(server, parameters);
-
+			return  m.invoke(server, parameters);
 		} 
 		catch (Exception e)
 		{
