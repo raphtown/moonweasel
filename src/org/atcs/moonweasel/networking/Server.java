@@ -138,7 +138,12 @@ public class Server extends ActionSource implements IServer
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		List<Entity> entityList = new ArrayList<Entity>();
 		while(range.hasNext())
+		{
+			Entity e = range.next();
 			entityList.add(range.next());
+			
+		}
+			
 		return entityList;
 	}
 	
