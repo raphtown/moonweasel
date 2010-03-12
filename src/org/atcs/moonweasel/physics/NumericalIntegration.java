@@ -59,16 +59,18 @@ public class NumericalIntegration
 	
 	public void damping(State state, Derivative output)
 	{
-		//arbitrarily lose 0.1% of energy per timestep to simulate heat loss
-		output.force = output.force.subtract(state.velocity.scale(0.001f));
-		output.torque = output.torque.subtract(state.angularVelocity.scale(0.001f));
+		//arbitrarily lose 1% of energy per timestep to simulate heat loss
+		output.force = output.force.subtract(state.velocity.scale(0.01f));
+		output.torque = output.torque.subtract(state.angularVelocity.scale(0.01f));
 	}
 	
 	public void collisionResponse(State s1, State s2)
 	{
 		//for testing purposes, just zero the velocity and forces
-		s1.angularMomentum = Vector.ZERO;
-		s1.momentum = Vector.ZERO;
+		s1.angularMomentum = s1.angularMomentum.ZERO;
+		s1.momentum = s1.momentum.scale(-1);
+		System.out.println("reversed momentum");
+		//s1.position = s1.position.add(s1.velocity.scale(1));
 		//this should actually MOVE the stuff
 	}
 

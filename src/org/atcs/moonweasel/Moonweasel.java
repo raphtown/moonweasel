@@ -1,5 +1,6 @@
 package org.atcs.moonweasel;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -11,6 +12,7 @@ import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Networking;
 import org.atcs.moonweasel.physics.Physics;
+import org.atcs.moonweasel.util.Vector;
 
 public class Moonweasel {
 	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
@@ -65,10 +67,29 @@ public class Moonweasel {
 		player = this.entityManager.create("player");
 		player.spawn();
 
+		ArrayList<Vector> bounds = new ArrayList<Vector>();
+		bounds.add(new Vector(0.3f,0.3f,0.3f));
+		bounds.add(new Vector(-0.3f,-0.3f,-0.3f));
+		bounds.add(new Vector(0.3f,0.3f,-0.3f));
+		bounds.add(new Vector(-0.3f,0.3f,0.3f));
+		bounds.add(new Vector(0.3f,-0.3f,0.3f));
+		bounds.add(new Vector(-0.3f,-0.3f,0.3f));
+		bounds.add(new Vector(-0.3f,0.3f,-0.3f));
+		bounds.add(new Vector(0.3f,-0.3f,-0.3f));
+		
 		Snowflake snowflake = this.entityManager.create("snowflake");
 		snowflake.setPilot(player);
+		snowflake.getState().verticesOfBoundingRegion = bounds;
+		snowflake.getState().setInitialConvexHull();
 		snowflake.spawn();
 		player.setShip(snowflake);
+		
+		Snowflake snowflake2 = this.entityManager.create("snowflake");
+		
+		snowflake2.getState().verticesOfBoundingRegion = bounds;
+		snowflake2.getState().setInitialConvexHull();
+		snowflake2.setPosition(new Vector(10,0,0));
+		snowflake2.spawn();
 		
 		this.physics = new Physics();
 		this.view = new WeaselView(width, height, fullscreen, player);

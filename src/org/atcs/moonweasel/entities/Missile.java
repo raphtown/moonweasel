@@ -16,7 +16,6 @@ public class Missile extends ModelEntity
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

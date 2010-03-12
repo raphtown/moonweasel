@@ -145,7 +145,7 @@ public class WeaselView extends View {
         		CAMERA_CLIPPING_FAR);
         
         ModelEntity ent = me.getShip();
-        float radius = 10;
+        float radius = 1;
         
         State interp = State.interpolate(ent.getLastRenderState(), ent.getState(), alpha);
         Vector relative = interp.orientation.rotate(
@@ -184,23 +184,23 @@ public class WeaselView extends View {
         	tex.bind();
         	
         	gl.glPushMatrix();
-	        	gl.glTranslatef(0, 0, 200.f);
-	        	drawCubeFace(tc, 200.f, gl);
+	        	gl.glTranslatef(0, 0, 25.f);
+	        	drawCubeFace(tc, 25.f, gl);
         	gl.glPopMatrix();
         	gl.glPushMatrix();
-	        	gl.glTranslatef(200.f, 0, 0);
+	        	gl.glTranslatef(25.f, 0, 0);
 	        	gl.glRotatef(90, 0, 1, 0);
-	        	drawCubeFace(tc, 200.f, gl);
+	        	drawCubeFace(tc, 25.f, gl);
 	        gl.glPopMatrix();
 	    	gl.glPushMatrix();
-		    	gl.glTranslatef(-200.f, 0, 0);
+		    	gl.glTranslatef(-25.f, 0, 0);
 		    	gl.glRotatef(90, 0, 1, 0);
-		    	drawCubeFace(tc, 200.f, gl);
+		    	drawCubeFace(tc, 25.f, gl);
 		    gl.glPopMatrix();
 			gl.glPushMatrix();
-				gl.glTranslatef(0, 0, -200.f);
+				gl.glTranslatef(0, 0, -25.f);
 				gl.glRotatef(0, 0, 1, 0);
-				drawCubeFace(tc, 200.f, gl);
+				drawCubeFace(tc, 25.f, gl);
 			gl.glPopMatrix();
         	
         	gl.glDisable(GL2.GL_TEXTURE_2D);

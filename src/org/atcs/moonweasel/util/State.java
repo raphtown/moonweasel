@@ -24,7 +24,7 @@ public class State
 		interpolated.recalculate();
 		return interpolated;
 	}
-	
+
 	// primary
 	public Vector position;
 	public Vector momentum;
@@ -39,25 +39,29 @@ public class State
 	public Matrix worldToBody;
 	public ArrayList<Vector> verticesOfBoundingRegion;
 	public float dangerZoneRadius;
-	
+
 	// constant
 	public final float mass;
 	public final float inverseMass;
 	public final Matrix inertiaTensor;
 	public final Matrix inverseInertiaTensor;
 
-	public ArrayList<Vector> XYConvexHull;
-	public ArrayList<Vector> YZConvexHull;
-	public ArrayList<Vector> ZXConvexHull;
-	
-	
-	
+	public ArrayList<Vector> XYConvexHullBody;
+	public ArrayList<Vector> YZConvexHullBody;
+	public ArrayList<Vector> ZXConvexHullBody;
+
+	public ArrayList<Vector> XYConvexHullWorld;
+	public ArrayList<Vector> YZConvexHullWorld;
+	public ArrayList<Vector> ZXConvexHullWorld;
+
+
+
 	private PriorityQueue<TimedDerivative> derivatives;
-	
+
 	public State(float mass, Matrix inertia) 
 	{
 		this(Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
-		
+
 
 	}
 	public State(Vector position, Vector momentum, Quaternion orientation, 
@@ -73,10 +77,10 @@ public class State
 		this.inertiaTensor = inertiaTensor;
 		this.inverseInertiaTensor = inverseInertiaTensor;
 		recalculate();
-		
+
 		this.derivatives = new PriorityQueue<TimedDerivative>();
 	}
-	
+
 	private State(State other) {
 		this.position = other.position;
 		this.momentum = other.momentum;
@@ -90,34 +94,34 @@ public class State
 		this.worldToBody = other.worldToBody;
 		this.verticesOfBoundingRegion = other.verticesOfBoundingRegion;
 		this.dangerZoneRadius = other.dangerZoneRadius;
-		
+
 		this.mass = other.mass;
 		this.inverseMass = other.inverseMass;
 		this.inertiaTensor = other.inertiaTensor;
 		this.inverseInertiaTensor = other.inverseInertiaTensor;
-		
+
 		this.derivatives = other.derivatives;
 	}
-	
+
 	public void addDerivative(TimedDerivative derivative) {
 		this.derivatives.add(derivative);
 	}
-	
+
 	public void clearDerivativesBefore(long t) {
 		while (!derivatives.isEmpty() &&
 				derivatives.peek().getTime() < t) {
 			derivatives.remove();
 		}
 	}
-	
+
 	public State clone() {
 		return new State(this);
 	}
-	
+
 	public Range<TimedDerivative> getDerivativesBefore(long t) {
 		return new TimeRange<TimedDerivative>(0, t, derivatives.iterator());
 	}
-	
+
 	public void recalculate() {
 		velocity = momentum.scale(inverseMass);
 		angularVelocity = inverseInertiaTensor.transform(angularMomentum);
@@ -125,21 +129,47 @@ public class State
 
 		Quaternion tempUpdate = new Quaternion(0, angularVelocity.x, angularVelocity.y, angularVelocity.z);
 		spin = tempUpdate.scale(0.5f).multiply(orientation);
-		  
+
 		// dealing with local vs global coordinates now
 		bodyToWorld = new Matrix(position).multiply(orientation.toMatrix());
 		worldToBody = bodyToWorld.inverse();
+
+		if(XYConvexHullWorld != null)
+		{
+			XYConvexHullWorld.clear();
+			YZConvexHullWorld.clear();
+			ZXConvexHullWorld.clear();
+
+			for(Vector point : XYConvexHullBody)
+			{
+				XYConvexHullWorld.add(bodyToWorld.transform(point).projectIntoXY());
+			}
+			for(Vector point : YZConvexHullBody)
+			{
+				YZConvexHullWorld.add(bodyToWorld.transform(point).projectIntoYZ());
+			}
+			for(Vector point : ZXConvexHullBody)
+			{
+				ZXConvexHullWorld.add(bodyToWorld.transform(point).projectIntoZX());
+			}
+		}
+
 	}
-	 
+
 	public void setDangerZone(float dt)
 	{
-		dangerZoneRadius = velocity.scale(dt).length();
+		dangerZoneRadius = 5 + velocity.scale(dt).length();
 	}
-	
-	public void setInitialConvexHull(ArrayList<Vector> boundingPoints)
+
+
+	public void setInitialConvexHull()
 	{
-		XYConvexHull = (new ConvexHull(boundingPoints, "xy")).toPolygon();
-		YZConvexHull = (new ConvexHull(boundingPoints, "yz")).toPolygon();
-		ZXConvexHull = (new ConvexHull(boundingPoints, "zx")).toPolygon();
+		XYConvexHullBody = (new ConvexHull(verticesOfBoundingRegion, "xy").toPolygon());
+		YZConvexHullBody = (new ConvexHull(verticesOfBoundingRegion, "yz").toPolygon());
+		ZXConvexHullBody = (new ConvexHull(verticesOfBoundingRegion, "zx").toPolygon());
+
+		XYConvexHullWorld = new ArrayList<Vector>();
+		YZConvexHullWorld = new ArrayList<Vector>();
+		ZXConvexHullWorld = new ArrayList<Vector>();
 	}
 }

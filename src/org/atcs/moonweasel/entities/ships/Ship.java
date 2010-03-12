@@ -91,10 +91,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 			relativeForce.y -= 20 * relativeVelocity.y;
 		}
 		
-		// A little forward thrust.
-		if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
-			relativeForce.z -= f / 2;
-		}
+		//// A little forward thrust.
+		//if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+		//	relativeForce.z -= f / 2;
+		//}
 		
 		force.sum(state.orientation.rotate(relativeForce.toVector()));
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));

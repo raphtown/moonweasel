@@ -38,7 +38,8 @@ public class Physics
 	{
 		EntityManager em = EntityManager.getEntityManager();
 		ArrayList<State> allStates = new ArrayList<State>();
-		ArrayList<State> statesToPredict = new ArrayList<State>();
+		ArrayList<State> normalStates = new ArrayList<State>();
+		ArrayList<State> statesToCheck = new ArrayList<State>();
 		
 		
 		
@@ -48,45 +49,63 @@ public class Physics
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
 			allStates.add(e.getState());
+			e.getState().setDangerZone(dt);
+			e.getState().recalculate();
+		}
+		
+		//integrate all the states
+		for(State s : allStates)
+		{
+			integrator.integrate(s,t,dt);
 		}
 		
 		//Separation based on "danger zone" concept
 		for(State s : allStates)
 		{
-			for(State check : statesToPredict)
+//			System.out.println("ConvexHullWorld: " + s.XYConvexHullWorld);
+//			System.out.println(s.dangerZoneRadius);
+			//System.out.println("There are " + allStates.size() + " states");
+			for(State check : allStates)
 			{
 				if(!s.equals(check))
 				{
+					//System.out.println("Checking danger zones");
 					if(s.position.squareDistance(check.position) < Math.pow((s.dangerZoneRadius + check.dangerZoneRadius), 2))
 					{
 						//DANGER WILL ROBINSON
-						statesToPredict.add(s.clone());
-						allStates.remove(s);
+						
+						statesToCheck.add(s);
+						System.out.println("added a point IN THE DANGER ZONE!!!");
 					}
 				}
 			}
 		}
 		
 		//integrate the safe states like normal
-		for(State s : allStates)
-		{
-			integrator.integrate(s, t, dt);
-		}
+		//System.out.println("about to start integrating normal states");
+//		for(State s : normalStates)
+//		{
+//			//System.out.println("integrating normal (non-colliding) states now");
+//			integrator.integrate(s, t, dt);
+//		}
 		
 		//integrate the dangerous states
-		for(State s : statesToPredict)
-		{
-			integrator.integrate(s, t, dt);
-		}
+		//System.out.println("about to start integrating the things we have to predict");
+//		for(State s : statesToCheck)
+//		{
+//			//System.out.println("integrating potential colliding states now");
+//			integrator.integrate(s, t, dt);
+//		}
 		
-		for(State s : statesToPredict)
+		for(State s : statesToCheck)
 		{
-			for(State check : statesToPredict)
+			for(State check : statesToCheck)
 			{
 				if(!s.equals(check))
 				{
-					if(polyhedralCollision(s.verticesOfBoundingRegion, check.verticesOfBoundingRegion))
+					if(polyhedralCollision(s, check))
 					{
+						System.out.println("COLLISION!!!");
 						collidingStates.put(s, check);
 					}
 				}
@@ -97,6 +116,10 @@ public class Physics
 		{
 			integrator.collisionResponse(s, collidingStates.get(s));
 		}
+		allStates.clear();
+		normalStates.clear();
+		statesToCheck.clear();
+		collidingStates.clear();
 	}
 	
 	
@@ -144,18 +167,18 @@ public class Physics
 
 		return new Matrix(i11, i12, i13, i21, i22, i23, i31, i32, i33);
 	}
-	public State predictFutureState(ModelEntity me, int dt)
-	{
-		State futureState = new State(me.getState().mass, me.getState().inertiaTensor);
-		futureState.angularMomentum = me.getState().angularMomentum;
-		futureState.momentum = me.getState().momentum;
-		futureState.orientation = me.getState().orientation;
-		futureState.position = me.getState().position;
-		futureState.recalculate();
-		Integrator.integrate(futureState,0,dt);
-
-		return futureState;
-	}
+//	public State predictFutureState(ModelEntity me, int dt)
+//	{
+//		State futureState = new State(me.getState().mass, me.getState().inertiaTensor);
+//		futureState.angularMomentum = me.getState().angularMomentum;
+//		futureState.momentum = me.getState().momentum;
+//		futureState.orientation = me.getState().orientation;
+//		futureState.position = me.getState().position;
+//		futureState.recalculate();
+//		Integrator.integrate(futureState,0,dt);
+//
+//		return futureState;
+//	}
 	public static void removeDuplicates(ArrayList<Vector> listIn)
 	{
 		//exploits set nature
@@ -170,38 +193,39 @@ public class Physics
 			listIn.add(v);
 		}
 	}
-	
-	public static ArrayList<Vector> projectOntoXY(ArrayList<Vector> A)
+	public static ArrayList<Vector> projectOntoPlane(ArrayList<Vector> A, String s)
 	{
-		ArrayList<Vector> projectedComponents = new ArrayList<Vector>();
-		for(Vector v : A)
+		if(s.equals("xy"))
 		{
-			projectedComponents.add(v.projectIntoXY());
+			ArrayList<Vector> projectedComponents = new ArrayList<Vector>();
+			for(Vector v : A)
+			{
+				projectedComponents.add(v.projectIntoXY());
+			}
+			removeDuplicates(projectedComponents);
+			return projectedComponents;
 		}
-		removeDuplicates(projectedComponents);
-		return projectedComponents;
-	}
-	public static ArrayList<Vector> projectOntoZX(ArrayList<Vector> A)
-	{
-		ArrayList<Vector> projectedComponents = new ArrayList<Vector>();
-		for(Vector v : A)
+		else if(s.equals("yz"))
 		{
-			projectedComponents.add(v.projectIntoZX());
+			ArrayList<Vector> projectedComponents = new ArrayList<Vector>();
+			for(Vector v : A)
+			{
+				projectedComponents.add(v.projectIntoYZ());
+			}
+			removeDuplicates(projectedComponents);
+			return projectedComponents;
 		}
-		removeDuplicates(projectedComponents);
-		return projectedComponents;
-	}
-	public static ArrayList<Vector> projectOntoYZ(ArrayList<Vector> A)
-	{
-		ArrayList<Vector> projectedComponents = new ArrayList<Vector>();
-		for(Vector v : A)
+		else
 		{
-			projectedComponents.add(v.projectIntoYZ());
+			ArrayList<Vector> projectedComponents = new ArrayList<Vector>();
+			for(Vector v : A)
+			{
+				projectedComponents.add(v.projectIntoZX());
+			}
+			removeDuplicates(projectedComponents);
+			return projectedComponents;
 		}
-		removeDuplicates(projectedComponents);
-		return projectedComponents;
 	}
-	
 	
 	public static boolean pointInPolygon(Vector tp, ArrayList<Vector> polygon, String plane)
 	{
@@ -333,7 +357,6 @@ public class Physics
 		if(crossings % 2 == 1) return true;
 		else return false;	
 	}
-	
 	public static Boolean polygonCollision(ArrayList<Vector> p1, ArrayList<Vector> p2, String plane)
 	{
 		for(Vector v1 : p1)
@@ -344,21 +367,15 @@ public class Physics
 		return false;
 	}
 	
-	public static Boolean polyhedralCollision(ArrayList<Vector> p1, ArrayList<Vector> p2)
+	
+	
+	public static Boolean polyhedralCollision(State s1, State s2)
 	{	
-		ConvexHull obj1xy = new ConvexHull(projectOntoXY(p1), "xy");
-		ConvexHull obj2xy = new ConvexHull(projectOntoXY(p2), "xy");
-		ConvexHull obj1yz = new ConvexHull(projectOntoYZ(p1), "yz");
-		ConvexHull obj2yz = new ConvexHull(projectOntoYZ(p2), "yz");
-		ConvexHull obj1zx = new ConvexHull(projectOntoZX(p1), "zx");
-		ConvexHull obj2zx = new ConvexHull(projectOntoZX(p2), "zx");
+		boolean b1 = polygonCollision(s1.XYConvexHullWorld, s2.XYConvexHullWorld, "xy");
 		
+		boolean b2 = polygonCollision(s1.YZConvexHullWorld, s2.YZConvexHullWorld, "yz");
 		
-		boolean b1 = polygonCollision(obj1xy.toPolygon(), obj2xy.toPolygon(), "xy");
-		
-		boolean b2 = polygonCollision(obj1yz.toPolygon(), obj2yz.toPolygon(), "yz");
-		
-		boolean b3 = polygonCollision(obj1zx.toPolygon(), obj2zx.toPolygon(), "zx");
+		boolean b3 = polygonCollision(s1.ZXConvexHullWorld, s2.ZXConvexHullWorld, "zx");
 		
 //		System.out.println(b1);
 //		System.out.println(b2);

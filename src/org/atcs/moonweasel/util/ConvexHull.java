@@ -14,6 +14,20 @@ public class ConvexHull
 	public ConvexHull(ArrayList<Vector> points, String p)
 	{
 		remainingPoints.addAll(points);
+		Physics.removeDuplicates(remainingPoints);
+		if(p.equals("xy"))
+		{
+			remainingPoints = Physics.projectOntoPlane(remainingPoints, p);
+		}
+		else if(p.equals("yz"))
+		{
+			remainingPoints = Physics.projectOntoPlane(remainingPoints, p);
+		}
+		else
+		{
+			remainingPoints = Physics.projectOntoPlane(remainingPoints, p);
+		}
+		
 		plane = p;
 		this.hullMe();
 	}
@@ -21,6 +35,11 @@ public class ConvexHull
 	public ArrayList<Edge> getCH()
 	{
 		return CH;
+	}
+	
+	public String toString()
+	{
+		return this.toPolygon().toString();
 	}
 	
 	public ArrayList<Vector> toPolygon()
