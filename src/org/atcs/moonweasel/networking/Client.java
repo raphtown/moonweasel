@@ -148,6 +148,11 @@ public class Client implements IClient, Runnable
 
 		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
+		if (entityList == null)
+		{
+			System.out.println("ERROR ERROR ERROR");
+			return;
+		}
 		System.out.println(entityList.size());
 		
 		for (Entity entity : entityList)
