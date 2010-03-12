@@ -140,8 +140,7 @@ public class Server extends ActionSource implements IServer
 		while(range.hasNext())
 		{
 			Entity e = range.next();
-			entityList.add(range.next());
-			
+			entityList.add(e);
 		}
 			
 		return entityList;

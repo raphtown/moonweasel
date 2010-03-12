@@ -153,7 +153,7 @@ public class Client implements IClient, Runnable
 		for (Entity entity : entityList)
 		{
 			
-//			mgr.delete(entity);
+			mgr.delete(entity);
 			mgr.add(entity);
 		}
 
