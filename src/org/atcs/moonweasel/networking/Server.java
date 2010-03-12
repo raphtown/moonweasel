@@ -139,7 +139,9 @@ public class Server extends ActionSource implements IServer
 		List<Entity> entityList = new ArrayList<Entity>();
 		while(range.hasNext())
 		{
-			entityList.add(range.next());
+			Entity e = range.next();
+			System.out.println(e);
+			entityList.add(e);
 		}
 			
 		return entityList;
