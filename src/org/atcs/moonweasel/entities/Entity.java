@@ -19,10 +19,11 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	private final int id;
 	private boolean destroyed;
 	private boolean hasBeenChanged = false;
-	private ChangeList changes = new ChangeList(this.getClass().getName());
+	private ChangeList changes;
 	
 	protected Entity() {
 		this.id = getNextID();
+		changes = new ChangeList(getClass().getName(), getID());
 		this.destroyed = false;
 		this.hasBeenChanged = true;
 		this.changes.add("created entity");

@@ -7,10 +7,17 @@ public class ChangeList
 {
 	private final List<String> changes = new LinkedList<String>();
 	private final String typeName;
+	private final int entityID;
 
-	public ChangeList(String typeName)
+	public ChangeList(String typeName, int entityID)
 	{
 		this.typeName = typeName;
+		this.entityID = entityID;
+	}
+	
+	public int getID()
+	{
+		return entityID;
 	}
 	
 	public String getTypeName()
