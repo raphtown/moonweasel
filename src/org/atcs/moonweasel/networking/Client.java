@@ -143,16 +143,17 @@ public class Client implements IClient, Runnable
 	@SuppressWarnings("unchecked")
 	public void requestUpdate()
 	{
-		// problems can be foreseen here...
-		Object[] parameters = {getIP()};
+		Object[] parameters = { getIP() };
 
 		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
+		
 		if (entityList == null)
 		{
-			System.out.println("ERROR ERROR ERROR");
+			System.out.println("ERROR ERROR ERROR - ENTITY LIST IS NULL");
 			return;
 		}
+		
 		System.out.println(entityList.size());
 		
 		for (Entity entity : entityList)

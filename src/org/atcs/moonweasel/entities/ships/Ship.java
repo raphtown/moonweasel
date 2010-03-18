@@ -36,6 +36,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		
 		this.gunners = new Player[data.gunners.length];
 		this.gunnerPositions = data.gunners;
+		addChange("created ship " + data);
 	}
 	
 	public void apply(UserCommand command) {
@@ -105,6 +106,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
 		state.addDerivative(new TimedDerivative(getTime(), 
 				force.toVector(), torque.toVector()));
+		addChange("add command " + command);
 	}
 
 	@Override
@@ -114,6 +116,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		if (health <= 0) {
 			destroy();
 		}
+		addChange("damage " + damage);
 	}
 	
 	@Override
@@ -141,6 +144,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 			damage = 50 * (1 - getState().position.distance(ship.getState().position) / distance);
 			ship.damage((int)damage);
 		}
+		addChange("destroy");
 	}
 	
 	public ShipData getData() {
@@ -163,6 +167,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	public void setPilot(Player pilot) {
 		this.pilot = pilot;
+		addChange("set pilot " + pilot.getID());
 	}
 
 	@Override

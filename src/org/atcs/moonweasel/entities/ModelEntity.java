@@ -2,14 +2,12 @@ package org.atcs.moonweasel.entities;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.gui.Loader;
 import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.util.Matrix;
-import org.atcs.moonweasel.util.TimedDerivative;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
@@ -30,6 +28,7 @@ public abstract class ModelEntity extends Entity implements Positional {
 		this.bounding = bounding;
 		this.lastRenderState = new State(mass, inertiaTensor);
 		this.state = new State(mass, inertiaTensor);
+		this.addChange("create " + bounding + " " + mass + " " + inertiaTensor);
 	}
 	
 	public void collidedWith(ModelEntity other) {
@@ -81,9 +80,11 @@ public abstract class ModelEntity extends Entity implements Positional {
 	
 	protected void setVelocity(Vector velocity) {
 		this.state.velocity = velocity;
+		this.addChange("set velocity " + velocity);
 	}
 	
 	public void setPosition(Vector position) {
 		this.state.position = position;
+		this.addChange("set position " + position);
 	}
 }

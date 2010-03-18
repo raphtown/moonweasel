@@ -6,9 +6,6 @@ import org.atcs.moonweasel.Timed;
 import org.atcs.moonweasel.util.Vector;
 
 public class UserCommand implements Timed, Comparable<UserCommand>, Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public enum Commands {

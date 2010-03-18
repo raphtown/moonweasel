@@ -1,10 +1,7 @@
 package org.atcs.moonweasel.entities.players;
 
-import java.io.Serializable;
-import java.util.Comparator;
 import java.util.PriorityQueue;
 
-import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.ranges.Range;
@@ -44,8 +41,8 @@ public class Player extends Entity
 		synchronized (commands)
 		{
 			this.commands.add(command);
+			addChange("add command " + command);
 		}
-
 	}
 
 	public void clearCommandsBefore(long t) {
@@ -80,6 +77,7 @@ public class Player extends Entity
 
 	public void setShip(Ship ship) {
 		this.ship = ship;
+		addChange("set ship " + ship.getID());
 	}
 
 	public Ship getShip() {
@@ -92,7 +90,6 @@ public class Player extends Entity
 			{
 				for (UserCommand command : getCommandsBefore(getTime())) {
 					ship.apply(command);
-					Debug.print("lol!");
 				}
 			}
 

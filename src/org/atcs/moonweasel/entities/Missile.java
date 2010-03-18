@@ -1,23 +1,22 @@
 package org.atcs.moonweasel.entities;
 
 import org.atcs.moonweasel.physics.BoundingBox;
-import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.util.*;
 
 
 public class Missile extends ModelEntity 
 {
-	ModelEntity target;
+	private static final long serialVersionUID = 5687935793506812525L;
+
+	private ModelEntity target;
 	private Missile() 
 	{
 		super(new BoundingBox(1,2,3), 120, Matrix.IDENTITY);
 		scheduleThink(15);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
 		
 	}
 
