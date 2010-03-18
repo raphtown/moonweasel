@@ -4,9 +4,6 @@ import java.lang.reflect.Method;
 
 import java.util.HashMap;
 
-import org.atcs.moonweasel.Debug;
-import org.atcs.moonweasel.util.Vector;
-
 public abstract class Protocol
 {
 

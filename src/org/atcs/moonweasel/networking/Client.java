@@ -11,18 +11,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
-import org.atcs.moonweasel.InputController;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
-import org.atcs.moonweasel.ranges.Range;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 

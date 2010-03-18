@@ -28,7 +28,7 @@ public abstract class ModelEntity extends Entity implements Positional {
 		this.bounding = bounding;
 		this.lastRenderState = new State(mass, inertiaTensor);
 		this.state = new State(mass, inertiaTensor);
-		this.addChange("create " + bounding + " " + mass + " " + inertiaTensor);
+		this.addChange("create modelentity " + bounding + " " + mass + " " + inertiaTensor);
 	}
 	
 	public void collidedWith(ModelEntity other) {

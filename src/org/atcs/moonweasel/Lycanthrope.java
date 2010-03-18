@@ -47,7 +47,6 @@ public class Lycanthrope
 		player.spawn();
 		playerMap.put(client.getIP(), player);
 		Snowflake snowflake = this.entityManager.create("snowflake");
-		Snowflake snowflake2 = this.entityManager.create("snowflake");
 		snowflake.setPilot(player);
 		snowflake.spawn();
 		player.setShip(snowflake);

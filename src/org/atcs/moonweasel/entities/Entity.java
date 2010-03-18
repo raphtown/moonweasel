@@ -1,11 +1,10 @@
 package org.atcs.moonweasel.entities;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.atcs.moonweasel.Identifiable;
-import org.atcs.moonweasel.networking.Trackable;
+import org.atcs.moonweasel.networking.changes.ChangeList;
+import org.atcs.moonweasel.networking.changes.Trackable;
 
 public abstract class Entity implements Identifiable, Serializable, Trackable {
 	private static int nextID = 0;
@@ -20,13 +19,13 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	private final int id;
 	private boolean destroyed;
 	private boolean hasBeenChanged = false;
-	private List<String> changes = new LinkedList<String>();
+	private ChangeList changes = new ChangeList(this.getClass().getName());
 	
 	protected Entity() {
 		this.id = getNextID();
 		this.destroyed = false;
 		this.hasBeenChanged = true;
-		this.changes.add("created");
+		this.changes.add("created entity");
 	}
 	
 	protected void addChange(String change)
@@ -79,7 +78,7 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 		hasBeenChanged = false;
 	}
 	
-	public List<String> getRecentChanges()
+	public ChangeList getRecentChanges()
 	{
 		return changes;
 	}
