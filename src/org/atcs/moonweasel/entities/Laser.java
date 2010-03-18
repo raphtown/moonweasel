@@ -6,12 +6,17 @@ import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.physics.BoundingBox;
 import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.util.Matrix;
+import org.atcs.moonweasel.util.MutableVector;
+import org.atcs.moonweasel.util.Vector;
 
 import com.sun.opengl.util.gl2.GLUT;
 
 public class Laser extends ModelEntity
 {
-	private Laser() {
+	
+	private static final float VELOCITY = 100.0f;
+	
+	public Laser() {
 		super(new BoundingBox(10, 10, 10), 500, Matrix.IDENTITY);
 		// TODO Auto-generated constructor stub
 	}
@@ -27,6 +32,7 @@ public class Laser extends ModelEntity
 	{
 		GLUT glut = WeaselView.glut;
 		gl.glPushAttrib(gl.GL_CURRENT_BIT);
+		gl.glScalef(5, 5, 5);
 		gl.glColor3f(0.0f, 0.1f, 0.9f);
 		glut.glutSolidCylinder(0.02, 1.5, 30, 30);
 		gl.glPopAttrib();
@@ -35,7 +41,7 @@ public class Laser extends ModelEntity
 	@Override
 	public void spawn()
 	{
-		
-		
+		Vector speed = new Vector(0.0f, 0.0f, -VELOCITY);
+		this.getState().momentum = this.getState().orientation.rotate(speed);
 	}
 }

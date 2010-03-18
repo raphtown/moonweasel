@@ -27,6 +27,7 @@ import org.atcs.moonweasel.util.Vector;
 
 
 
+import com.sun.opengl.util.gl2.GLUT;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureCoords;
 import com.sun.opengl.util.texture.TextureIO;
@@ -45,6 +46,7 @@ public class WeaselView extends View {
 	
     /* OpenGL objects */
 	private static GLU glu;
+	public static GLUT glut;
 	
 	/* UI components */
 	private ArrayList<UIElement> uiElements;
@@ -100,6 +102,7 @@ public class WeaselView extends View {
 		GL2 gl = drawable.getGL().getGL2();
 		
 		glu = new GLU();
+		glut = new GLUT();
 
 		for (int i = 0; i < textures.length; i++) {
 			try {

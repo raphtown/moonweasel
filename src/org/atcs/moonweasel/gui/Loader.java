@@ -17,9 +17,10 @@ public abstract class Loader {
 		String path = String.format("data/models/%s/", name);
 		
 		try {
-			return loader.loadModel(path, "snowflake", gl);			
+			return loader.loadModel(path, name, gl);			
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to import " + name, e);
+			//throw new RuntimeException("Unable to import " + name, e);
+			return false;
 		}
 	}
 	
