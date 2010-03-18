@@ -3,6 +3,7 @@ package org.atcs.moonweasel.entities.ships;
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.Vulnerable;
 import org.atcs.moonweasel.entities.particles.Explosion;
@@ -36,6 +37,22 @@ public class Ship extends ModelEntity implements Vulnerable {
 	}
 	
 	public void apply(UserCommand command) {
+		//Shooting
+		if (command.get(Commands.ATTACK_1))
+		{
+			
+			EntityManager manager = EntityManager.getEntityManager();
+			Laser laser = manager.create("laser");
+			laser.getState().orientation = this.getState().orientation;
+			laser.getState().position = this.getPosition().add(new Vector(0.0f, 0.0f, 0.0f));
+			laser.spawn();
+			
+		}
+		
+		applyMovement(command);
+	}
+	
+	private void applyMovement(UserCommand command) {
 		State state = getState();
 		float f = data.thrust * 0.00001f; //50 newtons or 50 newton-meters, depending on context
 		Vector relativeVelocity = state.orientation.inverse().rotate(state.velocity);
