@@ -8,6 +8,7 @@ import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.util.Vector;
 
@@ -101,6 +102,20 @@ public class ChangeCompiler
 						((Ship)e).damage(Integer.parseInt(change.substring(7)));
 					}
 				}
+				else if (change.startsWith("add command "))
+				{
+					if (e instanceof Player)
+					{
+						((Player)e).addCommand(getCommandFromString(change.substring(13)));
+					}
+				}
+				else if (change.startsWith("apply command "))
+				{
+					if (e instanceof Ship)
+					{
+						((Ship)e).apply(getCommandFromString(change.substring(15)));
+					}
+				}
 				iter.remove();
 			}
 			e.clearChanges();
@@ -113,5 +128,22 @@ public class ChangeCompiler
 		components[0] = components[0].substring(1);
 		components[2] = components[2].substring(0, components[2].length() - 1);
 		return new Vector(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]));
+	}
+	
+	private static UserCommand getCommandFromString(String substring)
+	{
+		String[] components = substring.split(" ");
+		components[0] = components[0].substring(1);
+		components[components.length - 1] = components[components.length - 1].substring(0, components[components.length - 1].length() - 1);
+		UserCommand uc = new UserCommand();
+		uc.setKeysAsBitmask(Short.parseShort(components[0]));
+		String v = "";
+		for (int i = 1; i < components.length; i++)
+		{
+			v += components[i] + " ";
+		}
+		v = v.substring(0, v.length() - 1);
+		uc.setMouse(getVectorFromString(v));
+		return uc;
 	}
 }

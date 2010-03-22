@@ -121,4 +121,9 @@ public class UserCommand implements Timed, Comparable<UserCommand>, Serializable
 	{
 		return (int)(getTime() - o.getTime());
 	}
+	
+	public String toString()
+	{
+		return "[" + getAsBitmask() + " " + mouse + "]";
+	}
 }

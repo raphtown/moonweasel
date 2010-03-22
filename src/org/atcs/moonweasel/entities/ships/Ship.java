@@ -106,7 +106,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
 		state.addDerivative(new TimedDerivative(getTime(), 
 				force.toVector(), torque.toVector()));
-		addChange("add command " + command);
+		addChange("apply command " + command);
 	}
 
 	@Override
