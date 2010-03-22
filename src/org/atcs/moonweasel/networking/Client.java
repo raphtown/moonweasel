@@ -15,11 +15,12 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
-import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
+import org.atcs.moonweasel.networking.changes.ChangeCompiler;
+import org.atcs.moonweasel.networking.changes.ChangeList;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 
@@ -142,24 +143,17 @@ public class Client implements IClient, Runnable
 	{
 		Object[] parameters = { getIP() };
 
-		List<Entity> entityList = (List<Entity>) Protocol.sendPacket("requestUpdate", parameters, server);
+		List<ChangeList> changeList = (List<ChangeList>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
 		
-		if (entityList == null)
+		if (changeList == null)
 		{
-			System.out.println("ERROR ERROR ERROR - ENTITY LIST IS NULL");
+			System.out.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
 			return;
 		}
-		
-		System.out.println(entityList.size());
-		
-		for (Entity entity : entityList)
-		{
-			
-			mgr.delete(entity);
-			mgr.add(entity);
-		}
 
+		for (ChangeList changes : changeList)
+			ChangeCompiler.compile(changes, mgr);
 	}
 
 	public IServer getServer()

@@ -19,6 +19,7 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.actions.ActionSource;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
+import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Vector;
 
@@ -130,21 +131,25 @@ public class Server extends ActionSource implements IServer
 	 * @param c The client that is asking for an update.
 	 * @return A list of Entities.
 	 */
-	public List<Entity> requestUpdate(final String c) throws RemoteException
+	public List<ChangeList> requestUpdate(final String c) throws RemoteException
 	{
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to get an update!");
 
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
-		List<Entity> entityList = new ArrayList<Entity>();
+		List<ChangeList> changeList = new ArrayList<ChangeList>();
 		while(range.hasNext())
 		{
 			Entity e = range.next();
-			System.out.println(e);
-			entityList.add(e);
+			if (e.hasRecentlyChanged())
+			{
+				System.out.println(e);
+				changeList.add(e.getRecentChanges());
+				e.sent();
+			}	
 		}
 			
-		return entityList;
+		return changeList;
 	}
 	
 	/**

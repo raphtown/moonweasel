@@ -78,7 +78,7 @@ public abstract class ModelEntity extends Entity implements Positional {
 		this.lastRenderState = state;
 	}
 	
-	protected void setVelocity(Vector velocity) {
+	public void setVelocity(Vector velocity) {
 		this.state.velocity = velocity;
 		this.addChange("set velocity " + velocity);
 	}

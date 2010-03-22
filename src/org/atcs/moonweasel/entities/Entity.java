@@ -83,4 +83,9 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	{
 		return changes;
 	}
+	
+	public void clearChanges()
+	{
+		changes = new ChangeList(getClass().getName(), getID());
+	}
 }

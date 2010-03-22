@@ -4,8 +4,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.ships.ShipType;
+import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.util.Vector;
 
 /**
@@ -36,7 +36,7 @@ public interface IServer extends Remote
 	 * @param c The client that is asking for an update.
 	 * @return A list of ModelEntities.
 	 */
-	public List<Entity> requestUpdate(final String c) throws RemoteException;
+	public List<ChangeList> requestUpdate(final String c) throws RemoteException;
 
 	/**
 	 * The given client chooses a ship type, which then spawns.
