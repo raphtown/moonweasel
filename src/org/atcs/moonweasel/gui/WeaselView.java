@@ -27,6 +27,7 @@ import org.atcs.moonweasel.util.Vector;
 
 
 
+import com.sun.opengl.util.gl2.GLUT;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureCoords;
 import com.sun.opengl.util.texture.TextureIO;
@@ -45,6 +46,7 @@ public class WeaselView extends View {
 	
     /* OpenGL objects */
 	private static GLU glu;
+	public static GLUT glut;
 	
 	/* UI components */
 	private ArrayList<UIElement> uiElements;
@@ -100,6 +102,7 @@ public class WeaselView extends View {
 		GL2 gl = drawable.getGL().getGL2();
 		
 		glu = new GLU();
+		glut = new GLUT();
 
 		for (int i = 0; i < textures.length; i++) {
 			try {
@@ -155,8 +158,8 @@ public class WeaselView extends View {
         float[] ldiff = { 0.6f, 0.6f, 0.6f, 1.0f };
         float[] lspec = { 0.4f, 0.4f, 0.4f, 1.0f };
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, lamb, 0);
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, ldiff, 0);
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, lspec, 0);
+//        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, ldiff, 0);
+//        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, lspec, 0);
         
         float[] pos = {-9, -9, 10, 1};
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, pos, 0);
