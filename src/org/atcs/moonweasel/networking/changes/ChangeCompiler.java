@@ -103,6 +103,7 @@ public class ChangeCompiler
 				}
 				iter.remove();
 			}
+			e.clearChanges();
 		}
 	}
 
