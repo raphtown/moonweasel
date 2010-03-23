@@ -1,10 +1,12 @@
 package org.atcs.moonweasel.networking.changes;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ChangeList
+public class ChangeList implements Serializable
 {
+	private static final long serialVersionUID = 2756185332850488215L;
 	private final List<String> changes = new LinkedList<String>();
 	private final String typeName;
 	private final int entityID;

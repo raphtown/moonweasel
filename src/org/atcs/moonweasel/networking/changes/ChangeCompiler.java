@@ -127,7 +127,7 @@ public class ChangeCompiler
 		String[] components = substring.split(", ");
 		components[0] = components[0].substring(1);
 		components[2] = components[2].substring(0, components[2].length() - 1);
-		return new Vector(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]));
+		return new Vector(Float.parseFloat(components[0]), Float.parseFloat(components[1]), Float.parseFloat(components[2]));
 	}
 	
 	private static UserCommand getCommandFromString(String substring)

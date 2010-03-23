@@ -176,6 +176,14 @@ public class Client implements IClient, Runnable
 	}
 	public int getNextID()
 	{
-		return server.getNextEntityID();
+		try
+		{
+			return server.getNextEntityID();
+
+		}
+		catch (Exception e)
+		{
+			return 0;
+		}
 	}
 }

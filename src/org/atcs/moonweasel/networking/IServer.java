@@ -51,5 +51,5 @@ public interface IServer extends Remote
 	 * attempt to control the same ship.
 	 * @return The next ID that can be chosen.
 	 */
-	public int getNextEntityID();
+	public int getNextEntityID() throws RemoteException;
 }
