@@ -98,23 +98,12 @@ public class ChangeCompiler
 				else if (change.startsWith("damage"))
 				{
 					if (e instanceof Ship)
-					{
 						((Ship)e).damage(Integer.parseInt(change.substring(7)));
-					}
-				}
-				else if (change.startsWith("add command "))
-				{
-					if (e instanceof Player)
-					{
-						((Player)e).addCommand(getCommandFromString(change.substring(13)));
-					}
 				}
 				else if (change.startsWith("apply command "))
 				{
 					if (e instanceof Ship)
-					{
 						((Ship)e).apply(getCommandFromString(change.substring(15)));
-					}
 				}
 				iter.remove();
 			}
@@ -138,10 +127,10 @@ public class ChangeCompiler
 		UserCommand uc = new UserCommand();
 		uc.setKeysAsBitmask(Short.parseShort(components[0]));
 		String v = "";
+
 		for (int i = 1; i < components.length; i++)
-		{
 			v += components[i] + " ";
-		}
+
 		v = v.substring(0, v.length() - 1);
 		uc.setMouse(getVectorFromString(v));
 		return uc;
