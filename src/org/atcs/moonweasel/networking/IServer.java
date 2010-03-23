@@ -45,4 +45,11 @@ public interface IServer extends Remote
 	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
 	public void chooseShip(final ShipType shipType, final String c) throws RemoteException;
+	
+	/**
+	 * The next entity ID that can be used. Used to fix the glitch where multiple clients
+	 * attempt to control the same ship.
+	 * @return The next ID that can be chosen.
+	 */
+	public int getNextEntityID();
 }

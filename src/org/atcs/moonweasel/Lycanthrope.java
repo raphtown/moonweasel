@@ -37,11 +37,13 @@ public class Lycanthrope
 	{
 		
 		this.client = new Client();
+		int nextID = client.getNextID();
 		client.findAndConnectToServer();
 		client.chooseShip();
 
 		this.physics = new Physics();
 		this.entityManager = EntityManager.getEntityManager();
+		entityManager.setNextID(nextID);
 		
 		player = this.entityManager.create("player");
 		player.spawn();
@@ -95,10 +97,10 @@ public class Lycanthrope
 			if ((++curr) % currmax == 0)
 			{
 				//view.toggleUpdating();
-				int id = view.getMe().getID();
+				//int id = view.getMe().getID();
 				client.requestUpdate();
-				Player p = (Player)(entityManager.get(id));
-				view.setMe(p);
+				//Player p = (Player)(entityManager.get(id));
+				//view.setMe(p);
 				//view.toggleUpdating();
 			}
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 

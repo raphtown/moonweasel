@@ -173,8 +173,9 @@ public class Client implements IClient, Runnable
 		Protocol.sendPacket("doCommand", parameters, server);
 		long end = System.currentTimeMillis() - start;
 		Debug.print("RMI delay: " + end);
-
 	}
-
-
+	public int getNextID()
+	{
+		return server.getNextEntityID();
+	}
 }

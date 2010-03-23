@@ -62,4 +62,13 @@ public class EntityManager extends Manager<Entity> {
 			thoughts.remove(thoughts.firstKey()).think();
 		}
 	}
+
+	public int getNextID() {
+		return Entity.getNextIDWithoutChanging();
+	}
+	
+	public void setNextID(int nextID)
+	{
+		Entity.setNextID(nextID);
+	}
 }

@@ -179,4 +179,9 @@ public class Server extends ActionSource implements IServer
 		connectedClients.remove(clientName);
 		fireActionEvent(CLIENT_DISCONNECT + " " + clientName);
 	}
+	
+	public int getNextEntityID()
+	{
+		return EntityManager.getEntityManager().getNextID();
+	}
 }

@@ -16,6 +16,16 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 		return nextID++;
 	}
 	
+	static int getNextIDWithoutChanging()
+	{
+		return nextID;
+	}
+	
+	static void setNextID(int nextIDIn)
+	{
+		nextID = nextIDIn;
+	}
+	
 	private final int id;
 	private boolean destroyed;
 	private boolean hasBeenChanged = false;
