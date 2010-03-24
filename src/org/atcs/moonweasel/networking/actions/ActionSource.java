@@ -2,8 +2,8 @@ package org.atcs.moonweasel.networking.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 public abstract class ActionSource
 {

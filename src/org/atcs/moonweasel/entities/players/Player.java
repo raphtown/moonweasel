@@ -1,7 +1,5 @@
 package org.atcs.moonweasel.entities.players;
 
-import java.io.Serializable;
-import java.util.Comparator;
 import java.util.PriorityQueue;
 
 import org.atcs.moonweasel.Debug;

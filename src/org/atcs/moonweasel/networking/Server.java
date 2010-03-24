@@ -1,7 +1,12 @@
 package org.atcs.moonweasel.networking;
 
-import static org.atcs.moonweasel.networking.RMIConfiguration.*;
-import static org.atcs.moonweasel.networking.actions.ActionMessages.*;
+import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
+import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
+import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
+import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
+import static org.atcs.moonweasel.networking.actions.ActionMessages.CHOOSE_SHIP;
+import static org.atcs.moonweasel.networking.actions.ActionMessages.CLIENT_DISCONNECT;
+import static org.atcs.moonweasel.networking.actions.ActionMessages.COMMAND_RECEIVED;
 
 import java.rmi.AccessException;
 import java.rmi.Remote;

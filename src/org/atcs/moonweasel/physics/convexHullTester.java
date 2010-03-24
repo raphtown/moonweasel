@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.physics;
 import java.awt.Color;
 import java.awt.Graphics;
+
 import javax.swing.JFrame;
 
 import org.atcs.moonweasel.util.ConvexHull;

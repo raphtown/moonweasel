@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.atcs.moonweasel.util.*;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
+import org.atcs.moonweasel.util.ConvexHull;
 import org.atcs.moonweasel.util.Matrix;
+import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 public class Physics

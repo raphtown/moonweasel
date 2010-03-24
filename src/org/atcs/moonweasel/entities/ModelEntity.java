@@ -2,14 +2,12 @@ package org.atcs.moonweasel.entities;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.gui.Loader;
 import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.util.Matrix;
-import org.atcs.moonweasel.util.TimedDerivative;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
@@ -21,8 +19,8 @@ public abstract class ModelEntity extends Entity implements Positional {
 	}
 	
 	private BoundingShape bounding;
-	private State lastRenderState;
-	private State state;
+	private @Trackable State lastRenderState;
+	private @Trackable State state;
 		
 	protected ModelEntity(BoundingShape bounding, float mass, Matrix inertiaTensor) {
 		super();

@@ -3,6 +3,7 @@ package org.atcs.moonweasel.util;
 import java.io.Serializable;
 import java.util.PriorityQueue;
 
+import org.atcs.moonweasel.entities.Trackable;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
@@ -26,19 +27,19 @@ public class State implements Serializable
 	}
 	
 	// primary
-	public Vector position;
-	public Vector momentum;
-	public Quaternion orientation;
-	public Vector angularMomentum;
+	public @Trackable Vector position;
+	public @Trackable Vector momentum;
+	public @Trackable Quaternion orientation;
+	public @Trackable Vector angularMomentum;
 
 	// secondary
-	public Vector velocity;
-	public Vector angularVelocity;
-	public Quaternion spin;
-	public Matrix bodyToWorld;
-	public Matrix worldToBody;
-	public Vector[] verticesOfBoundingRegion;
-	public float dangerZoneRadius;
+	public @Trackable Vector velocity;
+	public @Trackable Vector angularVelocity;
+	public @Trackable Quaternion spin;
+	public @Trackable Matrix bodyToWorld;
+	public @Trackable Matrix worldToBody;
+	public @Trackable Vector[] verticesOfBoundingRegion;
+	public @Trackable float dangerZoneRadius;
 	
 	// constant
 	public final float mass;

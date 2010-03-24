@@ -1,19 +1,10 @@
 package org.atcs.moonweasel.entities;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
-public class ChangeTracker implements PropertyChangeListener
+public class ChangeTracker
 {
 	static HashMap<Integer, HashMap<String, Object>> changeMap = new HashMap<Integer, HashMap<String, Object>>();
-
-	@Override
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
 
 	public static void created(Entity target)
 	{
@@ -24,6 +15,7 @@ public class ChangeTracker implements PropertyChangeListener
 	public static void deleted(Entity target)
 	{
 		HashMap<String, Object> temp = changeMap.get(target.getID());
+		temp.clear();
 		temp.put("deleted", null);
 	}
 
@@ -31,8 +23,8 @@ public class ChangeTracker implements PropertyChangeListener
 	{
 		try
 		{
-			if(target.getClass().getDeclaredField(propertyName).getAnnotations().length == 0 || 
-					!target.getClass().getDeclaredField(propertyName).getAnnotations()[0].equals("final"))
+			if(target.getClass().getDeclaredField(propertyName).getAnnotations().length != 0 && 
+					!target.getClass().getDeclaredField(propertyName).getAnnotations()[0].equals("trackable"))
 			{
 				if(!changeMap.containsKey(target.getID()))
 				{
@@ -40,10 +32,8 @@ public class ChangeTracker implements PropertyChangeListener
 				}
 				HashMap<String, Object> temp = changeMap.get(target.getID());
 				temp.put(propertyName, newValue);
-				
-				target.getClass().getDeclaredField(propertyName).set(target, newValue);
 			}
-			
+			target.getClass().getDeclaredField(propertyName).set(target, newValue);
 		} 
 		catch (IllegalArgumentException e)
 		{

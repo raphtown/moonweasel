@@ -18,6 +18,7 @@ public abstract class Entity implements Identifiable, Serializable {
 	private boolean destroyed;
 	
 	protected Entity() {
+		ChangeTracker.created(this);
 		this.id = getNextID();
 		this.destroyed = false;
 	}
@@ -28,6 +29,7 @@ public abstract class Entity implements Identifiable, Serializable {
 	
 	public void destroy() {
 		this.destroyed = true;
+		ChangeTracker.deleted(this);
 	}
 	
 	public final String getEntityType() {

@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Ship;
@@ -20,6 +21,7 @@ import org.atcs.moonweasel.networking.Server;
 public class Artemis extends Moonweasel implements ActionListener {
 	
 	private final Map<Player, Long> playerCommandMap = new HashMap<Player, Long>();
+	HashMap<Integer, Entity> syncedEntities = new HashMap<Integer, Entity>();
 	
 	public Artemis(int width, int height, boolean fullscreen) {
 		super(width, height, fullscreen);
@@ -29,6 +31,16 @@ public class Artemis extends Moonweasel implements ActionListener {
 		server = new Server("Moonweasel Server");
 
 		server.addActionListener(this);
+	}
+	
+	public void sendChange()
+	{
+		HashMap<Integer>
+		for(Entity e : entityManager.getAllOfType(Entity.class))
+		{
+			if(!syncedEntities.containsKey(e.getID()))
+			e.getClass().getDeclaredF
+		}
 	}
 	
 	@Override

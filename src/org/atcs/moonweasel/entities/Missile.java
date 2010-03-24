@@ -1,8 +1,8 @@
 package org.atcs.moonweasel.entities;
 
 import org.atcs.moonweasel.physics.BoundingBox;
-import org.atcs.moonweasel.physics.BoundingShape;
-import org.atcs.moonweasel.util.*;
+import org.atcs.moonweasel.util.Matrix;
+import org.atcs.moonweasel.util.Vector;
 
 
 public class Missile extends ModelEntity 
