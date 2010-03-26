@@ -32,10 +32,14 @@ public class ChangeCompiler
 			{
 				if (s.startsWith("create"))
 				{
-					if (!created)
+					if (!created && !(changes.getTypeName().equals("Player")))
 					{
 						mgr.create(changes.getTypeName());
 						created = true;
+					}
+					else if (!(changes.getTypeName().equals("Player")))
+					{
+						mgr.setNextID(mgr.getNextID() + 1);
 					}
 					toRemove.add(s);
 				}

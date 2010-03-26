@@ -10,6 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -92,7 +93,6 @@ public class Server extends ActionSource implements IServer
 	{
 		connectedClients.add(c);
 		Debug.print("Client " + c + " connected!");
-		fireActionEvent("newClient " + c);
 	}
 	
 	/**
@@ -137,18 +137,24 @@ public class Server extends ActionSource implements IServer
 			throw new RemoteException("Unconnected client trying to get an update!");
 
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
-		List<ChangeList> changeList = new ArrayList<ChangeList>();
-		while(range.hasNext())
+		List<Entity> eList = new LinkedList<Entity>();
+		List<ChangeList> changeList = new LinkedList<ChangeList>();
+		synchronized (EntityManager.getEntityManager())
 		{
-			Entity e = range.next();
-			if (e.hasRecentlyChanged())
+			while(range.hasNext())
 			{
-				System.out.println(e);
-				changeList.add(e.getRecentChanges());
-				e.sent();
-			}	
+				Entity e = range.next();
+				if (eList.contains(e))
+					continue;
+				eList.add(e);
+				if (e.hasRecentlyChangedForClient(c))
+				{
+					changeList.add(e.getRecentChanges(c));
+					e.sent(c);
+				}
+			}
 		}
-			
+		
 		return changeList;
 	}
 	
@@ -169,6 +175,11 @@ public class Server extends ActionSource implements IServer
 				disconnectClient(clientName);
 			}
 		}
+		
+		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
+
+		while (range.hasNext())
+			range.next().clearChanges();
 	}
 
 	/**
@@ -183,5 +194,19 @@ public class Server extends ActionSource implements IServer
 	public int getNextEntityID()
 	{
 		return EntityManager.getEntityManager().getNextID();
+	}
+	
+	public List<Entity> getStartingEntities()
+	{
+		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
+		List<Entity> entityList = new LinkedList<Entity>();
+		while(range.hasNext())
+			entityList.add(range.next());
+		return entityList;
+	}
+	
+	public void connectionInitializationComplete(String c)
+	{
+		fireActionEvent("newClient " + c);
 	}
 }

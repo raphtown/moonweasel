@@ -9,7 +9,7 @@ public class Snowflake extends Ship
 	private static final ShipData DATA = 
 		ShipData.loadShipData(Snowflake.class.getSimpleName().toLowerCase());
 	
-	private Snowflake() {
+	public Snowflake() {
 		super(DATA);
 	}
 	

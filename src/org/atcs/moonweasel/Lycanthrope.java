@@ -35,10 +35,11 @@ public class Lycanthrope
 	
 	public Lycanthrope(int width, int height, boolean fullscreen)
 	{
-		
 		this.client = new Client();
-		int nextID = client.getNextID();
 		client.findAndConnectToServer();
+		int nextID = client.getNextID();
+		client.getStartingEntities();
+		client.connectionInitializationComplete();
 		client.chooseShip();
 
 		this.physics = new Physics();

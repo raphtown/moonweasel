@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
+import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
@@ -31,7 +32,6 @@ import org.atcs.moonweasel.networking.changes.ChangeList;
  * Currently has a main() method so that it can be run by itself for simple 
  * testing, but this can be changed in the future.
  * 
- * This is a work in progress and is not currently working.
  * @author Maxime Serrano, Raphael Townshend
  */
 public class Client implements IClient, Runnable
@@ -93,6 +93,15 @@ public class Client implements IClient, Runnable
 
 		Object[] parameters = {getIP()};
 		Protocol.sendPacket("connect", parameters, server);
+	}
+	
+	public void connectionInitializationComplete()
+	{
+		try {
+			server.connectionInitializationComplete(getIP());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void chooseShip()
@@ -174,6 +183,7 @@ public class Client implements IClient, Runnable
 		long end = System.currentTimeMillis() - start;
 		Debug.print("RMI delay: " + end);
 	}
+
 	public int getNextID()
 	{
 		try
@@ -183,7 +193,25 @@ public class Client implements IClient, Runnable
 		}
 		catch (Exception e)
 		{
-			return 0;
+			throw new RuntimeException("Error getting starting entity ID.");
+		}
+	}
+
+	public void getStartingEntities()
+	{
+		try
+		{
+			EntityManager mgr = EntityManager.getEntityManager();
+			List<Entity> entityList = server.getStartingEntities();
+			for (Entity e : entityList)
+			{
+				mgr.delete(e);
+				mgr.add(e);
+			}
+		}
+		catch (RemoteException e)
+		{
+			throw new RuntimeException("Error loading starting entities.");
 		}
 	}
 }

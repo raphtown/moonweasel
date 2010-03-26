@@ -4,6 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.util.Vector;
@@ -52,4 +53,11 @@ public interface IServer extends Remote
 	 * @return The next ID that can be chosen.
 	 */
 	public int getNextEntityID() throws RemoteException;
+	
+	/**
+	 * Yay we're getting a massive list of entities.
+	 */
+	public List<Entity> getStartingEntities() throws RemoteException;
+
+	public void connectionInitializationComplete(String c) throws RemoteException;
 }

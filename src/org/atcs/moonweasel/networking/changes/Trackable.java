@@ -3,7 +3,7 @@ package org.atcs.moonweasel.networking.changes;
 
 public interface Trackable
 {
-	public boolean hasRecentlyChanged();
-	public void sent();
-	public ChangeList getRecentChanges();
+	public boolean hasRecentlyChangedForClient(String c);
+	public void sent(String c);
+	public ChangeList getRecentChanges(String c);
 }

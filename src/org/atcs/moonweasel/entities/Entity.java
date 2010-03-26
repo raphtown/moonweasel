@@ -1,6 +1,10 @@
 package org.atcs.moonweasel.entities;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.atcs.moonweasel.Identifiable;
 import org.atcs.moonweasel.networking.changes.ChangeList;
@@ -28,21 +32,23 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	
 	private final int id;
 	private boolean destroyed;
-	private boolean hasBeenChanged = false;
-	private ChangeList changes;
-	
+	private List<String> clientsThatHaveGottenChanges = new LinkedList<String>();
+	private ChangeList globalChanges;
+	private Map<String, ChangeList> clientSpecificChanges = new HashMap<String, ChangeList>();
+	 
 	protected Entity() {
 		this.id = getNextID();
-		changes = new ChangeList(getClass().getSimpleName(), getID());
+		globalChanges = new ChangeList(getClass().getSimpleName(), getID());
 		this.destroyed = false;
-		this.hasBeenChanged = true;
-		this.changes.add("created entity");
+		this.globalChanges.add("created entity");
 	}
 	
 	protected void addChange(String change)
 	{
 		change();
-		changes.add(change);
+		globalChanges.add(change);
+		for (String key : clientSpecificChanges.keySet())
+			clientSpecificChanges.get(key).add(change);
 	}
 	
 	public boolean isDestroyed() {
@@ -76,27 +82,42 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	
 	protected void change()
 	{
-		hasBeenChanged = true;
+		clientsThatHaveGottenChanges = new LinkedList<String>();
 	}
 	
-	public boolean hasRecentlyChanged()
+	public boolean hasRecentlyChangedForClient(String c)
 	{
-		return hasBeenChanged;
+		return !(clientsThatHaveGottenChanges.contains(c));
 	}
 	
-	public void sent()
+	public void sent(String c)
 	{
-		hasBeenChanged = false;
-		clearChanges();
+		clientsThatHaveGottenChanges.add(c);
+		clearChanges(c);
 	}
 	
-	public ChangeList getRecentChanges()
+	public ChangeList getRecentChanges(String c)
 	{
-		return changes;
+		if (!clientSpecificChanges.keySet().contains(c))
+			return globalChanges;
+		else
+			return clientSpecificChanges.get(c);
 	}
 	
 	public void clearChanges()
 	{
-		changes = new ChangeList(getClass().getName(), getID());
+		globalChanges = new ChangeList(getClass().getName(), getID());
+		clientsThatHaveGottenChanges = new LinkedList<String>();
+	}
+	
+	private void clearChanges(String c)
+	{
+		clientSpecificChanges.put(c, new ChangeList(getClass().getName(), getID()));
+		clientsThatHaveGottenChanges.remove(c);
+	}
+
+	public boolean equals(Entity e)
+	{
+		return e.getID() == this.getID();
 	}
 }
