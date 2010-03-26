@@ -68,14 +68,16 @@ public class Moonweasel {
 		player.spawn();
 
 		ArrayList<Vector> bounds = new ArrayList<Vector>();
-		bounds.add(new Vector(0.3f,0.3f,0.3f));
-		bounds.add(new Vector(-0.3f,-0.3f,-0.3f));
-		bounds.add(new Vector(0.3f,0.3f,-0.3f));
-		bounds.add(new Vector(-0.3f,0.3f,0.3f));
-		bounds.add(new Vector(0.3f,-0.3f,0.3f));
-		bounds.add(new Vector(-0.3f,-0.3f,0.3f));
-		bounds.add(new Vector(-0.3f,0.3f,-0.3f));
-		bounds.add(new Vector(0.3f,-0.3f,-0.3f));
+		bounds.add(new Vector(0.4f,0.3f,0.4f));
+		bounds.add(new Vector(-0.1f,0f,-0.4f));
+		bounds.add(new Vector(0.1f,0.3f,-0.4f));
+		bounds.add(new Vector(-0.4f,0.3f,0.4f));
+		bounds.add(new Vector(0.4f,0f,0.4f));
+		bounds.add(new Vector(-0.4f,0f,0.4f));
+		bounds.add(new Vector(-0.1f,0.3f,-0.4f));
+		bounds.add(new Vector(0.1f,0f,-0.4f));
+		//bounds.add(new Vector(0,0,-0.6f));
+		bounds.add(new Vector(0,0.35f,0));
 		
 		Snowflake snowflake = this.entityManager.create("snowflake");
 		snowflake.setPilot(player);
@@ -88,7 +90,7 @@ public class Moonweasel {
 		
 		snowflake2.getState().verticesOfBoundingRegion = bounds;
 		snowflake2.getState().setInitialConvexHull();
-		snowflake2.setPosition(new Vector(10,0,0));
+		snowflake2.setPosition(new Vector(0,0,-10));
 		snowflake2.spawn();
 		
 		this.physics = new Physics();
@@ -102,7 +104,7 @@ public class Moonweasel {
 	}
 	
 	private void run() {
-		final int TICKS_PER_SECOND = 25;
+		final int TICKS_PER_SECOND = 50;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
 

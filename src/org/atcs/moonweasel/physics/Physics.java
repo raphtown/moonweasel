@@ -22,6 +22,8 @@ public class Physics
 	
 	public static Map<State, State> collidingStates = new HashMap<State, State>();
 	
+	public static final double MIN_COLLIDE_DISTANCE = 0.7;
+	
 	public Physics() 
 	{
 		this.integrator = new NumericalIntegration();
@@ -73,9 +75,8 @@ public class Physics
 					if(s.position.squareDistance(check.position) < Math.pow((s.dangerZoneRadius + check.dangerZoneRadius), 2))
 					{
 						//DANGER WILL ROBINSON
-						
 						statesToCheck.add(s);
-						System.out.println("added a point IN THE DANGER ZONE!!!");
+						//System.out.println("added a point IN THE DANGER ZONE!!!");
 					}
 				}
 			}
@@ -106,7 +107,11 @@ public class Physics
 					if(polyhedralCollision(s, check))
 					{
 						System.out.println("COLLISION!!!");
-						collidingStates.put(s, check);
+						//map should not have duplicates
+						if(!collidingStates.keySet().contains(check))
+						{
+							collidingStates.put(s, check);
+						}
 					}
 				}
 			}
@@ -115,6 +120,7 @@ public class Physics
 		for(State s : collidingStates.keySet())
 		{
 			integrator.collisionResponse(s, collidingStates.get(s));
+			integrator.integrate(s,t,dt);
 		}
 		allStates.clear();
 		normalStates.clear();

@@ -145,11 +145,11 @@ public class WeaselView extends View {
         		CAMERA_CLIPPING_FAR);
         
         ModelEntity ent = me.getShip();
-        float radius = 1;
+        float radius = 1.5f;
         
         State interp = State.interpolate(ent.getLastRenderState(), ent.getState(), alpha);
         Vector relative = interp.orientation.rotate(
-        		new Vector(0, 0, radius * CAMERA_PILOT_OFFSET_SCALAR));
+        		new Vector(0, 0, 3));
         Vector camera = interp.position.add(relative);
         Vector up = interp.orientation.rotate(new Vector(0, 1, 0));
 

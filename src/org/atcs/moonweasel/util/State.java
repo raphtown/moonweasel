@@ -123,6 +123,7 @@ public class State
 	}
 
 	public void recalculate() {
+		
 		velocity = momentum.scale(inverseMass);
 		angularVelocity = inverseInertiaTensor.transform(angularMomentum);
 		orientation = orientation.normalize();

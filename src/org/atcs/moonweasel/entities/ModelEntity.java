@@ -13,7 +13,7 @@ import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 public abstract class ModelEntity extends Entity implements Positional {
-	private final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
+	public final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
 	
 	static {
 		DISPLAY_LISTS = new HashMap<Class<? extends ModelEntity>, Integer>();
