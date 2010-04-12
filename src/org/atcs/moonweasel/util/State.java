@@ -1,5 +1,7 @@
 package org.atcs.moonweasel.util;
 
+import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.PriorityQueue;
 
@@ -24,7 +26,7 @@ public class State implements Serializable
 		interpolated.recalculate();
 		return interpolated;
 	}
-	
+
 	// primary
 	public Vector position;
 	public Vector momentum;
@@ -39,21 +41,21 @@ public class State implements Serializable
 	public Matrix worldToBody;
 	public Vector[] verticesOfBoundingRegion;
 	public float dangerZoneRadius;
-	
+
 	// constant
 	public final float mass;
 	public final float inverseMass;
 	public final Matrix inertiaTensor;
 	public final Matrix inverseInertiaTensor;
-	
+
 	private PriorityQueue<TimedDerivative> derivatives;
-	
+
 	public State(float mass, Matrix inertia) 
 	{
 		this(Vector.ZERO, Vector.ZERO, Quaternion.ZERO,
 				Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
 	}
-	
+
 	public State(Vector position, Vector momentum, Quaternion orientation, 
 			Vector angularMomentum, float mass, float inverseMass, Matrix inertiaTensor,
 			Matrix inverseInertiaTensor) {
@@ -67,10 +69,10 @@ public class State implements Serializable
 		this.inertiaTensor = inertiaTensor;
 		this.inverseInertiaTensor = inverseInertiaTensor;
 		recalculate();
-		
+
 		this.derivatives = new PriorityQueue<TimedDerivative>();
 	}
-	
+
 	private State(State other) {
 		this.position = other.position;
 		this.momentum = other.momentum;
@@ -84,34 +86,34 @@ public class State implements Serializable
 		this.worldToBody = other.worldToBody;
 		this.verticesOfBoundingRegion = other.verticesOfBoundingRegion;
 		this.dangerZoneRadius = other.dangerZoneRadius;
-		
+
 		this.mass = other.mass;
 		this.inverseMass = other.inverseMass;
 		this.inertiaTensor = other.inertiaTensor;
 		this.inverseInertiaTensor = other.inverseInertiaTensor;
-		
+
 		this.derivatives = other.derivatives;
 	}
-	
+
 	public void addDerivative(TimedDerivative derivative) {
 		this.derivatives.add(derivative);
 	}
-	
+
 	public void clearDerivativesBefore(long t) {
 		while (!derivatives.isEmpty() &&
 				derivatives.peek().getTime() < t) {
 			derivatives.remove();
 		}
 	}
-	
+
 	public State clone() {
 		return new State(this);
 	}
-	
+
 	public Range<TimedDerivative> getDerivativesBefore(long t) {
 		return new TimeRange<TimedDerivative>(0, t, derivatives.iterator());
 	}
-	
+
 	public void recalculate() {
 		velocity = momentum.scale(inverseMass);
 		angularVelocity = inverseInertiaTensor.transform(angularMomentum);
@@ -119,14 +121,31 @@ public class State implements Serializable
 
 		Quaternion tempUpdate = new Quaternion(0, angularVelocity.x, angularVelocity.y, angularVelocity.z);
 		spin = tempUpdate.scale(0.5f).multiply(orientation);
-		  
+
 		// dealing with local vs global coordinates now
 		bodyToWorld = new Matrix(position).multiply(orientation.toMatrix());
 		worldToBody = bodyToWorld.inverse();
 	}
-	 
+
 	public void setDangerZone(float dt)
 	{
 		dangerZoneRadius = velocity.scale(dt).length();
+	}
+
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException
+	{
+		out.writeObject(position);
+		out.writeObject(momentum);
+		out.writeObject(orientation);
+		out.writeObject(angularMomentum);
+	}
+	
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		position = (Vector) in.readObject();
+		momentum = (Vector) in.readObject();
+		orientation = (Quaternion) in.readObject();
+		angularMomentum = (Vector) in.readObject();
+		recalculate();
 	}
 }

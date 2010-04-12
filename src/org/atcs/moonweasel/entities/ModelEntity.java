@@ -87,4 +87,9 @@ public abstract class ModelEntity extends Entity implements Positional {
 		this.state.position = position;
 		this.addChange("set position " + position);
 	}
+	
+	public void setState(State s) 
+	{
+		state = s;
+	}
 }

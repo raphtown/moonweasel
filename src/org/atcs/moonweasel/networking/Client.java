@@ -1,6 +1,9 @@
 package org.atcs.moonweasel.networking;
 
-import static org.atcs.moonweasel.networking.RMIConfiguration.*;
+import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
+import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
+import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
+import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -12,16 +15,17 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
-import org.atcs.moonweasel.networking.changes.ChangeCompiler;
-import org.atcs.moonweasel.networking.changes.ChangeList;
+import org.atcs.moonweasel.util.State;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 
@@ -152,17 +156,24 @@ public class Client implements IClient, Runnable
 	{
 		Object[] parameters = { getIP() };
 
-		List<ChangeList> changeList = (List<ChangeList>) Protocol.sendPacket("requestUpdate", parameters, server);
+		Map<Integer, State> sList = (Map<Integer, State>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
 		
-		if (changeList == null)
+		if (sList == null)
 		{
 			System.out.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
 			return;
 		}
+		else
+		{
+			System.out.println("Change List is not null!");
+		}
 
-		for (ChangeList changes : changeList)
-			ChangeCompiler.compile(changes, mgr);
+		for (Integer id : sList.keySet())
+		{
+			ModelEntity m = mgr.get(id);
+			m.setState(sList.get(id));
+		}
 	}
 
 	public IServer getServer()

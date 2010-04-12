@@ -1,7 +1,12 @@
 package org.atcs.moonweasel.networking;
 
-import static org.atcs.moonweasel.networking.RMIConfiguration.*;
-import static org.atcs.moonweasel.networking.actions.ActionMessages.*;
+import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
+import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
+import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
+import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
+import static org.atcs.moonweasel.networking.actions.ActionMessages.CHOOSE_SHIP;
+import static org.atcs.moonweasel.networking.actions.ActionMessages.CLIENT_DISCONNECT;
+import static org.atcs.moonweasel.networking.actions.ActionMessages.COMMAND_RECEIVED;
 
 import java.rmi.AccessException;
 import java.rmi.Remote;
@@ -10,18 +15,21 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.actions.ActionSource;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
-import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.ranges.Range;
+import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 /**
@@ -131,31 +139,25 @@ public class Server extends ActionSource implements IServer
 	 * @param c The client that is asking for an update.
 	 * @return A list of Entities.
 	 */
-	public List<ChangeList> requestUpdate(final String c) throws RemoteException
+	public Map<Integer, State> requestUpdate(final String c) throws RemoteException
 	{
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to get an update!");
 
-		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
-		List<Entity> eList = new LinkedList<Entity>();
-		List<ChangeList> changeList = new LinkedList<ChangeList>();
+		System.out.println("zomg");
+		
+		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
+		Map<Integer, State> sList = new HashMap<Integer, State>();
 		synchronized (EntityManager.getEntityManager())
 		{
 			while(range.hasNext())
 			{
-				Entity e = range.next();
-				if (eList.contains(e))
-					continue;
-				eList.add(e);
-				if (e.hasRecentlyChangedForClient(c))
-				{
-					changeList.add(e.getRecentChanges(c));
-					e.sent(c);
-				}
+				ModelEntity e = range.next();
+				sList.put(e.getID(), e.getState());
 			}
 		}
 		
-		return changeList;
+		return sList;
 	}
 	
 	/**
