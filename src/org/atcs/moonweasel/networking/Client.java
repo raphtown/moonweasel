@@ -152,7 +152,7 @@ public class Client implements IClient, Runnable
 
 
 	@SuppressWarnings("unchecked")
-	public void requestUpdate()
+	public void requestUpdateFromServer()
 	{
 		Object[] parameters = { getIP() };
 
@@ -162,6 +162,7 @@ public class Client implements IClient, Runnable
 		if (sList == null)
 		{
 			System.out.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
+			System.exit(0);
 			return;
 		}
 		else

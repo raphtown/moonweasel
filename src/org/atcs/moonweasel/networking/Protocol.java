@@ -70,7 +70,15 @@ public abstract class Protocol
 		{
 			Class<?>[] paramClasses = getParameters(command);
 			Method m = server.getClass().getDeclaredMethod(command, paramClasses);
-			return  m.invoke(server, parameters);
+			System.out.print("Invoking: " + m.getName() + " with parameters: ");
+			for(int i = 0; i < parameters.length; i++)
+			{
+				System.out.print(parameters[i] + " ");
+			}
+			System.out.println();
+			Object o =  m.invoke(server, parameters);
+			System.out.println("Object returned: " + o);
+			return o;
 		} 
 		catch (Exception e)
 		{

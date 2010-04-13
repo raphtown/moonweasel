@@ -99,7 +99,7 @@ public class Lycanthrope
 			{
 				//view.toggleUpdating();
 				//int id = view.getMe().getID();
-				client.requestUpdate();
+				client.requestUpdateFromServer();
 				//Player p = (Player)(entityManager.get(id));
 				//view.setMe(p);
 				//view.toggleUpdating();

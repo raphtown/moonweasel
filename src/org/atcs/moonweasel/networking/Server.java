@@ -144,18 +144,22 @@ public class Server extends ActionSource implements IServer
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to get an update!");
 
-		System.out.println("zomg");
+		System.out.println("In requestUpdate...");
 		
 		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
 		Map<Integer, State> sList = new HashMap<Integer, State>();
 		synchronized (EntityManager.getEntityManager())
 		{
+			System.out.println("Synchronized in requestUpdate...");
 			while(range.hasNext())
 			{
 				ModelEntity e = range.next();
+				System.out.println("Sending object: " + e);
 				sList.put(e.getID(), e.getState());
 			}
 		}
+		
+		System.out.println(sList);
 		
 		return sList;
 	}
@@ -170,7 +174,7 @@ public class Server extends ActionSource implements IServer
 	        try
 	        {
 				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
-				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).requestUpdate();
+				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).requestUpdateFromServer();
 			}
 			catch (Exception e)
 			{

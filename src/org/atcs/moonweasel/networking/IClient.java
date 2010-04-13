@@ -5,5 +5,5 @@ import java.rmi.RemoteException;
 
 public interface IClient extends Remote
 {
-	public void requestUpdate() throws RemoteException;
+	public void requestUpdateFromServer() throws RemoteException;
 }
