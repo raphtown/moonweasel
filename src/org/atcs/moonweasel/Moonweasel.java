@@ -106,7 +106,7 @@ public class Moonweasel
 				next_logic_tick += SKIP_TICKS;
 				loops++;
 				count++;
-				if(count == 10)
+				if(count == 10000)
 				{
 					System.out.println("cool");
 					Ship ship = this.entityManager.create("snowflake");

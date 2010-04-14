@@ -64,6 +64,7 @@ public class Lycanthrope
 		client.connectionInitializationComplete();
 		client.chooseShip();
 		client.getStartingEntities();
+
 		this.physics = new Physics();
 		this.entityManager = EntityManager.getEntityManager();
 

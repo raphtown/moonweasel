@@ -146,7 +146,7 @@ public class Server extends ActionSource implements IServer
 	public Map<Integer, State> requestUpdate(final String c) throws RemoteException
 	{
 		sendNewEntities();
-		
+		System.out.println("In request update...");
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to get an update!");
 		
@@ -157,7 +157,7 @@ public class Server extends ActionSource implements IServer
 			while(range.hasNext())
 			{
 				ModelEntity e = range.next();
-//				System.out.println("Sending object: " + e.getID() + " ,  " + e.getState());
+				System.out.println("Sending object: " + e.getID() + " ,  " + e.getState());
 				sList.put(e.getID(), e.getState());
 			}
 		}
@@ -222,6 +222,7 @@ public class Server extends ActionSource implements IServer
 	
 	public void sendNewEntities()
 	{
+		System.out.println("In send new entities...");
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		synchronized (EntityManager.getEntityManager())
@@ -229,10 +230,10 @@ public class Server extends ActionSource implements IServer
 			while(range.hasNext())
 			{
 				Entity e = range.next();
-				if(e.sentToAll)
+				if(!e.sentToAll)
 				{
 					e.sentToAll = true;
-					System.out.println("Sending object: " + e.getID());
+					System.out.println("Sending new object: " + e.getID());
 					eList.add(e);
 				}
 			}
@@ -250,6 +251,7 @@ public class Server extends ActionSource implements IServer
 				disconnectClient(clientName);
 			}
 		}
+		System.out.println("Finished send new entities...");
 	}
 	
 	public void connectionInitializationComplete(String c)
