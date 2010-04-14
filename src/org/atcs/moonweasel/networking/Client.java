@@ -16,7 +16,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
@@ -43,7 +42,6 @@ public class Client implements IClient, Runnable
 {
 	private IServer server = null;
 	public String ip;
-	
 	
 	public static void main(String args[])
 	{
@@ -169,6 +167,7 @@ public class Client implements IClient, Runnable
 		for (Integer id : sList.keySet())
 		{
 			ModelEntity m = mgr.get(id);
+//			System.out.println("Obtained model entity: " + m + " with id: " + id);
 			m.setState(sList.get(id));
 		}
 	}
@@ -213,13 +212,53 @@ public class Client implements IClient, Runnable
 			List<Entity> entityList = server.getStartingEntities();
 			for (Entity e : entityList)
 			{
-				mgr.delete(e);
+//				mgr.delete(e);
+//				System.out.println("Receiving entity: " + e.getID());
 				mgr.add(e);
 			}
+			System.out.println("Done receiving");
 		}
 		catch (RemoteException e)
 		{
 			throw new RuntimeException("Error loading starting entities.");
 		}
+	}
+	
+	public void getNewEntities()
+	{
+
+		try
+		{
+			EntityManager mgr = EntityManager.getEntityManager();
+			List<Entity> entityList;
+			entityList = server.getNewEntities();
+			for (Entity e : entityList)
+			{
+				System.out.println("Received: " + e + "  with id: " + e.getID());
+				mgr.add(e);
+			}
+		} 
+		catch (RemoteException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+	}
+	
+	public int getMyID()
+	{
+		try
+		{
+			int id = server.getMyID(ip);
+			System.out.println("Got id: " + id);
+			return id;
+		} 
+		catch (RemoteException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 }

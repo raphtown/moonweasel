@@ -46,14 +46,14 @@ public class Artemis extends Moonweasel implements ActionListener {
 				Player plr = entityManager.create("player");
 				plr.spawn();
 
-				playerMap.put(clientHostname, plr);
+				server.playerMap.put(clientHostname, plr);
 			}
 			else if (parts[0].equals(CHOOSE_SHIP))
 			{
 				ShipType st = ShipType.valueOf(parts[1]);
 				String clientHostname = parts[2];
 				String shipTypeName = st.typeName;
-				Player plr = playerMap.get(clientHostname);
+				Player plr = server.playerMap.get(clientHostname);
 				Ship ship = this.entityManager.create(shipTypeName);
 				ship.setPilot(plr);
 				ship.spawn();
@@ -66,7 +66,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 				float mouseX = Float.parseFloat(parts[2]);
 				float mouseY = Float.parseFloat(parts[3]);
 				String clientHostname = parts[4];
-				Player plr = playerMap.get(clientHostname);
+				Player plr = server.playerMap.get(clientHostname);
 				if (playerCommandMap.get(plr) != null)
 					if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
 						return;
@@ -81,9 +81,9 @@ public class Artemis extends Moonweasel implements ActionListener {
 			else if (parts[0].equals(CLIENT_DISCONNECT))
 			{
 				String hostname = parts[1];
-				Player plr = playerMap.get(hostname);
+				Player plr = server.playerMap.get(hostname);
 				this.entityManager.delete(plr);
-				playerMap.remove(hostname);
+				server.playerMap.remove(hostname);
 				plr.getShip().destroy();
 				plr.destroy();
 				((Server)(e.getSource())).forceUpdateAllClients();

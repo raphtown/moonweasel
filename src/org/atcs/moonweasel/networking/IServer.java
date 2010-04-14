@@ -3,10 +3,12 @@ package org.atcs.moonweasel.networking;
 import java.rmi.Remote;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.atcs.moonweasel.entities.Entity;
+import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
@@ -60,8 +62,10 @@ public interface IServer extends Remote
 	 * Yay we're getting a massive list of entities.
 	 */
 	public List<Entity> getStartingEntities() throws RemoteException;
+	
+	public ArrayList<Entity> getNewEntities() throws RemoteException;
+	
+	public Integer getMyID(String ip) throws RemoteException;
 
 	public void connectionInitializationComplete(String c) throws RemoteException;
-	
-	public Integer doSomething(final String c) throws RemoteException;
 }

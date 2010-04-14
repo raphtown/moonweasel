@@ -58,7 +58,6 @@ public class Moonweasel
 
 	protected EntityManager entityManager;
 
-	protected Map<String, Player> playerMap = new HashMap<String, Player>();
 	protected long t;
 
 	protected Moonweasel(int width, int height, boolean fullscreen) {

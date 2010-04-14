@@ -12,6 +12,7 @@ import org.atcs.moonweasel.networking.changes.Trackable;
 
 public abstract class Entity implements Identifiable, Serializable, Trackable {
 	private static int nextID = 0;
+	
 	public static String getEntityType(Class<? extends Entity> clazz) {
 		return clazz.getSimpleName().toLowerCase();
 	}
@@ -30,6 +31,7 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 		nextID = nextIDIn;
 	}
 	
+	public boolean needSyncing;
 	private final int id;
 	private boolean destroyed;
 	private List<String> clientsThatHaveGottenChanges = new LinkedList<String>();
@@ -37,6 +39,7 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	private Map<String, ChangeList> clientSpecificChanges = new HashMap<String, ChangeList>();
 	 
 	protected Entity() {
+		needSyncing = true;
 		this.id = getNextID();
 		globalChanges = new ChangeList(getClass().getSimpleName(), getID());
 		this.destroyed = false;

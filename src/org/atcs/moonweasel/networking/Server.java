@@ -1,7 +1,6 @@
 package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
-
 import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
 import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
 import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
@@ -26,6 +25,7 @@ import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
+import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.actions.ActionSource;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
@@ -51,6 +51,9 @@ public class Server extends ActionSource implements IServer
 	 * The clients that have called the connect() method remotely.
 	 */
 	private final List<String> connectedClients = new ArrayList<String>();
+	
+	public Map<String, Player> playerMap = new HashMap<String, Player>();
+	
 	
 	public static void main(String args[])
 	{
@@ -134,12 +137,7 @@ public class Server extends ActionSource implements IServer
 		
 		fireActionEvent(COMMAND_RECEIVED + " " + command + " " + mouse.x + " " + mouse.y + " " + c);
 	}
-	
-	public Integer doSomething(final String c) throws RemoteException
-	{
-		return 1;
-	}
-	
+
 	/**
 	 * Gets an updated list of Entities.
 	 * @param c The client that is asking for an update.
@@ -157,7 +155,7 @@ public class Server extends ActionSource implements IServer
 			while(range.hasNext())
 			{
 				ModelEntity e = range.next();
-				Debug.print("Sending object: " + e.getID() + " ,  " + e.getState());
+//				System.out.println("Sending object: " + e.getID() + " ,  " + e.getState());
 				sList.put(e.getID(), e.getState());
 			}
 		}
@@ -205,15 +203,46 @@ public class Server extends ActionSource implements IServer
 	
 	public List<Entity> getStartingEntities()
 	{
+		
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		List<Entity> entityList = new LinkedList<Entity>();
-		while(range.hasNext())
-			entityList.add(range.next());
+		synchronized (EntityManager.getEntityManager())
+		{
+			while(range.hasNext())
+				entityList.add(range.next());
+		}
 		return entityList;
+	}
+	
+	public ArrayList<Entity> getNewEntities() throws RemoteException
+	{	
+		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
+		ArrayList<Entity> eList = new ArrayList<Entity>();
+		synchronized (EntityManager.getEntityManager())
+		{
+			while(range.hasNext())
+			{
+				Entity e = range.next();
+				if(e.needSyncing)
+				{
+					e.needSyncing = false;
+					System.out.println("Sending object: " + e.getID());
+					eList.add(e);
+				}
+			}
+		}
+		
+		return eList;
 	}
 	
 	public void connectionInitializationComplete(String c)
 	{
 		fireActionEvent("newClient " + c);
+	}
+	
+	
+	public Integer getMyID(String ip) throws RemoteException
+	{
+		return playerMap.get(ip).getID();
 	}
 }

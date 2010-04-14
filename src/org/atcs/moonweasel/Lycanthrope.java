@@ -35,25 +35,39 @@ public class Lycanthrope
 	
 	public Lycanthrope(int width, int height, boolean fullscreen)
 	{
+//		For Reference
+//		this.client = new Client();
+//		client.findAndConnectToServer();
+//		int nextID = client.getNextID();
+//		client.getStartingEntities();
+//		client.connectionInitializationComplete();
+//		client.chooseShip();
+//
+//		this.physics = new Physics();
+//		this.entityManager = EntityManager.getEntityManager();
+//		entityManager.setNextID(nextID);
+//
+//		player = this.entityManager.create("player");
+//		player.spawn();
+//		playerMap.put(client.getIP(), player);
+//		Snowflake snowflake = this.entityManager.create("snowflake");
+//		snowflake.setPilot(player);
+//		snowflake.spawn();
+//		player.setShip(snowflake);
+//
+//		this.view = new WeaselView(width, height, fullscreen, player);
+//		this.input = new InputController(view.getWindow());
+		
 		this.client = new Client();
 		client.findAndConnectToServer();
-		int nextID = client.getNextID();
-		client.getStartingEntities();
+	
 		client.connectionInitializationComplete();
 		client.chooseShip();
-
+		client.getStartingEntities();
 		this.physics = new Physics();
 		this.entityManager = EntityManager.getEntityManager();
-		entityManager.setNextID(nextID);
-		
-		player = this.entityManager.create("player");
-		player.spawn();
-		playerMap.put(client.getIP(), player);
-		Snowflake snowflake = this.entityManager.create("snowflake");
-		snowflake.setPilot(player);
-		snowflake.spawn();
-		player.setShip(snowflake);
-		
+
+		this.player = (Player) entityManager.get(client.getMyID());
 		this.view = new WeaselView(width, height, fullscreen, player);
 		this.input = new InputController(view.getWindow());
 	}
@@ -76,6 +90,7 @@ public class Lycanthrope
 		
 		while (!view.shouldQuit()) 
 		{
+//			client.getNewEntities();
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
@@ -99,6 +114,7 @@ public class Lycanthrope
 			{
 				//view.toggleUpdating();
 				//int id = view.getMe().getID();
+				
 				client.requestUpdateFromServer();
 				//Player p = (Player)(entityManager.get(id));
 				//view.setMe(p);
