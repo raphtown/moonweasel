@@ -209,7 +209,12 @@ public class Server extends ActionSource implements IServer
 		synchronized (EntityManager.getEntityManager())
 		{
 			while(range.hasNext())
-				entityList.add(range.next());
+			{
+				Entity e = range.next();
+				e.needSyncing = false;
+				entityList.add(e);
+			}
+				
 		}
 		return entityList;
 	}

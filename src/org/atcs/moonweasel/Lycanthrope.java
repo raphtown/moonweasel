@@ -90,7 +90,7 @@ public class Lycanthrope
 		
 		while (!view.shouldQuit()) 
 		{
-//			client.getNewEntities();
+			client.getNewEntities();
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
@@ -114,7 +114,6 @@ public class Lycanthrope
 			{
 				//view.toggleUpdating();
 				//int id = view.getMe().getID();
-				
 				client.requestUpdateFromServer();
 				//Player p = (Player)(entityManager.get(id));
 				//view.setMe(p);

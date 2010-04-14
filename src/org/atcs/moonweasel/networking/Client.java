@@ -167,7 +167,7 @@ public class Client implements IClient, Runnable
 		for (Integer id : sList.keySet())
 		{
 			ModelEntity m = mgr.get(id);
-//			System.out.println("Obtained model entity: " + m + " with id: " + id);
+			System.out.println("Obtained model entity: " + m + " with id: " + id);
 			m.setState(sList.get(id));
 		}
 	}
@@ -213,7 +213,7 @@ public class Client implements IClient, Runnable
 			for (Entity e : entityList)
 			{
 //				mgr.delete(e);
-//				System.out.println("Receiving entity: " + e.getID());
+				System.out.println("Receiving new entity: " + e.getID());
 				mgr.add(e);
 			}
 			System.out.println("Done receiving");
