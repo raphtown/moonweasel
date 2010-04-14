@@ -211,10 +211,11 @@ public class Client implements IClient, Runnable
 		{
 			EntityManager mgr = EntityManager.getEntityManager();
 			List<Entity> entityList = server.getStartingEntities();
+			System.out.println("Receiving Starting Entities...");
 			for (Entity e : entityList)
 			{
 //				mgr.delete(e);
-				System.out.println("Receiving new entity: " + e.getID());
+				System.out.println("Received New Entity: " + e.getID());
 				mgr.add(e);
 			}
 			System.out.println("Done receiving");
@@ -246,8 +247,26 @@ public class Client implements IClient, Runnable
 		EntityManager mgr = EntityManager.getEntityManager();
 		for (Entity e : eList)
 		{
-			System.out.println("Received: " + e + "  with id: " + e.getID());
+			System.out.println("Received New Entity: " + e + "  with id: " + e.getID());
 			mgr.add(e);
+		}
+	}
+	
+	public void receiveUpdatedStates(Map<Integer, State> sList) throws RemoteException
+	{
+		EntityManager mgr = EntityManager.getEntityManager();
+		if (sList == null)
+		{
+			System.out.println("ERROR ERROR ERROR - STATE LIST IS NULL");
+			System.exit(0);
+			return;
+		}
+
+		for (Integer id : sList.keySet())
+		{
+			ModelEntity m = mgr.get(id);
+			System.out.println("Received Updated State: " + sList.get(id));
+			m.setState(sList.get(id));
 		}
 	}
 }
