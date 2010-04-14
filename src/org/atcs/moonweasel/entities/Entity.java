@@ -31,7 +31,7 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 		nextID = nextIDIn;
 	}
 	
-	public boolean needSyncing;
+	public boolean sentToAll;
 	private final int id;
 	private boolean destroyed;
 	private List<String> clientsThatHaveGottenChanges = new LinkedList<String>();
@@ -39,7 +39,7 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	private Map<String, ChangeList> clientSpecificChanges = new HashMap<String, ChangeList>();
 	 
 	protected Entity() {
-		needSyncing = true;
+		sentToAll = false;
 		this.id = getNextID();
 		globalChanges = new ChangeList(getClass().getSimpleName(), getID());
 		this.destroyed = false;

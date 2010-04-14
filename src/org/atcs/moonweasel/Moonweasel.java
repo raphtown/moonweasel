@@ -8,6 +8,8 @@ import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.ships.Ship;
+import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.physics.Physics;
@@ -82,7 +84,7 @@ public class Moonweasel
 		long time = System.currentTimeMillis();
 		long delta = 0;
 		long temp = 0;
-
+		int count = 0;
 		while (true) {
 			
 			loops = 0;
@@ -103,6 +105,13 @@ public class Moonweasel
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
+				count++;
+				if(count == 10)
+				{
+					System.out.println("cool");
+					Ship ship = this.entityManager.create("snowflake");
+					ship.spawn();
+				}
 			}
 		}
 	}

@@ -90,7 +90,6 @@ public class Lycanthrope
 		
 		while (!view.shouldQuit()) 
 		{
-			client.getNewEntities();
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {

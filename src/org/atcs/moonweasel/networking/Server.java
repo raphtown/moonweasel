@@ -145,6 +145,8 @@ public class Server extends ActionSource implements IServer
 	 */
 	public Map<Integer, State> requestUpdate(final String c) throws RemoteException
 	{
+		sendNewEntities();
+		
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to get an update!");
 		
@@ -211,7 +213,6 @@ public class Server extends ActionSource implements IServer
 			while(range.hasNext())
 			{
 				Entity e = range.next();
-				e.needSyncing = false;
 				entityList.add(e);
 			}
 				
@@ -219,25 +220,36 @@ public class Server extends ActionSource implements IServer
 		return entityList;
 	}
 	
-	public ArrayList<Entity> getNewEntities() throws RemoteException
-	{	
-		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
+	public void sendNewEntities()
+	{
 		ArrayList<Entity> eList = new ArrayList<Entity>();
+		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		synchronized (EntityManager.getEntityManager())
 		{
 			while(range.hasNext())
 			{
 				Entity e = range.next();
-				if(e.needSyncing)
+				if(e.sentToAll)
 				{
-					e.needSyncing = false;
+					e.sentToAll = true;
 					System.out.println("Sending object: " + e.getID());
 					eList.add(e);
 				}
 			}
 		}
 		
-		return eList;
+		for (String clientName : connectedClients)
+		{
+	        try
+	        {
+				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
+				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).receiveNewEntities(eList);
+			}
+			catch (Exception e)
+			{
+				disconnectClient(clientName);
+			}
+		}
 	}
 	
 	public void connectionInitializationComplete(String c)

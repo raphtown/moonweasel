@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -222,29 +223,7 @@ public class Client implements IClient, Runnable
 		{
 			throw new RuntimeException("Error loading starting entities.");
 		}
-	}
-	
-	public void getNewEntities()
-	{
-
-		try
-		{
-			EntityManager mgr = EntityManager.getEntityManager();
-			List<Entity> entityList;
-			entityList = server.getNewEntities();
-			for (Entity e : entityList)
-			{
-				System.out.println("Received: " + e + "  with id: " + e.getID());
-				mgr.add(e);
-			}
-		} 
-		catch (RemoteException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-	}
+	} 
 	
 	public int getMyID()
 	{
@@ -260,5 +239,15 @@ public class Client implements IClient, Runnable
 			e.printStackTrace();
 		}
 		return -1;
+	}
+	
+	public void receiveNewEntities(ArrayList<Entity> eList) throws RemoteException
+	{
+		EntityManager mgr = EntityManager.getEntityManager();
+		for (Entity e : eList)
+		{
+			System.out.println("Received: " + e + "  with id: " + e.getID());
+			mgr.add(e);
+		}
 	}
 }

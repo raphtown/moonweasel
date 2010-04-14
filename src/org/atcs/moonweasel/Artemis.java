@@ -33,7 +33,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e)
-	{
+	{ 
 		String actionCommand = e.getActionCommand();
 		Debug.print("Action performed: " + actionCommand);
 		String[] parts = actionCommand.split(" ");

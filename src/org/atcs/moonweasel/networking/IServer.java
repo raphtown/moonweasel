@@ -63,8 +63,6 @@ public interface IServer extends Remote
 	 */
 	public List<Entity> getStartingEntities() throws RemoteException;
 	
-	public ArrayList<Entity> getNewEntities() throws RemoteException;
-	
 	public Integer getMyID(String ip) throws RemoteException;
 
 	public void connectionInitializationComplete(String c) throws RemoteException;
