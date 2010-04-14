@@ -16,6 +16,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
@@ -155,7 +156,6 @@ public class Client implements IClient, Runnable
 	public void requestUpdateFromServer()
 	{
 		Object[] parameters = { getIP() };
-
 		Map<Integer, State> sList = (Map<Integer, State>) Protocol.sendPacket("requestUpdate", parameters, server);
 		EntityManager mgr = EntityManager.getEntityManager();
 		
@@ -164,10 +164,6 @@ public class Client implements IClient, Runnable
 			System.out.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
 			System.exit(0);
 			return;
-		}
-		else
-		{
-			System.out.println("Change List is not null!");
 		}
 
 		for (Integer id : sList.keySet())

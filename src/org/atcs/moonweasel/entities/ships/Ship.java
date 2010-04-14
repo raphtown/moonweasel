@@ -133,7 +133,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		Explosion explosion = manager.create("explosion");
 		explosion.setPosition(this.getPosition());
 
-		float distance = getState().mass / 1000;
+		float distance = getState().getMass() / 1000;
 		float damage;
 		for (Ship ship : manager.getAllShipsInSphere(
 				getState().position, distance)) {

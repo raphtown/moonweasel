@@ -43,10 +43,10 @@ public class State implements Serializable
 	public float dangerZoneRadius;
 
 	// constant
-	public final float mass;
-	public final float inverseMass;
-	public final Matrix inertiaTensor;
-	public final Matrix inverseInertiaTensor;
+	private float mass;
+	private float inverseMass;
+	private Matrix inertiaTensor;
+	private Matrix inverseInertiaTensor;
 
 	private PriorityQueue<TimedDerivative> derivatives;
 
@@ -56,7 +56,7 @@ public class State implements Serializable
 				Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
 	}
 
-	public State(Vector position, Vector momentum, Quaternion orientation, 
+	private State(Vector position, Vector momentum, Quaternion orientation, 
 			Vector angularMomentum, float mass, float inverseMass, Matrix inertiaTensor,
 			Matrix inverseInertiaTensor) {
 		this.position = position;
@@ -93,6 +93,16 @@ public class State implements Serializable
 		this.inverseInertiaTensor = other.inverseInertiaTensor;
 
 		this.derivatives = other.derivatives;
+	}
+	
+	public float getMass()
+	{
+		return mass;
+	}
+
+	public Matrix getInertiaTensor()
+	{
+		return inertiaTensor;
 	}
 
 	public void addDerivative(TimedDerivative derivative) {
@@ -138,6 +148,8 @@ public class State implements Serializable
 		out.writeObject(momentum);
 		out.writeObject(orientation);
 		out.writeObject(angularMomentum);
+		out.writeObject(inertiaTensor);
+		out.writeFloat(mass);
 	}
 	
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
@@ -146,6 +158,14 @@ public class State implements Serializable
 		momentum = (Vector) in.readObject();
 		orientation = (Quaternion) in.readObject();
 		angularMomentum = (Vector) in.readObject();
-		recalculate();
+		inertiaTensor = (Matrix) in.readObject();
+		mass = in.readFloat();	
+	}
+	
+	private Object readResolve() throws ObjectStreamException
+	{
+		return new State(position, momentum, orientation, 
+				angularMomentum, mass, 1 / mass, inertiaTensor,
+				 inertiaTensor.inverse());
 	}
 }

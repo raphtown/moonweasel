@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.networking;
 
 import java.rmi.Remote;
+
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -61,4 +62,6 @@ public interface IServer extends Remote
 	public List<Entity> getStartingEntities() throws RemoteException;
 
 	public void connectionInitializationComplete(String c) throws RemoteException;
+	
+	public Integer doSomething(final String c) throws RemoteException;
 }

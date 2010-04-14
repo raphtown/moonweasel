@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.networking;
 
 import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
+
 import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
 import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
 import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
@@ -134,6 +135,11 @@ public class Server extends ActionSource implements IServer
 		fireActionEvent(COMMAND_RECEIVED + " " + command + " " + mouse.x + " " + mouse.y + " " + c);
 	}
 	
+	public Integer doSomething(final String c) throws RemoteException
+	{
+		return 1;
+	}
+	
 	/**
 	 * Gets an updated list of Entities.
 	 * @param c The client that is asking for an update.
@@ -143,23 +149,18 @@ public class Server extends ActionSource implements IServer
 	{
 		if (!connectedClients.contains(c))
 			throw new RemoteException("Unconnected client trying to get an update!");
-
-		System.out.println("In requestUpdate...");
 		
 		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
 		Map<Integer, State> sList = new HashMap<Integer, State>();
 		synchronized (EntityManager.getEntityManager())
 		{
-			System.out.println("Synchronized in requestUpdate...");
 			while(range.hasNext())
 			{
 				ModelEntity e = range.next();
-				System.out.println("Sending object: " + e);
+				Debug.print("Sending object: " + e.getID() + " ,  " + e.getState());
 				sList.put(e.getID(), e.getState());
 			}
 		}
-		
-		System.out.println(sList);
 		
 		return sList;
 	}

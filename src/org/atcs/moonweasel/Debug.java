@@ -8,7 +8,7 @@ public final class Debug
 	{
 		if(debug)
 		{
-			System.out.println(s);
+			System.out.println("DEBUG: " + s);
 		}
 	}
 }

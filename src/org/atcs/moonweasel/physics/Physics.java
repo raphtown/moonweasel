@@ -141,7 +141,7 @@ public class Physics
 	}
 	public State predictFutureState(ModelEntity me, int dt)
 	{
-		State futureState = new State(me.getState().mass, me.getState().inertiaTensor);
+		State futureState = new State(me.getState().getMass(), me.getState().getInertiaTensor());
 		futureState.angularMomentum = me.getState().angularMomentum;
 		futureState.momentum = me.getState().momentum;
 		futureState.orientation = me.getState().orientation;
