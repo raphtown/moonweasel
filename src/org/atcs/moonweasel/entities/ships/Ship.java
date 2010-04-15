@@ -90,6 +90,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		
 		if (command.get(Commands.UP) && command.get(Commands.DOWN)) {
 		} else if (command.get(Commands.UP)) {
+			System.out.println("lol " + this.getID());
 			relativeForce.y += f;
 		} else if (command.get(Commands.DOWN)) {
 			relativeForce.y -= f;
