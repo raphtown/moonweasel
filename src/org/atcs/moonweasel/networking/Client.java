@@ -3,17 +3,12 @@ package org.atcs.moonweasel.networking;
 import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
 import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
 import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
-import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

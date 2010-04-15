@@ -3,27 +3,19 @@ package org.atcs.moonweasel.networking;
 import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
 import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
 import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
-import static org.atcs.moonweasel.networking.RMIConfiguration.registry;
 import static org.atcs.moonweasel.networking.actions.ActionMessages.CHOOSE_SHIP;
 import static org.atcs.moonweasel.networking.actions.ActionMessages.CLIENT_DISCONNECT;
 import static org.atcs.moonweasel.networking.actions.ActionMessages.COMMAND_RECEIVED;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.rmi.AccessException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -60,6 +52,8 @@ public class Server extends RMIObject implements IServer, ActionSource
 	private final Map<String, IClient> connectedClients = new HashMap<String, IClient>();
 
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
+	
+	public ArrayList<String> newlyConnectedClients = new ArrayList<String>();
 
 
 	public static void main(String args[])
@@ -226,7 +220,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 				ModelEntity e = range.next();
 				if(e.sentToAll)
 				{
-					System.out.println("Sending object: " + e.getID() + " ,  " + e.getState());
+					System.out.println("Sending state: " + e.getID() + " ,  " + e.getState());
 					sList.put(e.getID(), e.getState());
 				}
 				
@@ -282,6 +276,12 @@ public class Server extends RMIObject implements IServer, ActionSource
 	{
 		try
 		{
+			for(String clientName : newlyConnectedClients)
+			{
+				this.sendAllCurrentEntitiesToClient(clientName);
+				this.sendNewEntitiesToAll();
+			}
+			newlyConnectedClients.clear();
 			this.sendAllStatesToAll();
 		} 
 		catch (RemoteException e)

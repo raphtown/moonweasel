@@ -1,6 +1,5 @@
 package org.atcs.moonweasel;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -9,7 +8,6 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Ship;
-import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.physics.Physics;

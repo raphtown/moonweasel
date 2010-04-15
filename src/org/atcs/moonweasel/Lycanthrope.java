@@ -6,7 +6,6 @@ import java.util.Map;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
-import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
 import org.atcs.moonweasel.physics.Physics;
@@ -67,7 +66,16 @@ public class Lycanthrope
 		this.physics = new Physics();
 		this.entityManager = EntityManager.getEntityManager();
 
-		this.player = (Player) entityManager.get(client.getMyID());
+		while (player == null)
+		{
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.player = (Player) entityManager.get(client.getMyID());
+		}
 		this.view = new WeaselView(width, height, fullscreen, player);
 		this.input = new InputController(view.getWindow());
 	}

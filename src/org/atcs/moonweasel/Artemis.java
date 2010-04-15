@@ -59,11 +59,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 				ship.setPilot(plr);
 				ship.spawn();
 				plr.setShip(ship);
-				synchronized (server)
-				{
-					server.sendAllCurrentEntitiesToClient(clientHostname);
-					server.sendNewEntitiesToAll();
-				}
+				server.newlyConnectedClients.add(clientHostname);
 			}
 			else if (parts[0].equals(COMMAND_RECEIVED))
 			{
