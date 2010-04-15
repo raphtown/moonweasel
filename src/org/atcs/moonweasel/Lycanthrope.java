@@ -63,7 +63,6 @@ public class Lycanthrope
 	
 		client.connectionInitializationComplete();
 		client.chooseShip();
-		client.getStartingEntities();
 
 		this.physics = new Physics();
 		this.entityManager = EntityManager.getEntityManager();
@@ -114,7 +113,7 @@ public class Lycanthrope
 			{
 				//view.toggleUpdating();
 				//int id = view.getMe().getID();
-				client.requestUpdateFromServer();
+//				client.requestUpdateFromServer();
 				//Player p = (Player)(entityManager.get(id));
 				//view.setMe(p);
 				//view.toggleUpdating();

@@ -39,10 +39,9 @@ import org.atcs.moonweasel.util.State;
  * 
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Client implements IClient, Runnable
+public class Client extends RMIObject implements IClient, Runnable
 {
 	private IServer server = null;
-	public String ip;
 	
 	public static void main(String args[])
 	{
@@ -51,23 +50,7 @@ public class Client implements IClient, Runnable
 
 	public Client()
 	{
-		try {
-			ip = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-
-		try 
-		{
-			Remote stub = UnicastRemoteObject.exportObject(this, 0);
-			registry.rebind(CLIENT_OBJECT_NAME, stub);
-		}
-		catch (RemoteException e)
-		{
-			e.printStackTrace();
-		}
-		
-		
+		super(CLIENT_OBJECT_NAME);
 	}
 	
 	@Override
@@ -94,8 +77,7 @@ public class Client implements IClient, Runnable
 	{
 		Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
 		server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
-
-		Object[] parameters = {getIP()};
+		Object[] parameters = {ip};
 		Protocol.sendPacket("connect", parameters, server);
 	}
 	
@@ -191,40 +173,6 @@ public class Client implements IClient, Runnable
 		long end = System.currentTimeMillis() - start;
 		Debug.print("RMI delay: " + end);
 	}
-
-	public int getNextID()
-	{
-		try
-		{
-			return server.getNextEntityID();
-
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException("Error getting starting entity ID.");
-		}
-	}
-
-	public void getStartingEntities()
-	{
-		try
-		{
-			EntityManager mgr = EntityManager.getEntityManager();
-			List<Entity> entityList = server.getStartingEntities();
-			System.out.println("Receiving Starting Entities...");
-			for (Entity e : entityList)
-			{
-//				mgr.delete(e);
-				System.out.println("Received New Entity: " + e.getID());
-				mgr.add(e);
-			}
-			System.out.println("Done receiving");
-		}
-		catch (RemoteException e)
-		{
-			throw new RuntimeException("Error loading starting entities.");
-		}
-	} 
 	
 	public int getMyID()
 	{
@@ -242,7 +190,7 @@ public class Client implements IClient, Runnable
 		return -1;
 	}
 	
-	public void receiveNewEntities(ArrayList<Entity> eList) throws RemoteException
+	public void receiveEntities(ArrayList<Entity> eList) throws RemoteException
 	{
 		EntityManager mgr = EntityManager.getEntityManager();
 		for (Entity e : eList)
@@ -257,7 +205,7 @@ public class Client implements IClient, Runnable
 		EntityManager mgr = EntityManager.getEntityManager();
 		if (sList == null)
 		{
-			System.out.println("ERROR ERROR ERROR - STATE LIST IS NULL");
+			System.err.println("ERROR ERROR ERROR - STATE LIST IS NULL");
 			System.exit(0);
 			return;
 		}
@@ -265,8 +213,21 @@ public class Client implements IClient, Runnable
 		for (Integer id : sList.keySet())
 		{
 			ModelEntity m = mgr.get(id);
-			System.out.println("Received Updated State: " + sList.get(id));
+			if(m == null)
+			{
+				System.err.println("This id was not located: " + id);
+//				System.exit(0);
+//				return;
+			}
+			System.out.println("Received Updated State For Entity: " + id);
 			m.setState(sList.get(id));
 		}
+	}
+
+	@Override
+	public void act()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

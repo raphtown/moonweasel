@@ -18,16 +18,16 @@ import org.atcs.moonweasel.util.Vector;
  * RMI happy.
  * @author Maxime Serrano, Raphael Townshend
  */
-public interface IServer extends Remote
+public interface IServer extends IRMIObject
 {
 	/**
 	 * Connects the given client to the server. Given that we don't yet have a 
 	 * reliable way of disconnecting, we should perhaps hope that nobody's going 
 	 * to have their program randomly crash. 
-	 * @param c The client that is being connected to the server. 
+	 * @param clientName ip of the Client connecting to the server
 	 * @throws RemoteException If bad things happen  server goes away, that sort of thing.
 	 */
-	public void connect(final String c) throws RemoteException;
+	public void connect(final String clientName) throws RemoteException;
 
 	/**
 	 * When the client sends in a command, call this method.
@@ -39,9 +39,8 @@ public interface IServer extends Remote
 	/**
 	 * Gets an updated list of ModelEntities.
 	 * @param c The client that is asking for an update.
-	 * @return A list of ModelEntities.
 	 */
-	public Map<Integer, State> requestUpdate(final String c) throws RemoteException;
+	public void requestUpdate(final String c) throws RemoteException;
 
 	/**
 	 * The given client chooses a ship type, which then spawns.
@@ -50,18 +49,6 @@ public interface IServer extends Remote
 	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
 	public void chooseShip(final ShipType shipType, final String c) throws RemoteException;
-	
-	/**
-	 * The next entity ID that can be used. Used to fix the glitch where multiple clients
-	 * attempt to control the same ship.
-	 * @return The next ID that can be chosen.
-	 */
-	public int getNextEntityID() throws RemoteException;
-	
-	/**
-	 * Yay we're getting a massive list of entities.
-	 */
-	public List<Entity> getStartingEntities() throws RemoteException;
 	
 	public Integer getMyID(String ip) throws RemoteException;
 

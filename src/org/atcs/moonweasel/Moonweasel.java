@@ -73,7 +73,7 @@ public class Moonweasel
 		physics.destroy();
 	}
 
-	private void run() {
+	protected void run() {
 		final int TICKS_PER_SECOND = 25;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
@@ -91,6 +91,7 @@ public class Moonweasel
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) 
 			{
+				server.act();
 				time = System.currentTimeMillis();
 				entityManager.update(t);
 				physics.update(t, SKIP_TICKS);

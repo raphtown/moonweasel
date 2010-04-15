@@ -8,7 +8,12 @@ import static org.atcs.moonweasel.networking.actions.ActionMessages.CHOOSE_SHIP;
 import static org.atcs.moonweasel.networking.actions.ActionMessages.CLIENT_DISCONNECT;
 import static org.atcs.moonweasel.networking.actions.ActionMessages.COMMAND_RECEIVED;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -16,10 +21,12 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
@@ -45,16 +52,16 @@ import org.atcs.moonweasel.util.Vector;
  * 
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Server extends ActionSource implements IServer
+public class Server extends RMIObject implements IServer, ActionSource
 {
 	/**
 	 * The clients that have called the connect() method remotely.
 	 */
-	private final List<String> connectedClients = new ArrayList<String>();
-	
+	private final Map<String, IClient> connectedClients = new HashMap<String, IClient>();
+
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
-	
-	
+
+
 	public static void main(String args[])
 	{
 		Scanner console = new Scanner(System.in);
@@ -68,32 +75,20 @@ public class Server extends ActionSource implements IServer
 	 */
 	public Server(final String serverName)
 	{
+		super(SERVER_OBJECT_NAME);
+
 		try
 		{
 			new ServerAnnouncer(serverName).start();
-			registerObject(SERVER_OBJECT_NAME, this);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-	 * Register an object to the registry.
-	 * @param name The name to register with.
-	 * @param object The object to bind.
-	 * @throws RemoteException If there is an error while rebinding.
-	 * @throws AccessException If we don't have access to the registry.
-	 */
-	private static void registerObject(final String name, final Remote object) throws RemoteException, AccessException
-	{
-		Remote stub = UnicastRemoteObject.exportObject(object, 0);
-		registry.rebind(name, stub);
-		
-		Debug.print(name + " bound");
-	}
-	
+
+
+
 	/**
 	 * Connects the given client to the server. Given that we don't yet have a 
 	 * reliable way of disconnecting, we should perhaps hope that nobody's going 
@@ -101,12 +96,22 @@ public class Server extends ActionSource implements IServer
 	 * @param c The client that is being connected to the server. 
 	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
 	 */
-	public void connect(final String c) throws RemoteException
+	public void connect(final String clientName) throws RemoteException
 	{
-		connectedClients.add(c);
-		Debug.print("Client " + c + " connected!");
+		try
+		{
+			Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
+			IClient	client = (IClient) registry.lookup(CLIENT_OBJECT_NAME);
+			connectedClients.put(clientName, client);
+			Debug.print("Client " + clientName + " connected!");
+		} 
+		catch (NotBoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
-	
+
 	/**
 	 * The given client chooses a ship type, which then spawns.
 	 * @param clientHostname The client that is being connected to the server. 
@@ -115,11 +120,11 @@ public class Server extends ActionSource implements IServer
 	 */
 	public void chooseShip(final ShipType shipType, final String c) throws RemoteException
 	{
-		if(!connectedClients.contains(c))
+		if(!connectedClients.keySet().contains(c))
 			throw new RemoteException("Unconnected client trying to choose ship!");
-		
+
 		Debug.print("Received ship choice " + shipType.typeName + " from " + c + ".");
-		
+
 		fireActionEvent(CHOOSE_SHIP + " " + shipType + " " + c);
 	}
 
@@ -130,11 +135,11 @@ public class Server extends ActionSource implements IServer
 	 */
 	public void doCommand(short command, Vector mouse, final String c) throws RemoteException
 	{
-		if (!connectedClients.contains(c))
+		if (!connectedClients.keySet().contains(c))
 			throw new RemoteException("Unconnected client trying to execute command!");
 
 		Debug.print("Received command " + command + " from " + c + ".");
-		
+
 		fireActionEvent(COMMAND_RECEIVED + " " + command + " " + mouse.x + " " + mouse.y + " " + c);
 	}
 
@@ -143,13 +148,75 @@ public class Server extends ActionSource implements IServer
 	 * @param c The client that is asking for an update.
 	 * @return A list of Entities.
 	 */
-	public Map<Integer, State> requestUpdate(final String c) throws RemoteException
+	public void requestUpdate(final String c) throws RemoteException
 	{
-		sendNewEntities();
-		System.out.println("In request update...");
-		if (!connectedClients.contains(c))
-			throw new RemoteException("Unconnected client trying to get an update!");
-		
+		sendAllCurrentEntitiesToClient(c);
+	}
+
+	/**
+	 * Disconnects the given client, telling all listeners of the event as well.
+	 */
+	private void disconnectClient(IClient c)
+	{
+		try
+		{
+			connectedClients.remove(c);
+			fireActionEvent(CLIENT_DISCONNECT + " " + c.getIP());
+		} 
+		catch (RemoteException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void sendAllCurrentEntitiesToAll()
+	{
+		for(String clientName : connectedClients.keySet())
+		{
+			sendAllCurrentEntitiesToClient(clientName);
+		}
+	}
+
+	public void sendAllCurrentEntitiesToClient(String clientName)
+	{
+		System.out.println("In Send All Current Entities To Clinet...");
+		ArrayList<Entity> eList = new ArrayList<Entity>();
+		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
+		synchronized (EntityManager.getEntityManager())
+		{
+			while(range.hasNext())
+			{
+				Entity e = range.next();
+				if(e.sentToAll)
+				{
+					System.out.println("Sending object: " + e.getID());
+					eList.add(e);
+				}
+			}
+		}
+
+		sendEntities(eList, clientName);
+
+		System.out.println("Finished send all entities to Client: " + clientName);
+	}
+
+	private void sendEntities(ArrayList<Entity> eList, String clientName)
+	{
+		IClient c = connectedClients.get(clientName);
+		try
+		{
+			c.receiveEntities(eList);
+		}
+		catch (Exception e)
+		{
+			disconnectClient(c);
+		}
+	}
+	
+	public void sendAllStatesToAll() throws RemoteException
+	{
+
 		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
 		Map<Integer, State> sList = new HashMap<Integer, State>();
 		synchronized (EntityManager.getEntityManager())
@@ -157,72 +224,25 @@ public class Server extends ActionSource implements IServer
 			while(range.hasNext())
 			{
 				ModelEntity e = range.next();
-				System.out.println("Sending object: " + e.getID() + " ,  " + e.getState());
-				sList.put(e.getID(), e.getState());
-			}
-		}
-		
-		return sList;
-	}
-	
-	/**
-	 * Forces all of the server's clients to request (and receive) an update.
-	 */
-	public void forceUpdateAllClients()
-	{
-		for (String clientName : connectedClients)
-		{
-	        try
-	        {
-				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
-				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).requestUpdateFromServer();
-			}
-			catch (Exception e)
-			{
-				disconnectClient(clientName);
-			}
-		}
-		
-		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
-
-		while (range.hasNext())
-			range.next().clearChanges();
-	}
-
-	/**
-	 * Disconnects the given client, telling all listeners of the event as well.
-	 */
-	private void disconnectClient(String clientName)
-	{
-		connectedClients.remove(clientName);
-		fireActionEvent(CLIENT_DISCONNECT + " " + clientName);
-	}
-	
-	public int getNextEntityID()
-	{
-		return EntityManager.getEntityManager().getNextID();
-	}
-	
-	public List<Entity> getStartingEntities()
-	{
-		
-		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
-		List<Entity> entityList = new LinkedList<Entity>();
-		synchronized (EntityManager.getEntityManager())
-		{
-			while(range.hasNext())
-			{
-				Entity e = range.next();
-				entityList.add(e);
-			}
+				if(e.sentToAll)
+				{
+					System.out.println("Sending object: " + e.getID() + " ,  " + e.getState());
+					sList.put(e.getID(), e.getState());
+				}
 				
+			}
 		}
-		return entityList;
+
+		for(String clientName : connectedClients.keySet())
+		{
+			IClient c = connectedClients.get(clientName);
+			c.receiveUpdatedStates(sList);
+		}
 	}
-	
-	public void sendNewEntities()
+
+	public void sendNewEntitiesToAll()
 	{
-		System.out.println("In send new entities...");
+		System.out.println("In Send New Entities To All...");
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		synchronized (EntityManager.getEntityManager())
@@ -238,30 +258,54 @@ public class Server extends ActionSource implements IServer
 				}
 			}
 		}
-		
-		for (String clientName : connectedClients)
+
+		for(String clientName : connectedClients.keySet())
 		{
-	        try
-	        {
-				Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
-				((IClient)(registry.lookup(CLIENT_OBJECT_NAME))).receiveNewEntities(eList);
-			}
-			catch (Exception e)
-			{
-				disconnectClient(clientName);
-			}
+			sendEntities(eList, clientName);
 		}
+
 		System.out.println("Finished send new entities...");
 	}
-	
+
 	public void connectionInitializationComplete(String c)
 	{
 		fireActionEvent("newClient " + c);
 	}
-	
-	
+
+
 	public Integer getMyID(String ip) throws RemoteException
 	{
 		return playerMap.get(ip).getID();
+	}
+
+	public void act()
+	{
+		try
+		{
+			this.sendAllStatesToAll();
+		} 
+		catch (RemoteException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private Set<ActionListener> actionListeners = new HashSet<ActionListener>();
+
+	public void fireActionEvent(String command)
+	{
+		for(ActionListener al : actionListeners)
+			al.actionPerformed(new ActionEvent(this, 0, command));
+	}
+
+	public void addActionListener(ActionListener e)
+	{
+		actionListeners.add(e);
+	}
+
+	public void removeActionListener(ActionListener e)
+	{
+		actionListeners.remove(e);
 	}
 }

@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Ship;
@@ -58,7 +59,11 @@ public class Artemis extends Moonweasel implements ActionListener {
 				ship.setPilot(plr);
 				ship.spawn();
 				plr.setShip(ship);
-				server.sendNewEntities();
+				synchronized (server)
+				{
+					server.sendAllCurrentEntitiesToClient(clientHostname);
+					server.sendNewEntitiesToAll();
+				}
 			}
 			else if (parts[0].equals(COMMAND_RECEIVED))
 			{
@@ -87,7 +92,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 				server.playerMap.remove(hostname);
 				plr.getShip().destroy();
 				plr.destroy();
-				((Server)(e.getSource())).forceUpdateAllClients();
+				((Server)(e.getSource())).sendAllCurrentEntitiesToAll();
 			}
 		}
 	}

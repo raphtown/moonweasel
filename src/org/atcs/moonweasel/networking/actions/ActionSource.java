@@ -1,28 +1,12 @@
 package org.atcs.moonweasel.networking.actions;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
-import java.util.HashSet;
 
-public abstract class ActionSource
+public interface ActionSource
 {
-	private Set<ActionListener> actionListeners = new HashSet<ActionListener>();
-	private static int counter = 0;
-
-	public void fireActionEvent(String command)
-	{
-		for(ActionListener al : actionListeners)
-			al.actionPerformed(new ActionEvent(this, counter++, command));
-	}
+	public void fireActionEvent(String command);
 	
-	public void addActionListener(ActionListener e)
-	{
-		actionListeners.add(e);
-	}
+	public void addActionListener(ActionListener e);
 	
-	public void removeActionListener(ActionListener e)
-	{
-		actionListeners.remove(e);
-	}
+	public void removeActionListener(ActionListener e);
 }
