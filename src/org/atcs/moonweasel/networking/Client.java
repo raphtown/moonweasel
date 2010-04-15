@@ -214,7 +214,7 @@ public class Client extends RMIObject implements IClient, Runnable
 //				System.exit(0);
 //				return;
 			}
-			System.out.println("Received Updated State For Entity: " + id);
+//			System.out.println("Received Updated State For Entity: " + id);
 			m.setState(sList.get(id));
 		}
 	}

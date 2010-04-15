@@ -7,6 +7,7 @@ import static org.atcs.moonweasel.networking.actions.ActionMessages.COMMAND_RECE
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,19 +20,19 @@ import org.atcs.moonweasel.networking.Server;
 
 
 public class Artemis extends Moonweasel implements ActionListener {
-	
+
 	private final Map<Player, Long> playerCommandMap = new HashMap<Player, Long>();
-	
+
 	public Artemis(int width, int height, boolean fullscreen) {
 		super(width, height, fullscreen);
-		
-//		System.out.print("Enter server name: ");
-//		String serverName = new java.util.Scanner(System.in).nextLine();
+
+		//		System.out.print("Enter server name: ");
+		//		String serverName = new java.util.Scanner(System.in).nextLine();
 		server = new Server("Moonweasel Server");
 
 		server.addActionListener(this);
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{ 
@@ -69,6 +70,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 				float mouseY = Float.parseFloat(parts[3]);
 				String clientHostname = parts[4];
 				Player plr = server.playerMap.get(clientHostname);
+//				System.out.println("Command received from client: " + clientHostname + "  command: " + command);
 				if (playerCommandMap.get(plr) != null)
 					if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
 						return;
