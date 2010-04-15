@@ -220,7 +220,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 				ModelEntity e = range.next();
 				if(e.sentToAll)
 				{
-					System.out.println("Sending state: " + e.getID() + " ,  " + e.getState());
+//					System.out.println("Sending state: " + e.getID() + " ,  " + e.getState());
 					sList.put(e.getID(), e.getState());
 				}
 				
