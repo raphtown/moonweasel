@@ -15,6 +15,7 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -49,11 +50,11 @@ public class Server extends RMIObject implements IServer, ActionSource
 	/**
 	 * The clients that have called the connect() method remotely.
 	 */
-	private final Map<String, IClient> connectedClients = new HashMap<String, IClient>();
+	private Map<String, IClient> connectedClients = new HashMap<String, IClient>();
 
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
 
-	public ArrayList<String> newlyConnectedClients = new ArrayList<String>();
+	private ArrayList<String> newlyConnectedClients = new ArrayList<String>();
 
 
 	public static void main(String args[])
@@ -129,7 +130,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 	 */
 	public void requestUpdate(final String c) throws RemoteException
 	{
-		sendAllCurrentEntitiesToClient(c);
+		sendCurrentEntitiesToClient(c);
 	}
 
 	/**
@@ -154,15 +155,22 @@ public class Server extends RMIObject implements IServer, ActionSource
 		plr.destroy();
 	}
 
-	public void sendAllCurrentEntitiesToAll()
+	public void sendCurrentEntitiesToAll()
 	{
+		Set<String> temp = new HashSet<String>();
 		for(String clientName : connectedClients.keySet())
 		{
-			sendAllCurrentEntitiesToClient(clientName);
+			temp.add(clientName);
+		}
+		Iterator<String> i = temp.iterator();
+		while(i.hasNext())
+		{
+			String clientName = i.next();
+			sendCurrentEntitiesToClient(clientName);
 		}
 	}
 
-	public void sendAllCurrentEntitiesToClient(String clientName)
+	public void sendCurrentEntitiesToClient(String clientName)
 	{
 		System.out.println("In Send All Current Entities To Clinet...");
 		ArrayList<Entity> eList = new ArrayList<Entity>();
@@ -185,62 +193,6 @@ public class Server extends RMIObject implements IServer, ActionSource
 		System.out.println("Finished send all entities to Client: " + clientName);
 	}
 
-	private void sendEntities(boolean add, ArrayList<Entity> eList, String clientName)
-	{
-		IClient c = connectedClients.get(clientName);
-		try
-		{
-			c.receiveEntities(add, eList);
-		}
-		catch (Exception e)
-		{
-			System.err.println("Invalid client in client list...");
-			disconnectClient(clientName);
-		}
-	}
-
-	public void sendAllStatesToAll()
-	{
-
-		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
-		Map<Integer, State> sList = new HashMap<Integer, State>();
-		synchronized (EntityManager.getEntityManager())
-		{
-			while(range.hasNext())
-			{
-				ModelEntity e = range.next();
-				if(e.sentToAll)
-				{
-					//					System.out.println("Sending state: " + e.getID() + " ,  " + e.getState());
-					sList.put(e.getID(), e.getState());
-				}
-
-			}
-		}
-
-		for(String clientName : connectedClients.keySet())
-		{
-			IClient c = connectedClients.get(clientName);
-			try
-			{
-				c.receiveUpdatedStates(sList);
-			} 
-			catch (RemoteException e)
-			{
-				System.err.println("Invalid client in client list...");
-				disconnectClient(clientName);
-			}
-		}
-	}
-
-	public void sendDeletedEntitiesToAll(ArrayList<Entity> eList)
-	{
-		for(String clientName : connectedClients.keySet())
-		{
-			sendEntities(false, eList, clientName);
-		}
-	}
-
 	public void sendNewEntitiesToAll()
 	{
 		System.out.println("In Send New Entities To All...");
@@ -259,14 +211,95 @@ public class Server extends RMIObject implements IServer, ActionSource
 				}
 			}
 		}
-
+		
+		Set<String> temp = new HashSet<String>();
 		for(String clientName : connectedClients.keySet())
 		{
+			temp.add(clientName);
+		}
+		Iterator<String> i = temp.iterator();
+		while(i.hasNext())
+		{
+			String clientName = i.next();
 			sendEntities(true, eList, clientName);
 		}
 
 		System.out.println("Finished send new entities...");
 	}
+	
+	public void sendDeletedEntitiesToAll(ArrayList<Entity> eList)
+	{
+		Set<String> temp = new HashSet<String>();
+		for(String clientName : connectedClients.keySet())
+		{
+			temp.add(clientName);
+		}
+		Iterator<String> i = temp.iterator();
+		while(i.hasNext())
+		{
+			String clientName = i.next();
+			sendEntities(false, eList, clientName);
+		}
+	}
+	
+	private void sendEntities(boolean add, ArrayList<Entity> eList, String clientName)
+	{
+		IClient c = connectedClients.get(clientName);
+		try
+		{
+			c.receiveEntities(add, eList);
+		}
+		catch (Exception e)
+		{
+			System.err.println("Invalid client in client list...");
+			disconnectClient(clientName);
+		}
+	}
+
+	public void sendStatesToAll()
+
+	{
+
+		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
+		Map<Integer, State> sList = new HashMap<Integer, State>();
+		synchronized (EntityManager.getEntityManager())
+		{
+			while(range.hasNext())
+			{
+				ModelEntity e = range.next();
+				if(e.sentToAll)
+				{
+					//					System.out.println("Sending state: " + e.getID() + " ,  " + e.getState());
+					sList.put(e.getID(), e.getState());
+				}
+
+			}
+		}
+		Set<String> temp = new HashSet<String>();
+		for(String clientName : connectedClients.keySet())
+		{
+			temp.add(clientName);
+		}
+		Iterator<String> i = temp.iterator();
+		while(i.hasNext())
+		{
+			String clientName = i.next();
+			IClient c = connectedClients.get(clientName);
+			try
+			{
+				c.receiveUpdatedStates(sList);
+			} 
+			catch (RemoteException e)
+			{ 
+				System.err.println("Invalid client in client list...");
+				disconnectClient(clientName);
+			}
+		}
+	}
+
+
+
+	
 
 	public void connectionInitializationComplete(String c)
 	{
@@ -303,20 +336,19 @@ public class Server extends RMIObject implements IServer, ActionSource
 		ship.setPilot(plr);
 		ship.spawn();
 		plr.setShip(ship);
-		sendAllCurrentEntitiesToClient(clientName);
+		sendCurrentEntitiesToClient(clientName);
 		sendNewEntitiesToAll();
 	}
 
 	public void act()
 	{
-
 		for(String clientName : newlyConnectedClients)
 		{
 			System.out.println("Performing setup...");
 			setupClient(clientName);
 		}
 		newlyConnectedClients.clear();
-		sendAllStatesToAll();
+		sendStatesToAll();
 
 	}
 

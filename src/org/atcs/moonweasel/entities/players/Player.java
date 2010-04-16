@@ -90,7 +90,7 @@ public class Player extends Entity
 			synchronized (commands)
 			{
 				for (UserCommand command : getCommandsBefore(getTime())) {
-//				System.out.println("WOW" + this);
+				System.out.println("Processing command" + this.getID() + "  " + command);
 					ship.apply(command);
 				}
 			}

@@ -49,7 +49,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 				float mouseY = Float.parseFloat(parts[3]);
 				String clientHostname = parts[4];
 				Player plr = server.playerMap.get(clientHostname);
-//				System.out.println("Command received from client: " + clientHostname + "  command: " + command  + "Player: " + plr);
+				System.out.println("Command received from client: " + clientHostname + "  command: " + command  + "Player: " + plr);
 //				System.out.println("Comparing..." + playerCommandMap.get(plr) + "  " + new Long(command));
 				if (playerCommandMap.get(plr) != null)
 					if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
