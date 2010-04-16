@@ -3,7 +3,6 @@ package org.atcs.moonweasel.networking;
 import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
 import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
 import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
-import static org.atcs.moonweasel.networking.actions.ActionMessages.CHOOSE_SHIP;
 import static org.atcs.moonweasel.networking.actions.ActionMessages.CLIENT_DISCONNECT;
 import static org.atcs.moonweasel.networking.actions.ActionMessages.COMMAND_RECEIVED;
 
@@ -25,6 +24,7 @@ import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.actions.ActionSource;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
@@ -52,7 +52,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 	private final Map<String, IClient> connectedClients = new HashMap<String, IClient>();
 
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
-	
+
 	public ArrayList<String> newlyConnectedClients = new ArrayList<String>();
 
 
@@ -106,21 +106,6 @@ public class Server extends RMIObject implements IServer, ActionSource
 		}	
 	}
 
-	/**
-	 * The given client chooses a ship type, which then spawns.
-	 * @param clientHostname The client that is being connected to the server. 
-	 * @param shipType The type of ship that the client has chosen.
-	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
-	 */
-	public void chooseShip(final ShipType shipType, final String c) throws RemoteException
-	{
-		if(!connectedClients.keySet().contains(c))
-			throw new RemoteException("Unconnected client trying to choose ship!");
-
-		Debug.print("Received ship choice " + shipType.typeName + " from " + c + ".");
-
-		fireActionEvent(CHOOSE_SHIP + " " + shipType + " " + c);
-	}
 
 	/**
 	 * When the client sends in a command, call this method.
@@ -150,18 +135,23 @@ public class Server extends RMIObject implements IServer, ActionSource
 	/**
 	 * Disconnects the given client, telling all listeners of the event as well.
 	 */
-	private void disconnectClient(IClient c)
+	private void disconnectClient(String clientName)
 	{
-		try
-		{
-			connectedClients.remove(c);
-			fireActionEvent(CLIENT_DISCONNECT + " " + c.getIP());
-		} 
-		catch (RemoteException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.err.println("Disconnecting client: " + clientName);
+		connectedClients.remove(clientName);
+		Player plr = playerMap.get(clientName);
+		Ship s = plr.getShip();
+		ArrayList<Entity> toDelete = new ArrayList<Entity>();
+		toDelete.add(plr);
+		toDelete.add(s);
+		this.sendDeletedEntitiesToAll(toDelete);
+
+		EntityManager.getEntityManager().delete(plr);
+		EntityManager.getEntityManager().delete(s);
+		playerMap.remove(clientName);
+
+		s.destroy();
+		plr.destroy();
 	}
 
 	public void sendAllCurrentEntitiesToAll()
@@ -190,25 +180,26 @@ public class Server extends RMIObject implements IServer, ActionSource
 			}
 		}
 
-		sendEntities(eList, clientName);
+		sendEntities(true, eList, clientName);
 
 		System.out.println("Finished send all entities to Client: " + clientName);
 	}
 
-	private void sendEntities(ArrayList<Entity> eList, String clientName)
+	private void sendEntities(boolean add, ArrayList<Entity> eList, String clientName)
 	{
 		IClient c = connectedClients.get(clientName);
 		try
 		{
-			c.receiveEntities(eList);
+			c.receiveEntities(add, eList);
 		}
 		catch (Exception e)
 		{
-			disconnectClient(c);
+			System.err.println("Invalid client in client list...");
+			disconnectClient(clientName);
 		}
 	}
-	
-	public void sendAllStatesToAll() throws RemoteException
+
+	public void sendAllStatesToAll()
 	{
 
 		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
@@ -220,17 +211,33 @@ public class Server extends RMIObject implements IServer, ActionSource
 				ModelEntity e = range.next();
 				if(e.sentToAll)
 				{
-//					System.out.println("Sending state: " + e.getID() + " ,  " + e.getState());
+					//					System.out.println("Sending state: " + e.getID() + " ,  " + e.getState());
 					sList.put(e.getID(), e.getState());
 				}
-				
+
 			}
 		}
 
 		for(String clientName : connectedClients.keySet())
 		{
 			IClient c = connectedClients.get(clientName);
-			c.receiveUpdatedStates(sList);
+			try
+			{
+				c.receiveUpdatedStates(sList);
+			} 
+			catch (RemoteException e)
+			{
+				System.err.println("Invalid client in client list...");
+				disconnectClient(clientName);
+			}
+		}
+	}
+
+	public void sendDeletedEntitiesToAll(ArrayList<Entity> eList)
+	{
+		for(String clientName : connectedClients.keySet())
+		{
+			sendEntities(false, eList, clientName);
 		}
 	}
 
@@ -255,7 +262,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 
 		for(String clientName : connectedClients.keySet())
 		{
-			sendEntities(eList, clientName);
+			sendEntities(true, eList, clientName);
 		}
 
 		System.out.println("Finished send new entities...");
@@ -263,7 +270,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 
 	public void connectionInitializationComplete(String c)
 	{
-		fireActionEvent("newClient " + c);
+		newlyConnectedClients.add(c);
 	}
 
 
@@ -272,23 +279,45 @@ public class Server extends RMIObject implements IServer, ActionSource
 		return playerMap.get(ip).getID();
 	}
 
-	public void act()
+	private void setupClient(String clientName)
 	{
+		EntityManager mgr = EntityManager.getEntityManager();
+		IClient client = connectedClients.get(clientName);
+		ShipType shipType;
 		try
 		{
-			for(String clientName : newlyConnectedClients)
-			{
-				this.sendAllCurrentEntitiesToClient(clientName);
-				this.sendNewEntitiesToAll();
-			}
-			newlyConnectedClients.clear();
-			this.sendAllStatesToAll();
+			shipType = client.sendShipChoice();
 		} 
 		catch (RemoteException e)
 		{
-			// TODO Auto-generated catch block
+			System.err.println("Client is not sending ship choice!  Aborting client setup...");
+			disconnectClient(clientName);
 			e.printStackTrace();
+			return;
 		}
+		Player plr = mgr.create("player");
+		playerMap.put(clientName, plr);
+		plr.spawn();
+
+		Ship ship = mgr.create(shipType.typeName);
+		ship.setPilot(plr);
+		ship.spawn();
+		plr.setShip(ship);
+		sendAllCurrentEntitiesToClient(clientName);
+		sendNewEntitiesToAll();
+	}
+
+	public void act()
+	{
+
+		for(String clientName : newlyConnectedClients)
+		{
+			System.out.println("Performing setup...");
+			setupClient(clientName);
+		}
+		newlyConnectedClients.clear();
+		sendAllStatesToAll();
+
 	}
 
 	private Set<ActionListener> actionListeners = new HashSet<ActionListener>();

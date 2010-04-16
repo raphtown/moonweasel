@@ -85,12 +85,6 @@ public class Client extends RMIObject implements IClient, Runnable
 		}
 	}
 
-	public void chooseShip()
-	{
-		Object[] parameters = {ShipType.SNOWFLAKE, getIP()};
-		Protocol.sendPacket("chooseShip", parameters, server);
-	}
-
 	/**
 	 * Serves to get a hostname out of the ServerAnnouncer, splitting out the 
 	 * server name so that nothing but an IP or DNS is left.
@@ -185,13 +179,20 @@ public class Client extends RMIObject implements IClient, Runnable
 		return -1;
 	}
 	
-	public void receiveEntities(ArrayList<Entity> eList) throws RemoteException
+	public void receiveEntities(boolean add, ArrayList<Entity> eList) throws RemoteException
 	{
 		EntityManager mgr = EntityManager.getEntityManager();
 		for (Entity e : eList)
 		{
 			System.out.println("Received New Entity: " + e + "  with id: " + e.getID());
-			mgr.add(e);
+			if(add)
+			{
+				mgr.add(e);
+			}
+			else
+			{
+				mgr.delete(e);
+			}
 		}
 	}
 	
@@ -219,6 +220,11 @@ public class Client extends RMIObject implements IClient, Runnable
 		}
 	}
 
+	public ShipType sendShipChoice() throws RemoteException
+	{
+		return ShipType.SNOWFLAKE;
+	}
+	
 	@Override
 	public void act()
 	{

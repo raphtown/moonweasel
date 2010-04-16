@@ -41,28 +41,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 		String[] parts = actionCommand.split(" ");
 		if (parts.length > 0)
 		{
-			if (parts[0].equals(CLIENT_CONNECT))
-			{
-				String clientHostname = parts[1];
-
-				Player plr = entityManager.create("player");
-				plr.spawn();
-
-				server.playerMap.put(clientHostname, plr);
-			}
-			else if (parts[0].equals(CHOOSE_SHIP))
-			{
-				ShipType st = ShipType.valueOf(parts[1]);
-				String clientHostname = parts[2];
-				String shipTypeName = st.typeName;
-				Player plr = server.playerMap.get(clientHostname);
-				Ship ship = this.entityManager.create(shipTypeName);
-				ship.setPilot(plr);
-				ship.spawn();
-				plr.setShip(ship);
-				server.newlyConnectedClients.add(clientHostname);
-			}
-			else if (parts[0].equals(COMMAND_RECEIVED))
+			if (parts[0].equals(COMMAND_RECEIVED))
 			{
 				Debug.print("Artemis to Lycanthrope ... we have lift-off");
 				short command = Short.parseShort(parts[1]);
@@ -71,6 +50,7 @@ public class Artemis extends Moonweasel implements ActionListener {
 				String clientHostname = parts[4];
 				Player plr = server.playerMap.get(clientHostname);
 //				System.out.println("Command received from client: " + clientHostname + "  command: " + command  + "Player: " + plr);
+//				System.out.println("Comparing..." + playerCommandMap.get(plr) + "  " + new Long(command));
 				if (playerCommandMap.get(plr) != null)
 					if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
 						return;
@@ -81,16 +61,6 @@ public class Artemis extends Moonweasel implements ActionListener {
 				plr.addCommand(ucommand);
 				playerCommandMap.put(plr, new Long(command));
 
-			}
-			else if (parts[0].equals(CLIENT_DISCONNECT))
-			{
-				String hostname = parts[1];
-				Player plr = server.playerMap.get(hostname);
-				this.entityManager.delete(plr);
-				server.playerMap.remove(hostname);
-				plr.getShip().destroy();
-				plr.destroy();
-				((Server)(e.getSource())).sendAllCurrentEntitiesToAll();
 			}
 		}
 	}

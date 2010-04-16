@@ -40,7 +40,7 @@ public class Player extends Entity
 	public void addCommand(UserCommand command) {
 		synchronized (commands)
 		{
-			System.out.println("WOW" + this + "  " + command);
+//			System.out.println("WOW" + this + "  " + command);
 			this.commands.add(command);
 			addChange("add command " + command);
 		}

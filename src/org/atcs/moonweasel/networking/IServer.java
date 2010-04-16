@@ -1,16 +1,7 @@
 package org.atcs.moonweasel.networking;
 
-import java.rmi.Remote;
-
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
-import org.atcs.moonweasel.entities.Entity;
-import org.atcs.moonweasel.entities.players.Player;
-import org.atcs.moonweasel.entities.ships.ShipType;
-import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 /**
@@ -41,14 +32,6 @@ public interface IServer extends IRMIObject
 	 * @param c The client that is asking for an update.
 	 */
 	public void requestUpdate(final String c) throws RemoteException;
-
-	/**
-	 * The given client chooses a ship type, which then spawns.
-	 * @param clientHostname The client that is being connected to the server. 
-	 * @param shipType The type of ship that the client has chosen.
-	 * @throws RemoteException If bad things happen - server goes away, that sort of thing.
-	 */
-	public void chooseShip(final ShipType shipType, final String c) throws RemoteException;
 	
 	public Integer getMyID(String ip) throws RemoteException;
 

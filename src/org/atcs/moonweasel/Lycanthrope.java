@@ -34,34 +34,10 @@ public class Lycanthrope
 	
 	public Lycanthrope(int width, int height, boolean fullscreen)
 	{
-//		For Reference
-//		this.client = new Client();
-//		client.findAndConnectToServer();
-//		int nextID = client.getNextID();
-//		client.getStartingEntities();
-//		client.connectionInitializationComplete();
-//		client.chooseShip();
-//
-//		this.physics = new Physics();
-//		this.entityManager = EntityManager.getEntityManager();
-//		entityManager.setNextID(nextID);
-//
-//		player = this.entityManager.create("player");
-//		player.spawn();
-//		playerMap.put(client.getIP(), player);
-//		Snowflake snowflake = this.entityManager.create("snowflake");
-//		snowflake.setPilot(player);
-//		snowflake.spawn();
-//		player.setShip(snowflake);
-//
-//		this.view = new WeaselView(width, height, fullscreen, player);
-//		this.input = new InputController(view.getWindow());
-		
 		this.client = new Client();
 		client.findAndConnectToServer();
 	
 		client.connectionInitializationComplete();
-		client.chooseShip();
 
 		this.physics = new Physics();
 		this.entityManager = EntityManager.getEntityManager();
@@ -71,7 +47,6 @@ public class Lycanthrope
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			this.player = (Player) entityManager.get(client.getMyID());
@@ -93,8 +68,6 @@ public class Lycanthrope
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		float interpolation;
-		int curr = 0;
-		int currmax = 10;
 		
 		while (!view.shouldQuit()) 
 		{
@@ -111,21 +84,17 @@ public class Lycanthrope
 			
 			t = System.currentTimeMillis();
 			UserCommand command = input.poll(t);
-			player.addCommand(command);
+			
 			if (command.getAsBitmask() != lastCommand)
+			{
+				player.addCommand(command);
 				client.sendCommandToServer(command);
+			}
+				
 			lastCommand = command.getAsBitmask();
 			
 			player.clearCommandsBefore(t);
-			if ((++curr) % currmax == 0)
-			{
-				//view.toggleUpdating();
-				//int id = view.getMe().getID();
-//				client.requestUpdateFromServer();
-				//Player p = (Player)(entityManager.get(id));
-				//view.setMe(p);
-				//view.toggleUpdating();
-			}
+			
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
 			/ SKIP_TICKS;
 			view.render(interpolation);
