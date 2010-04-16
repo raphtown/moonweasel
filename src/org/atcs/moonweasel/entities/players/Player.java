@@ -89,7 +89,7 @@ public class Player extends Entity
 		if (ship != null) {
 			synchronized (commands)
 			{
-				for (UserCommand command : getCommandsBefore(getTime())) {
+				for (UserCommand command : commands) {
 				System.out.println("Processing command" + this.getID() + "  " + command);
 					ship.apply(command);
 				}

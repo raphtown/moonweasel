@@ -11,6 +11,7 @@ import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.physics.Physics;
+import org.atcs.moonweasel.ranges.Range;
 
 public class Moonweasel
 {
@@ -92,6 +93,11 @@ public class Moonweasel
 				server.act();
 				time = System.currentTimeMillis();
 				entityManager.update(t);
+				Range<Player> eList = entityManager.getAllOfType(Player.class);
+				for(Player e : eList)
+				{
+					e.think();
+				}
 				physics.update(t, SKIP_TICKS);
 				temp = System.currentTimeMillis();
 				delta = temp - time;
@@ -105,12 +111,6 @@ public class Moonweasel
 				next_logic_tick += SKIP_TICKS;
 				loops++;
 				count++;
-				if(count == 10000)
-				{
-					System.out.println("cool");
-					Ship ship = this.entityManager.create("snowflake");
-					ship.spawn();
-				}
 			}
 		}
 	}
