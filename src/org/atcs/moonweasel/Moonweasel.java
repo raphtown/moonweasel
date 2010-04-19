@@ -93,11 +93,6 @@ public class Moonweasel
 				server.act();
 				time = System.currentTimeMillis();
 				entityManager.update(t);
-				Range<Player> eList = entityManager.getAllOfType(Player.class);
-				for(Player e : eList)
-				{
-					e.think();
-				}
 				physics.update(t, SKIP_TICKS);
 				temp = System.currentTimeMillis();
 				delta = temp - time;
