@@ -55,8 +55,6 @@ public class Server extends RMIObject implements IServer, ActionSource
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
 
 	private ArrayList<String> newlyConnectedClients = new ArrayList<String>();
-	
-	private Map<String, IClient> connectingClients = new HashMap<String, IClient>();
 
 
 	public static void main(String args[])
@@ -99,7 +97,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 		{
 			Registry registry = LocateRegistry.getRegistry(clientName, RMI_PORT);
 			IClient	client = (IClient) registry.lookup(CLIENT_OBJECT_NAME);
-			connectingClients.put(clientName, client);
+			connectedClients.put(clientName, client);
 			Debug.print("Client " + clientName + " connected!");
 		} 
 		catch (NotBoundException e)
@@ -305,8 +303,6 @@ public class Server extends RMIObject implements IServer, ActionSource
 
 	public void connectionInitializationComplete(String c)
 	{
-		connectedClients.put(c, connectingClients.get(c));
-		connectingClients.remove(c);
 		newlyConnectedClients.add(c);
 	}
 
