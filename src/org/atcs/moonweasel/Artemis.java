@@ -50,7 +50,6 @@ public class Artemis extends Moonweasel implements ActionListener {
 				String clientHostname = parts[4];
 				Player plr = server.playerMap.get(clientHostname);
 			
-//				System.out.println("Comparing..." + playerCommandMap.get(plr) + "  " + new Long(command));
 				if (playerCommandMap.get(plr) != null)
 					if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
 						return;

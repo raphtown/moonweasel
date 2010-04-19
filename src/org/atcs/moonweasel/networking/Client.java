@@ -34,7 +34,7 @@ import org.atcs.moonweasel.util.State;
  * 
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Client extends RMIObject implements IClient, Runnable
+public class Client extends RMIObject implements IClient
 {
 	private IServer server = null;
 	
@@ -46,13 +46,6 @@ public class Client extends RMIObject implements IClient, Runnable
 	public Client()
 	{
 		super(CLIENT_OBJECT_NAME);
-	}
-	
-	@Override
-	public void run()
-	{
-		
-		
 	}
 
 	public void findAndConnectToServer()
