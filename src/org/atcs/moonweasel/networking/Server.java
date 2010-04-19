@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -28,6 +30,7 @@ import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.actions.ActionSource;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
+import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
@@ -257,9 +260,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 	}
 
 	public void sendStatesToAll()
-
 	{
-
 		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
 		Map<Integer, State> sList = new HashMap<Integer, State>();
 		synchronized (EntityManager.getEntityManager())
@@ -297,9 +298,43 @@ public class Server extends RMIObject implements IServer, ActionSource
 		}
 	}
 
-
-
-	
+	public void sendChangesToAll()
+	{
+		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
+		List<ChangeList> list = new LinkedList<ChangeList>();
+		synchronized (EntityManager.getEntityManager())
+		{
+			while(range.hasNext())
+			{
+				Entity e = range.next();
+				if(e.hasChangedForAll())
+				{
+					list.add(e.getRecentChanges());
+					e.sent();
+				}
+			}
+		}
+		Set<String> temp = new HashSet<String>();
+		for(String clientName : connectedClients.keySet())
+		{
+			temp.add(clientName);
+		}
+		Iterator<String> i = temp.iterator();
+		while(i.hasNext())
+		{
+			String clientName = i.next();
+			IClient c = connectedClients.get(clientName);
+			try
+			{
+				c.receiveChanges(list);
+			} 
+			catch (RemoteException e)
+			{ 
+				System.err.println("Invalid client in client list...");
+				disconnectClient(clientName);
+			}
+		}
+	}
 
 	public void connectionInitializationComplete(String c)
 	{
@@ -350,8 +385,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 			setupClient(clientName);
 		}
 		newlyConnectedClients.clear();
-		sendStatesToAll();
-
+		sendChangesToAll();
 	}
 
 	private Set<ActionListener> actionListeners = new HashSet<ActionListener>();

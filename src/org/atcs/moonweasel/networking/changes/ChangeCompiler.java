@@ -17,11 +17,6 @@ public class ChangeCompiler
 	public static void compile(ChangeList changes, EntityManager mgr)
 	{
 		assert changes != null && mgr != null;
-		//PANTS ON THE GROUND PANTS ON THE GROUND LOOKIN LIKE A FOOL
-		// WITH YOUR PANTS ON THE GROUND GOT THAT GOLD IN OUR MOUTH
-		// HAT TURNED SIDEWAYS CALL YOURSELF A COOL CAT
-		// LOOKING A LIKE A FOOL WALKING TALKING WITCHO PANTS O THE GROUND!!!!
-		// GET EM UP HEY GET YO PANTS OFF THE GROUND LOO
 		List<String> list = changes.getChanges();
 
 		if (mgr.get(changes.getID()) == null)

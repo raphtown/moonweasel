@@ -21,6 +21,8 @@ import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
+import org.atcs.moonweasel.networking.changes.ChangeCompiler;
+import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.util.State;
 
 /**
@@ -196,21 +198,29 @@ public class Client extends RMIObject implements IClient
 		{
 			System.err.println("ERROR ERROR ERROR - STATE LIST IS NULL");
 			System.exit(0);
-			return;
 		}
 
 		for (Integer id : sList.keySet())
 		{
 			ModelEntity m = mgr.get(id);
 			if(m == null)
-			{
 				System.err.println("This id was not located: " + id);
-//				System.exit(0);
-//				return;
-			}
-//			System.out.println("Received Updated State For Entity: " + id);
+
 			m.setState(sList.get(id));
 		}
+	}
+	
+	public void receiveChanges(List<ChangeList> changes) throws RemoteException
+	{
+		EntityManager mgr = EntityManager.getEntityManager();
+		if (changes == null)
+		{
+			System.err.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
+			System.exit(1);
+		}
+
+		for (ChangeList l : changes)
+			ChangeCompiler.compile(l, mgr);
 	}
 
 	public ShipType sendShipChoice() throws RemoteException

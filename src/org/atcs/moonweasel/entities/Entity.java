@@ -37,6 +37,7 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	private List<String> clientsThatHaveGottenChanges = new LinkedList<String>();
 	private ChangeList globalChanges;
 	private Map<String, ChangeList> clientSpecificChanges = new HashMap<String, ChangeList>();
+	private boolean hasChanged = false;
 	 
 	protected Entity() {
 		sentToAll = false;
@@ -85,6 +86,7 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 	
 	protected void change()
 	{
+		hasChanged = true;
 		clientsThatHaveGottenChanges = new LinkedList<String>();
 	}
 	
@@ -93,10 +95,21 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 		return !(clientsThatHaveGottenChanges.contains(c));
 	}
 	
+	public boolean hasChangedForAll()
+	{
+		return hasChanged;
+	}
+	
 	public void sent(String c)
 	{
 		clientsThatHaveGottenChanges.add(c);
 		clearChanges(c);
+	}
+	
+	public void sent()
+	{
+		hasChanged = false;
+		clearChanges();
 	}
 	
 	public ChangeList getRecentChanges(String c)
@@ -107,10 +120,16 @@ public abstract class Entity implements Identifiable, Serializable, Trackable {
 			return clientSpecificChanges.get(c);
 	}
 	
+	public ChangeList getRecentChanges()
+	{
+		return globalChanges;
+	}
+	
 	public void clearChanges()
 	{
 		globalChanges = new ChangeList(getClass().getName(), getID());
 		clientsThatHaveGottenChanges = new LinkedList<String>();
+		hasChanged = false;
 	}
 	
 	private void clearChanges(String c)

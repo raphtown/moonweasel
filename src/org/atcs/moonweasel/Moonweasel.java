@@ -51,8 +51,6 @@ public class Moonweasel
 
 	protected Physics physics;
 
-
-
 	protected Server server;
 
 	protected EntityManager entityManager;
