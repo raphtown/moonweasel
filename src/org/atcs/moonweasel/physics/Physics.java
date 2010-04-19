@@ -42,7 +42,7 @@ public class Physics
 		ArrayList<State> allStates = new ArrayList<State>();
 		ArrayList<State> normalStates = new ArrayList<State>();
 		ArrayList<State> statesToCheck = new ArrayList<State>();
-		
+		Map<State, ModelEntity> linkMap = new HashMap<State, ModelEntity>();
 		
 		
 		//Generating the macro list of all of the states, pre split
@@ -50,6 +50,7 @@ public class Physics
 		//possible colliders are handled with more precision later
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
+			linkMap.put(e.getState(), e);
 			allStates.add(e.getState());
 			e.getState().setDangerZone(dt);
 			e.getState().recalculate();
@@ -110,6 +111,8 @@ public class Physics
 						//map should not have duplicates
 						if(!collidingStates.keySet().contains(check))
 						{
+							linkMap.get(s).collidedWith(linkMap.get(check));
+							linkMap.get(check).collidedWith(linkMap.get(s));
 							collidingStates.put(s, check);
 						}
 					}

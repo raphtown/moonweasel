@@ -34,6 +34,7 @@ public abstract class ModelEntity extends Entity implements Positional {
 
 	
 	public void collidedWith(ModelEntity other) {
+		System.out.println("collidedWith method called");
 	}
 	
 	public void draw(GL2 gl) {
