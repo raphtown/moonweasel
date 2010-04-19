@@ -1,8 +1,5 @@
 package org.atcs.moonweasel;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
@@ -20,7 +17,6 @@ public class Lycanthrope
 	protected long t;
 	private EntityManager entityManager;
 	protected Physics physics;
-	private Map<String, Player> playerMap = new HashMap<String, Player>();
 	
 	public static void main(String args[])
 	{

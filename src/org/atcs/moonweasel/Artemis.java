@@ -1,21 +1,14 @@
 package org.atcs.moonweasel;
 
-import static org.atcs.moonweasel.networking.actions.ActionMessages.CHOOSE_SHIP;
-import static org.atcs.moonweasel.networking.actions.ActionMessages.CLIENT_CONNECT;
-import static org.atcs.moonweasel.networking.actions.ActionMessages.CLIENT_DISCONNECT;
 import static org.atcs.moonweasel.networking.actions.ActionMessages.COMMAND_RECEIVED;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
-import org.atcs.moonweasel.entities.ships.Ship;
-import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.Server;
 
 
