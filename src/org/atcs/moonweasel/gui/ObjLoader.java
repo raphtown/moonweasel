@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.gui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +26,34 @@ public class ObjLoader extends Loader
 	
 	protected String getExtension() {
 		return EXTENSION;
+	}
+	
+	
+	protected Vector[] loadGeometry(String path, String name) throws FileNotFoundException
+	{
+		Scanner sc = new Scanner(new File(path + name + ".obj"));
+		ArrayList<Vector> vertices = new ArrayList<Vector>();
+		
+		while(sc.hasNext())
+		{
+			String nextToken = sc.next();
+			if(nextToken.equals("v"))
+			{
+				float[] coordinates = new float[3];
+				coordinates[0] = sc.nextFloat();
+				coordinates[1] = sc.nextFloat();
+				coordinates[2] = sc.nextFloat();
+				Vector insertVertex = new Vector(coordinates[0], coordinates[1], coordinates[2]);
+				vertices.add(insertVertex);
+			}
+			
+			if(sc.hasNextLine())
+			{
+				sc.nextLine();
+			}
+		}
+		
+		return (Vector[]) vertices.toArray();
 	}
 	
 	@Override

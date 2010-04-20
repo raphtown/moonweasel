@@ -28,8 +28,6 @@ public abstract class ModelEntity extends Entity implements Positional {
 		
 		this.lastRenderState = new State(mass, inertiaTensor);
 		this.state = new State(mass, inertiaTensor);
-		
-	
 	}
 
 	

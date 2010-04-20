@@ -84,7 +84,9 @@ public class NumericalIntegration
 		Vector impulse = normal.scale(s1.momentum.add(s2.momentum).length()*10);
 		
 		System.out.println("Impulse: " + impulse);
-		Vector transformVector = s1.orientation.toAxisAngle().axis.normalize();
+		Vector transformVector = s1.orientation.toAxisAngle().axis; //this is prenormalized, so we're good.
+		
+		System.out.println("Transform Vector:" + transformVector);
 		
 		s1.angularVelocity = s1.angularVelocity.add(s1.inverseInertiaTensor.transform(impulse.cross(transformVector.scale(-s1.inverseMass))));
 		s2.angularVelocity = s2.angularVelocity.subtract(s2.inverseInertiaTensor.transform(impulse.cross(transformVector.scale(-s2.inverseMass))));
@@ -97,54 +99,6 @@ public class NumericalIntegration
 		
 		s1.recalculate(); //updates velocity from new momentum
 		s2.recalculate();
-
-		
-
-
-
-
-
-		//		System.out.println("precollision momenta: ");
-		//		float initialTotalMomentum = s1.momentum.add(s2.momentum).length();
-		//		System.out.println("s1 linear: " + s1.momentum.length() + "  s1 angular: " + s1.angularMomentum.length());
-		//		System.out.println("s2 linear: " + s2.momentum.length() + "  s2 angular: " + s2.angularMomentum.length());	
-		//	
-		//		float fCr = 1f; //coefficient of restitution
-		//		Vector normal = s1.position.subtract(s2.position).normalize();
-
-		//		float jNumerator = 
-		//			(s1.velocity.subtract(s2.velocity)).dot(normal); /* +
-		//			ra.cross(normal).dot(s1.angularVelocity) -
-		//			rb.cross(normal).dot(s2.angularVelocity);*/
-		//		float jDenominator = 
-		//			s1.inverseMass + 
-		//			s2.inverseMass; /* +
-		//			(ra.cross(normal).dot(s1.inverseInertiaTensor.transform(ra.cross(normal)))) + 
-		//			(rb.cross(normal).dot(s2.inverseInertiaTensor.transform(rb.cross(normal)))); */
-		//		float j = (-1 * (1 + fCr) * jNumerator) / (jDenominator);
-		//		Vector impulse = normal.scale(j);
-		//		s1.velocity = s1.velocity.add(impulse.scale(s1.inverseMass));
-		//		s2.velocity = s2.velocity.subtract(impulse.scale(s2.inverseMass));
-		//		s1.momentum = s1.velocity.scale(s1.mass);
-		//		s2.momentum = s2.velocity.scale(s2.mass);
-		//		
-		//		float finalTotalMomentum = s1.momentum.add(s2.momentum).length();
-		//		float scaleFactor = initialTotalMomentum / finalTotalMomentum;
-		//		s1.velocity.scale(scaleFactor);
-		//		s1.momentum.scale(scaleFactor);
-		//		s2.velocity.scale(scaleFactor);
-		//		s2.momentum.scale(scaleFactor);
-		//		
-		//		System.out.println(s1.worldToBody.transform(normal));
-		//		
-
-		//		
-		//		System.out.println("postcol momenta: ");
-		//		System.out.println("s1 linear: " + s1.momentum.length() + "  s1 angular: " + s1.angularMomentum.length());
-		//		System.out.println("s2 linear: " + s2.momentum.length() + "  s2 angular: " + s2.angularMomentum.length());
-		//	
-		//		s1.position = s1.position.add(s1.velocity.scale(50)); //nudge code
-		//		s2.position = s2.position.add(s2.velocity.scale(50));
 	}
 
 	public void integrate(State state, long t, int dt)
@@ -157,7 +111,7 @@ public class NumericalIntegration
 		state.position = state.position.add(Vector.add(a.velocity, b.velocity, b.velocity, c.velocity, c.velocity, d.velocity).scale(dt / 6));
 		state.momentum = state.momentum.add(Vector.add(a.force, b.force, b.force, c.force, c.force, d.force).scale(dt/6));
 		state.orientation = state.orientation.add(Quaternion.add(a.spin, b.spin, b.spin, c.spin, c.spin, d.spin).scale(dt/6));
-		state.angularMomentum = state.angularMomentum.add(Vector.add(a.torque, b.torque, b.torque, c.torque, c.torque, d.torque).scale(dt/6));
+		state.angularMomentum = state.angularMomentum.add(Vector.add(a.torque, b.torque, b.torque, c.torque, c.torque, d.torque).scale(dt/6));				
 		state.recalculate();
 
 		state.clearDerivativesBefore(t + dt);

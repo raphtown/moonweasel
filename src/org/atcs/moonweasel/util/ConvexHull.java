@@ -13,22 +13,21 @@ public class ConvexHull
 	
 	public ConvexHull(ArrayList<Vector> points, String p)
 	{
+		plane = p;
 		remainingPoints.addAll(points);
 		Physics.removeDuplicates(remainingPoints);
 		if(p.equals("xy"))
 		{
-			remainingPoints = Physics.projectOntoPlane(remainingPoints, p);
+			remainingPoints = Physics.projectOntoPlane(remainingPoints, plane);
 		}
 		else if(p.equals("yz"))
 		{
-			remainingPoints = Physics.projectOntoPlane(remainingPoints, p);
+			remainingPoints = Physics.projectOntoPlane(remainingPoints, plane);
 		}
 		else
 		{
-			remainingPoints = Physics.projectOntoPlane(remainingPoints, p);
+			remainingPoints = Physics.projectOntoPlane(remainingPoints, plane);
 		}
-		
-		plane = p;
 		this.hullMe();
 	}
 	

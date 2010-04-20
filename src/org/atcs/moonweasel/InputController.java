@@ -130,8 +130,9 @@ public class InputController implements KeyListener, MouseListener {
 	}
 
 	@Override
-	public void mouseWheelMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseWheelMoved(MouseEvent e) {
+		int scrollAmnt = e.getWheelRotation();
+		System.out.println("scrolled " + scrollAmnt + " units");
 		
 	}
 }

@@ -36,6 +36,10 @@ public class Vector
 	
 	public Vector cross(Vector o) 
 	{
+//		if(o.equals(this))
+//		{
+//			System.out.println("crap. zero crossproduct");
+//		}
 		return new Vector(y * o.z - z * o.y, z*o.x - x*o.z, x*o.y - y*o.x);
 	}
 	
@@ -89,6 +93,10 @@ public class Vector
 	public Vector normalize()
 	{
 		float length = this.length();
+		if(length == 0f)
+		{
+			System.out.println("Attempting to normalize, about to divide by zero.");
+		}
 		return new Vector(x / length, y / length, z / length);
 	}
 	

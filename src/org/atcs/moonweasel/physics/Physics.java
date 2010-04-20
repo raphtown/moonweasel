@@ -20,9 +20,7 @@ public class Physics
 	
 	private NumericalIntegration integrator;
 	
-	public static Map<State, State> collidingStates = new HashMap<State, State>();
-	
-	public static final double MIN_COLLIDE_DISTANCE = 0.7;
+	public static final double MIN_COLLIDE_DISTANCE = 0.7; //tuning parameter
 	
 	public Physics() 
 	{
@@ -42,61 +40,49 @@ public class Physics
 		ArrayList<State> allStates = new ArrayList<State>();
 		ArrayList<State> normalStates = new ArrayList<State>();
 		ArrayList<State> statesToCheck = new ArrayList<State>();
-		
+		Map<State, State> collidingStates = new HashMap<State, State>();
 		
 		
 		//Generating the macro list of all of the states, pre split
-		//we split this list into "possible colliders" and "definitely safe"
-		//possible colliders are handled with more precision later
+		//we split this list into "possible colliders" (stored in statesTocheck) 
+		//and "definitely safe" (stored in normalStates). 
+		
+		
+		
+		
+		//This method grabs the state from each model entity in the manager.
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
 			allStates.add(e.getState());
 			e.getState().setDangerZone(dt);
+			System.out.println("Current Speed:" + e.getState().velocity.length());
 			e.getState().recalculate();
 		}
 		
-		//integrate all the states
+		//State integration
 		for(State s : allStates)
 		{
+			//integrate everything, and if something collides, we'll handle it later
 			integrator.integrate(s,t,dt);
 		}
 		
 		//Separation based on "danger zone" concept
 		for(State s : allStates)
 		{
-//			System.out.println("ConvexHullWorld: " + s.XYConvexHullWorld);
-//			System.out.println(s.dangerZoneRadius);
-			//System.out.println("There are " + allStates.size() + " states");
 			for(State check : allStates)
 			{
 				if(!s.equals(check))
 				{
-					//System.out.println("Checking danger zones");
 					if(s.position.squareDistance(check.position) < Math.pow((s.dangerZoneRadius + check.dangerZoneRadius), 2))
 					{
-						//DANGER WILL ROBINSON
+						//DANGER WILL ROBINSON! Collision imminent!
 						statesToCheck.add(s);
 						//System.out.println("added a point IN THE DANGER ZONE!!!");
 					}
 				}
 			}
 		}
-		
-		//integrate the safe states like normal
-		//System.out.println("about to start integrating normal states");
-//		for(State s : normalStates)
-//		{
-//			//System.out.println("integrating normal (non-colliding) states now");
-//			integrator.integrate(s, t, dt);
-//		}
-		
-		//integrate the dangerous states
-		//System.out.println("about to start integrating the things we have to predict");
-//		for(State s : statesToCheck)
-//		{
-//			//System.out.println("integrating potential colliding states now");
-//			integrator.integrate(s, t, dt);
-//		}
+
 		
 		for(State s : statesToCheck)
 		{
@@ -106,8 +92,7 @@ public class Physics
 				{
 					if(polyhedralCollision(s, check))
 					{
-						System.out.println("COLLISION!!!");
-						//map should not have duplicates
+						//map should not have duplicates, so this final condition is needed
 						if(!collidingStates.keySet().contains(check))
 						{
 							collidingStates.put(s, check);
@@ -122,6 +107,7 @@ public class Physics
 			integrator.collisionResponse(s, collidingStates.get(s));
 			integrator.integrate(s,t,dt);
 		}
+		
 		allStates.clear();
 		normalStates.clear();
 		statesToCheck.clear();
