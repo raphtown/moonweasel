@@ -40,8 +40,10 @@ public class Physics
 		ArrayList<State> allStates = new ArrayList<State>();
 		ArrayList<State> normalStates = new ArrayList<State>();
 		ArrayList<State> statesToCheck = new ArrayList<State>();
-		Map<State, State> collidingStates = new HashMap<State, State>();
 		
+		Map<State, State> collidingStates = new HashMap<State, State>();
+		Map<State, ModelEntity> linkMap = new HashMap<State, ModelEntity>();
+
 		
 		//Generating the macro list of all of the states, pre split
 		//we split this list into "possible colliders" (stored in statesTocheck) 
@@ -53,6 +55,7 @@ public class Physics
 		//This method grabs the state from each model entity in the manager.
 		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
 		{
+			linkMap.put(e.getState(), e);
 			allStates.add(e.getState());
 			e.getState().setDangerZone(dt);
 			System.out.println("Current Speed:" + e.getState().velocity.length());
@@ -95,6 +98,8 @@ public class Physics
 						//map should not have duplicates, so this final condition is needed
 						if(!collidingStates.keySet().contains(check))
 						{
+							linkMap.get(s).collidedWith(linkMap.get(check));
+							linkMap.get(check).collidedWith(linkMap.get(s));
 							collidingStates.put(s, check);
 						}
 					}
