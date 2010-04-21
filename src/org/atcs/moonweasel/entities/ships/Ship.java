@@ -1,7 +1,5 @@
 package org.atcs.moonweasel.entities.ships;
 
-import java.util.ArrayList;
-
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.entities.EntityManager;
@@ -172,7 +170,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		assert DISPLAY_LISTS.containsKey(this.getClass());
 		
 		gl.glCallList(DISPLAY_LISTS.get(this.getClass()));
-		gl.glBegin(gl.GL_LINES);
+		gl.glBegin(GL2.GL_LINES);
 			gl.glVertex3f(this.state.velocity.x*1000,this.state.velocity.y*1000,this.state.velocity.z*1000);
 			gl.glVertex3f(0,0,0);
 		gl.glEnd();

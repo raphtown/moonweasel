@@ -159,7 +159,7 @@ public class Physics
 		return new Matrix(i11, i12, i13, i21, i22, i23, i31, i32, i33);
 	}
 
-	public static boolean pointInPolygon(Vector tp, List<Vector> polygon)
+	public static boolean pointInPolygon(Vector tp, Vector[] polygon)
 	{
 		for(Vector v : polygon)
 		{
@@ -167,14 +167,14 @@ public class Physics
 		}
 		
 		int crossings = 0;
-		int n = polygon.size();
+		int n = polygon.length;
 
 		for(int i = 0; i < n; i++)
 		{
-			if((polygon.get(i).x < tp.x && tp.x < polygon.get((i+1) % n).x) || (polygon.get(i).x > tp.x && tp.x > polygon.get((i+1) % n).x))
+			if((polygon[i].x < tp.x && tp.x < polygon[(i+1) % n].x) || (polygon[i].x > tp.x && tp.x > polygon[(i+1) % n].x))
 			{
-				double t = (tp.x - polygon.get((i+1) % n).x) / (polygon.get(i).x - polygon.get((i+1) % n).x);
-				double cy = t*(polygon.get(i).y) + (1 - t)*(polygon.get((i+1) % n).y);
+				double t = (tp.x - polygon[(i+1) % n].x) / (polygon[i].x - polygon[(i+1) % n].x);
+				double cy = t*(polygon[i].y) + (1 - t)*(polygon[(i+1) % n].y);
 				if(tp.y == cy)
 				{
 					return true;
@@ -186,30 +186,30 @@ public class Physics
 				}
 			}
 			
-			if (polygon.get(i).x == tp.x && polygon.get(i).y <= tp.y) 
+			if (polygon[i].x == tp.x && polygon[i].y <= tp.y) 
 			{
-	            if (polygon.get(i).y == tp.y)
+	            if (polygon[i].y == tp.y)
 	            {
 	            	return true;
 	            	//on the boundary
 	            }
-	            if (polygon.get((i+1) % n).x == tp.x)
+	            if (polygon[(i+1) % n].x == tp.x)
 	            {
-	                if ((polygon.get(i).y <= tp.y && tp.y <= polygon.get((i+1) % n).y) || (polygon.get(i).y >= tp.y && tp.y >= polygon.get((i+1) % n).y))
+	                if ((polygon[i].y <= tp.y && tp.y <= polygon[(i+1) % n].y) || (polygon[i].y >= tp.y && tp.y >= polygon[(i+1) % n].y))
 	                {
 	                	return true;
 	                	//on boundary
 	                }         
 	            } 
-	            else if (polygon.get((i+1) % n).x > tp.x) crossings++;
-	            if (polygon.get((i-1) % n).x > tp.x) crossings++;
+	            else if (polygon[(i+1) % n].x > tp.x) crossings++;
+	            if (polygon[(i-1) % n].x > tp.x) crossings++;
 	        }
 		}
 
 		if(crossings % 2 == 1) return true;
 		else return false;	
 	}
-	public static boolean polygonCollision(List<Vector> p1, List<Vector> p2)
+	public static boolean polygonCollision(Vector[] p1, Vector[] p2)
 	{
 		for(Vector v1 : p1)
 		{
@@ -221,24 +221,19 @@ public class Physics
 	
 	public static boolean polyhedralCollision(State s1, State s2)
 	{
-		List<Vector> s1body, s2body, s1world, s2world;
-		s1world = new ArrayList<Vector>();
-		s2world = new ArrayList<Vector>();
+		Vector[] s1body, s2body, s1world, s2world;
 		for (Projection p : Projection.values()) {
-			s1body = Arrays.asList(ConvexHull.getConvexHull(s1.entity.getClass(), p));
-			s2body = Arrays.asList(ConvexHull.getConvexHull(s2.entity.getClass(), p));
+			s1body = ConvexHull.getConvexHull(s1.entity.getClass(), p);
+			s2body = ConvexHull.getConvexHull(s2.entity.getClass(), p);
 			
-			s1world.clear();
-			for(Vector point : s1body)
-			{
-				s1world.add(
-						p.project(s1.bodyToWorld.transform(point, p)));
+			s1world = new Vector[s1body.length];
+			for (int i = 0; i < s1body.length; i++) {
+				s1world[i]  = p.project(s1.bodyToWorld.transform(s1body[i], p));
 			}
-			s2world.clear();
-			for(Vector point : s2body)
-			{
-				s2world.add(
-						p.project(s2.bodyToWorld.transform(point, p)));
+
+			s2world = new Vector[s2body.length];
+			for (int i = 0; i < s2body.length; i++) {
+				s2world[i]  = p.project(s2.bodyToWorld.transform(s2body[i], p));
 			}
 
 			if (!polygonCollision(s1world, s2world)) {
