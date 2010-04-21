@@ -13,7 +13,7 @@ public abstract class Loader {
 		String path = String.format("data/models/%s/", name);
 		
 		try {
-			return loader.loadGeometry(path, "snowflake");			
+			return loader.loadGeometry(path, name);			
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to import " + name, e);
 		}

@@ -3,10 +3,7 @@ package org.atcs.moonweasel.entities;
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.gui.WeaselView;
-import org.atcs.moonweasel.physics.BoundingBox;
-import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.util.Matrix;
-import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.Vector;
 
 import com.sun.opengl.util.gl2.GLUT;
@@ -17,15 +14,12 @@ public class Laser extends ModelEntity
 	private static final float VELOCITY = 100.0f;
 	
 	public Laser() {
-		super(new BoundingBox(10, 10, 10), 500, Matrix.IDENTITY);
-		// TODO Auto-generated constructor stub
+		super(500, Matrix.IDENTITY);
 	}
 
 	@Override
 	public void destroy()
 	{
-		
-		
 	}
 	
 	public void draw(GL2 gl)

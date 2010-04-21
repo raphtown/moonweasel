@@ -1,11 +1,5 @@
 package org.atcs.moonweasel.gui;
 
-
-
-import java.awt.Cursor;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,14 +12,9 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Ship;
-import org.atcs.moonweasel.physics.BoundingBox;
-import org.atcs.moonweasel.physics.BoundingShape;
-import org.atcs.moonweasel.physics.BoundingSphere;
 import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
-
-
 
 import com.sun.opengl.util.gl2.GLUT;
 import com.sun.opengl.util.texture.Texture;
@@ -53,12 +42,6 @@ public class WeaselView extends View {
 	
 	/* Camera parameters */
 	private static final double CAMERA_FOV_ANGLE = 60.0;		/* Camera (vertical) field of view angle */
-
-//	private static final float CAMERA_PILOT_OFFSET_SCALAR = 5.f;
-	private static final float SNOWFLAKE_CAMERA_PILOT_Z_OFFSET_SCALAR = 11.f;
-	private static final float SNOWFLAKE_CAMERA_PILOT_Y_OFFSET_SCALAR = 2.5f;
-
-	private static final float CAMERA_PILOT_OFFSET_SCALAR = 1.5f;
 
 	private static final double CAMERA_CLIPPING_NEAR = 0.1;
 	private static final double CAMERA_CLIPPING_FAR = 10000;
@@ -155,8 +138,8 @@ public class WeaselView extends View {
         gl.glEnable(GL2.GL_LIGHT0);
         
         float[] lamb = { 0.8f, 0.8f, 0.8f, 1.0f };
-        float[] ldiff = { 0.6f, 0.6f, 0.6f, 1.0f };
-        float[] lspec = { 0.4f, 0.4f, 0.4f, 1.0f };
+//        float[] ldiff = { 0.6f, 0.6f, 0.6f, 1.0f };
+//        float[] lspec = { 0.4f, 0.4f, 0.4f, 1.0f };
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, lamb, 0);
 //        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, ldiff, 0);
 //        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, lspec, 0);
@@ -186,17 +169,6 @@ public class WeaselView extends View {
         		CAMERA_CLIPPING_FAR);
         
         Ship ent = me.getShip();
-        BoundingShape shape = ent.getBoundingShape();
-        float radius;
-        if (shape instanceof BoundingBox) {
-        	radius = ((BoundingBox)shape).maxZ;
-        } else if (shape instanceof BoundingSphere) {
-        	radius = ((BoundingSphere)shape).radius;
-        } else {
-        	throw new RuntimeException(String.format(
-        			"Unknown bounding shape of type %s.", 
-        			shape.getClass().getName()));
-        }
         
         State interp = State.interpolate(ent.getLastRenderState(), ent.getState(), alpha);
 //        Vector relative = interp.orientation.rotate(
@@ -290,13 +262,13 @@ public class WeaselView extends View {
         	gl.glPopMatrix();
         }
         
-   		gl.glMatrixMode(gl.GL_PROJECTION);
+   		gl.glMatrixMode(GL2.GL_PROJECTION);
    		gl.glPushMatrix();
-   		gl.glPushAttrib(gl.GL_LIGHTING_BIT);
-   			gl.glDisable(gl.GL_LIGHTING);
+   		gl.glPushAttrib(GL2.GL_LIGHTING_BIT);
+   			gl.glDisable(GL2.GL_LIGHTING);
    			gl.glLoadIdentity();
    			glu.gluOrtho2D(0, width, 0, height);
-   			gl.glMatrixMode(gl.GL_MODELVIEW);
+   			gl.glMatrixMode(GL2.GL_MODELVIEW);
    			gl.glLoadIdentity();
    			
    			for(UIElement e : uiElements)
@@ -307,7 +279,7 @@ public class WeaselView extends View {
    				gl.glPopMatrix();
    			}
    		gl.glPopAttrib();
-   		gl.glMatrixMode(gl.GL_PROJECTION);
+   		gl.glMatrixMode(GL2.GL_PROJECTION);
    		gl.glPopMatrix();
    		
         gl.glFlush();
