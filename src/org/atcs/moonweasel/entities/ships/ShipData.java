@@ -74,6 +74,24 @@ public class ShipData {
 					((Double)position.get(2)).floatValue()));
 		}
 		
+		if (object.containsKey("cameraPosOffset"))
+		{
+			JSONArray position = (JSONArray)object.get("cameraPosOffset");
+			factory.cameraPosOffset = (new Vector(
+					((Double)position.get(0)).floatValue(),
+					((Double)position.get(1)).floatValue(), 
+					((Double)position.get(2)).floatValue()));
+		}
+		
+		if (object.containsKey("cameraLookOffset"))
+		{
+			JSONArray position = (JSONArray)object.get("cameraLookOffset");
+			factory.cameraLookOffset = (new Vector(
+					((Double)position.get(0)).floatValue(),
+					((Double)position.get(1)).floatValue(), 
+					((Double)position.get(2)).floatValue()));
+		}
+		
 		return factory.build();
 	}
 	
@@ -101,7 +119,7 @@ public class ShipData {
 	public final Vector[] gunners;
 	public final Vector cameraPosOffset;
 	public final Vector cameraLookOffset;
-	
+
 	private ShipData(String name, float mass, int health, int attack,
 			float thrust, Vector[] gunners, Vector cameraPosOffset, 
 			Vector cameraLookOffset) {
@@ -118,7 +136,6 @@ public class ShipData {
 		this.attack = attack;
 		this.thrust = thrust;
 		this.gunners = gunners;
-
 
 		this.cameraPosOffset = cameraPosOffset;
 		this.cameraLookOffset = cameraLookOffset;
