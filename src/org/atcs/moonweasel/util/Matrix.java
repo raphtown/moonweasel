@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.util;
 
-import javax.sql.rowset.CachedRowSet;
+import org.atcs.moonweasel.physics.ConvexHull.Projection;
+import org.atcs.moonweasel.util.Vector.Direction;
 
 //a 4x4 matrix class that should do pretty much everything useful
 //convention is row-col ordering
@@ -177,7 +178,6 @@ public class Matrix
 	
 	public Vector transform(Vector v)
 	{
-		
 		float rx = v.x * m11 + v.y * m12 + v.z * m13 + m14;
 		float ry = v.x * m21 + v.y * m22 + v.z * m23 + m24;
 		float rz = v.x * m31 + v.y * m32 + v.z * m33 + m34;
@@ -185,6 +185,17 @@ public class Matrix
 		return returnVec;
 	}
 	
+	public Vector transform(Vector v, Projection p) {
+		float x = p.get(Direction.X).get(v);
+		float y = p.get(Direction.Y).get(v);
+		float z = p.get(Direction.Z).get(v);
+		float rx = x * m11 + y * m12 + z * m13 + m14;
+		float ry = x * m21 + y * m22 + z * m23 + m24;
+		float rz = x * m31 + y * m32 + z * m33 + m34;
+		Vector returnVec = new Vector(rx, ry, rz);
+		return returnVec;		
+	}
+
 	public Vector getOrientation()
 	{
 		return new Vector(m11+m21+m31, m12+m22+m32, m13+m23+m33).normalize();

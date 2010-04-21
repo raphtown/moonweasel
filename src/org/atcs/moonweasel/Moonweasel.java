@@ -67,29 +67,12 @@ public class Moonweasel {
 		player = this.entityManager.create("player");
 		player.spawn();
 
-		ArrayList<Vector> bounds = new ArrayList<Vector>();
-		bounds.add(new Vector(0.4f,0.3f,0.4f));
-		bounds.add(new Vector(-0.1f,0f,-0.4f));
-		bounds.add(new Vector(0.1f,0.3f,-0.4f));
-		bounds.add(new Vector(-0.4f,0.3f,0.4f));
-		bounds.add(new Vector(0.4f,0f,0.4f));
-		bounds.add(new Vector(-0.4f,0f,0.4f));
-		bounds.add(new Vector(-0.1f,0.3f,-0.4f));
-		bounds.add(new Vector(0.1f,0f,-0.4f));
-		//bounds.add(new Vector(0,0,-0.6f));
-		bounds.add(new Vector(0,0.35f,0));
-		
 		Snowflake snowflake = this.entityManager.create("snowflake");
 		snowflake.setPilot(player);
-		snowflake.getState().verticesOfBoundingRegion = bounds;
-		snowflake.getState().setInitialConvexHull();
 		snowflake.spawn();
 		player.setShip(snowflake);
 		
 		Snowflake snowflake2 = this.entityManager.create("snowflake");
-		
-		snowflake2.getState().verticesOfBoundingRegion = bounds;
-		snowflake2.getState().setInitialConvexHull();
 		snowflake2.setPosition(new Vector(0,0,-10));
 		snowflake2.spawn();
 		

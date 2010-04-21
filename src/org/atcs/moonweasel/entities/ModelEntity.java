@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.gui.Loader;
@@ -26,8 +27,8 @@ public abstract class ModelEntity extends Entity implements Positional {
 	{
 		super();
 		
-		this.lastRenderState = new State(mass, inertiaTensor);
-		this.state = new State(mass, inertiaTensor);
+		this.lastRenderState = new State(this, mass, inertiaTensor);
+		this.state = new State(this, mass, inertiaTensor);
 	}
 
 	

@@ -36,31 +36,12 @@ public class Edge
 	}
 
 
-	public boolean visibleFromPoint(Vector v, String plane)
+	public boolean visibleFromPoint(Vector v)
 	{
-		if(plane.equalsIgnoreCase("xy"))
-		{
-			Matrix m = new Matrix(startPoint.x, endPoint.x, v.x, startPoint.y, endPoint.y, v.y, 1, 1, 1);
-			float det = m.determinant();
-			if(det > 0.00001) return false;
-			else return true; //we're including the collinear case as "visible"
-		}
-		else if(plane.equalsIgnoreCase("yz"))
-		{
-			//use determinant trick to find out of 
-			Matrix m = new Matrix(startPoint.y, endPoint.y, v.y, startPoint.z, endPoint.z, v.z, 1, 1, 1);
-			float det = m.determinant();
-			if(det > 0.00001) return false;
-			else return true; //we're including the collinear case as "visible"
-		}
-		else //plane must be zx
-		{
-			//use determinant trick to find out of 
-			Matrix m = new Matrix(startPoint.z, endPoint.z, v.z, startPoint.x, endPoint.x, v.x, 1, 1, 1);
-			float det = m.determinant();
-			if(det > 0.00001) return false;
-			else return true; //we're including the collinear case as "visible"
-		}
+		Matrix m = new Matrix(startPoint.x, endPoint.x, v.x, startPoint.y, endPoint.y, v.y, 1, 1, 1);
+		float det = m.determinant();
+		if(det > 0.00001) return false;
+		else return true; //we're including the collinear case as "visible"
 	}
 
 	public String toString()

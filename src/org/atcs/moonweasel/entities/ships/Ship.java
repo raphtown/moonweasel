@@ -172,21 +172,20 @@ public class Ship extends ModelEntity implements Vulnerable {
 		assert DISPLAY_LISTS.containsKey(this.getClass());
 		
 		gl.glCallList(DISPLAY_LISTS.get(this.getClass()));
-		ArrayList<Vector> b = this.state.verticesOfBoundingRegion;
-		
-		gl.glBegin(gl.GL_LINES);
-			for (Vector v1 : b)
-			{
-				for (Vector v2 : b)
-				{
-					gl.glVertex3f(v1.x, v1.y, v1.z);
-					gl.glVertex3f(v2.x, v2.y, v2.z);
-				}
-			}
-			gl.glVertex3f(this.state.velocity.x*1000,this.state.velocity.y*1000,this.state.velocity.z*1000);
-			//System.out.println(this.state.velocity);
-			gl.glVertex3f(0,0,0);
-		gl.glEnd();
-			
+//		ArrayList<Vector> b = this.state.verticesOfBoundingRegion;
+//		
+//		gl.glBegin(gl.GL_LINES);
+//			for (Vector v1 : b)
+//			{
+//				for (Vector v2 : b)
+//				{
+//					gl.glVertex3f(v1.x, v1.y, v1.z);
+//					gl.glVertex3f(v2.x, v2.y, v2.z);
+//				}
+//			}
+//			gl.glVertex3f(this.state.velocity.x*1000,this.state.velocity.y*1000,this.state.velocity.z*1000);
+//			//System.out.println(this.state.velocity);
+//			gl.glVertex3f(0,0,0);
+//		gl.glEnd();			
 	}
 }

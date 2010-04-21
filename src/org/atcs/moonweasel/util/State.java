@@ -1,10 +1,14 @@
 package org.atcs.moonweasel.util;
 
-
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.PriorityQueue;
 
-import org.atcs.moonweasel.entities.players.UserCommand;
+import org.atcs.moonweasel.entities.ModelEntity;
+import org.atcs.moonweasel.physics.ConvexHull;
+import org.atcs.moonweasel.physics.ConvexHullMaker;
+import org.atcs.moonweasel.physics.ConvexHull.Projection;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
@@ -14,6 +18,7 @@ public class State
 	public static State interpolate(State a, State b, float alpha) 
 	{
 		State interpolated = new State(
+				a.entity,
 				a.position.scale(1 - alpha).add(b.position.scale(alpha)), 
 				a.momentum.scale(1 - alpha).add(b.momentum.scale(alpha)), 
 				Quaternion.slerp(a.orientation,b.orientation, alpha), 
@@ -41,32 +46,23 @@ public class State
 	public float dangerZoneRadius;
 
 	// constant
+	public final ModelEntity entity;
 	public final float mass;
 	public final float inverseMass;
 	public final Matrix inertiaTensor;
 	public final Matrix inverseInertiaTensor;
 
-	public ArrayList<Vector> XYConvexHullBody;
-	public ArrayList<Vector> YZConvexHullBody;
-	public ArrayList<Vector> ZXConvexHullBody;
-
-	public ArrayList<Vector> XYConvexHullWorld;
-	public ArrayList<Vector> YZConvexHullWorld;
-	public ArrayList<Vector> ZXConvexHullWorld;
-
-
-
 	private PriorityQueue<TimedDerivative> derivatives;
 
-	public State(float mass, Matrix inertia) 
+	public State(ModelEntity entity, float mass, Matrix inertia) 
 	{
-		this(Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
-
-
+		this(entity, Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
 	}
-	public State(Vector position, Vector momentum, Quaternion orientation, 
-			Vector angularMomentum, float mass, float inverseMass, Matrix inertiaTensor,
-			Matrix inverseInertiaTensor) {
+	
+	private State(ModelEntity entity, Vector position, Vector momentum, 
+			Quaternion orientation, Vector angularMomentum, float mass, 
+			float inverseMass, Matrix inertiaTensor, Matrix inverseInertiaTensor) {
+		this.entity = entity;
 		this.position = position;
 		this.momentum = momentum;
 		this.orientation = orientation;
@@ -95,6 +91,7 @@ public class State
 		this.verticesOfBoundingRegion = other.verticesOfBoundingRegion;
 		this.dangerZoneRadius = other.dangerZoneRadius;
 
+		this.entity = other.entity;
 		this.mass = other.mass;
 		this.inverseMass = other.inverseMass;
 		this.inertiaTensor = other.inertiaTensor;
@@ -134,43 +131,10 @@ public class State
 		// dealing with local vs global coordinates now
 		bodyToWorld = new Matrix(position).multiply(orientation.toMatrix());
 		worldToBody = bodyToWorld.inverse();
-
-		if(XYConvexHullWorld != null)
-		{
-			XYConvexHullWorld.clear();
-			YZConvexHullWorld.clear();
-			ZXConvexHullWorld.clear();
-
-			for(Vector point : XYConvexHullBody)
-			{
-				XYConvexHullWorld.add(bodyToWorld.transform(point).projectIntoXY());
-			}
-			for(Vector point : YZConvexHullBody)
-			{
-				YZConvexHullWorld.add(bodyToWorld.transform(point).projectIntoYZ());
-			}
-			for(Vector point : ZXConvexHullBody)
-			{
-				ZXConvexHullWorld.add(bodyToWorld.transform(point).projectIntoZX());
-			}
-		}
-
 	}
 
 	public void setDangerZone(float dt)
 	{
 		dangerZoneRadius = 5 + velocity.scale(dt).length();
-	}
-
-
-	public void setInitialConvexHull()
-	{
-		XYConvexHullBody = (new ConvexHull(verticesOfBoundingRegion, "xy").toPolygon());
-		YZConvexHullBody = (new ConvexHull(verticesOfBoundingRegion, "yz").toPolygon());
-		ZXConvexHullBody = (new ConvexHull(verticesOfBoundingRegion, "zx").toPolygon());
-
-		XYConvexHullWorld = new ArrayList<Vector>();
-		YZConvexHullWorld = new ArrayList<Vector>();
-		ZXConvexHullWorld = new ArrayList<Vector>();
 	}
 }

@@ -28,8 +28,7 @@ public class ObjLoader extends Loader
 		return EXTENSION;
 	}
 	
-	
-	protected Vector[] loadGeometry(String path, String name) throws FileNotFoundException
+	protected Vector[] loadGeometry(String path, String name) throws IOException
 	{
 		Scanner sc = new Scanner(new File(path + name + ".obj"));
 		ArrayList<Vector> vertices = new ArrayList<Vector>();
@@ -53,7 +52,11 @@ public class ObjLoader extends Loader
 			}
 		}
 		
-		return (Vector[]) vertices.toArray();
+		Vector[] array = new Vector[vertices.size()];
+		for (int i = 0; i < vertices.size(); i++) {
+			array[i] = vertices.get(i);
+		}
+		return array;
 	}
 	
 	@Override

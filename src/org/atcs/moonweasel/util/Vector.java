@@ -18,6 +18,38 @@ public class Vector
 		return new Vector(x, y, z);
 	}
 	
+	private interface IDirection {
+		public float get(Vector v);
+	}
+	
+	public enum Direction {
+		X(new IDirection() {
+			public float get(Vector v) {
+				return v.x;
+			}
+		}),
+		Y(new IDirection() {
+			public float get(Vector v) {
+				return v.y;
+			}
+		}),
+		Z(new IDirection() {
+			public float get(Vector v) {
+				return v.z;
+			}
+		});
+		
+		private IDirection impl;
+		
+		private Direction(IDirection impl) {
+			this.impl = impl;
+		}
+		
+		public float get(Vector v) {
+			return impl.get(v);
+		}
+	}
+	
 	public final float x, y, z;
 	
 	public Vector(float x, float y, float z) 
@@ -75,7 +107,7 @@ public class Vector
 			return false;
 		return true;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -86,6 +118,10 @@ public class Vector
 		return result;
 	}
 
+	public float get(Direction d) {
+		return d.get(this);
+	}
+	
 	public float length() {
 		return (float)Math.sqrt(x * x + y * y + z * z);
 	}
@@ -103,7 +139,6 @@ public class Vector
 	public Vector roundMe(int decimalPrecision)
 	{
 		return new Vector(
-				
 	(float) (Math.floor(x*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)),
 	(float) (Math.floor(y*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)),
 	(float) (Math.floor(z*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)) 	
@@ -118,20 +153,6 @@ public class Vector
 	public Vector subtract(Vector o)
 	{
 		return new Vector(x - o.x, y - o.y, z - o.z);
-	}
-	
-	public Vector projectIntoXY()
-	{
-		return new Vector(x, y, 0);
-	}
-	
-	public Vector projectIntoZX()
-	{
-		return new Vector(x, 0, z);
-	}
-	public Vector projectIntoYZ()
-	{
-		return new Vector(0, y, z);
 	}
 	
 	public Vector projectOnto(Vector v)

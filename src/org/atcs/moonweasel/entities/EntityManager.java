@@ -30,7 +30,6 @@ public class EntityManager extends Manager<Entity> {
 	@Override
 	public <E extends Entity> E create(String type) {
 		E ent = super.create(type);
-		ent.spawn();
 		return ent;
 	}
 
