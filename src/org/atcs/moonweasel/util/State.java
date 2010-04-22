@@ -1,14 +1,8 @@
 package org.atcs.moonweasel.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.PriorityQueue;
 
 import org.atcs.moonweasel.entities.ModelEntity;
-import org.atcs.moonweasel.physics.ConvexHull;
-import org.atcs.moonweasel.physics.ConvexHullMaker;
-import org.atcs.moonweasel.physics.ConvexHull.Projection;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
@@ -42,7 +36,6 @@ public class State
 	public Quaternion spin;
 	public Matrix bodyToWorld;
 	public Matrix worldToBody;
-	public ArrayList<Vector> verticesOfBoundingRegion;
 	public float dangerZoneRadius;
 
 	// constant
@@ -88,7 +81,6 @@ public class State
 		this.spin = other.spin;
 		this.bodyToWorld = other.bodyToWorld;
 		this.worldToBody = other.worldToBody;
-		this.verticesOfBoundingRegion = other.verticesOfBoundingRegion;
 		this.dangerZoneRadius = other.dangerZoneRadius;
 
 		this.entity = other.entity;

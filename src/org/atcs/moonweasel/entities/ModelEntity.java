@@ -2,14 +2,11 @@ package org.atcs.moonweasel.entities;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.gui.Loader;
 import org.atcs.moonweasel.util.Matrix;
-import org.atcs.moonweasel.util.TimedDerivative;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 

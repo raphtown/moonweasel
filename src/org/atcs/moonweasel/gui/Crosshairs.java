@@ -15,21 +15,16 @@ public class Crosshairs extends UIElement
 	private int y3 = 10;
 	private int y4 = 40;
 	
-
-	
-	
 	public Crosshairs(Vector v)
 	{
 		super(v);
 	}
 
-	
 	public void draw(GL2 gl) 
 	{
-		
 		gl.glPushMatrix();
-			gl.glPushAttrib(gl.GL_CURRENT_BIT);
-				gl.glBegin(gl.GL_LINES);
+			gl.glPushAttrib(GL2.GL_CURRENT_BIT);
+				gl.glBegin(GL2.GL_LINES);
 				gl.glColor3f(0, 1, 0);
 				gl.glVertex2i(x1,y3);
 				gl.glVertex2i(x2,y4);
@@ -48,6 +43,4 @@ public class Crosshairs extends UIElement
 		gl.glPopMatrix();
 
 	}
-	
-
 }

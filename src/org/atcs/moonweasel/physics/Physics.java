@@ -1,7 +1,6 @@
 package org.atcs.moonweasel.physics;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +11,9 @@ import org.atcs.moonweasel.physics.ConvexHull.Projection;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
-import org.atcs.moonweasel.util.Vector.Direction;
 
 public class Physics 
-{	
-	
+{
 	private NumericalIntegration integrator;
 	
 	public static final double MIN_COLLIDE_DISTANCE = 0.7; //tuning parameter
