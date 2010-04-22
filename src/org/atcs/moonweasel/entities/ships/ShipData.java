@@ -128,8 +128,11 @@ public class ShipData {
 		assert health > 0;
 		assert attack > 0;
 		assert thrust > 0;
+
 		assert gunners != null;
-		
+		assert cameraPosOffset != null;
+		assert cameraLookOffset != null;
+
 		this.name = name;
 		this.mass = mass;
 		this.health = health;

@@ -1,7 +1,5 @@
 package org.atcs.moonweasel.entities.ships;
 
-import javax.media.opengl.GL2;
-
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -24,7 +22,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	private Player pilot;
 	private Player[] gunners;
-	private Vector[] gunnerPositions;
 	
 	protected Ship(ShipData data) {
 		super(data.mass, BASE_TENSOR.scale(data.mass / 100));
@@ -33,7 +30,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 		this.health = this.data.health;
 		
 		this.gunners = new Player[data.gunners.length];
-		this.gunnerPositions = data.gunners;
 	}
 	
 	public void apply(UserCommand command) {
@@ -138,19 +134,20 @@ public class Ship extends ModelEntity implements Vulnerable {
 		}
 		
 		EntityManager manager = EntityManager.getEntityManager();
-
 		Explosion explosion = manager.create("explosion");
 		explosion.setPosition(this.getPosition());
 
 		float distance = getState().mass / 1000;
 		float damage;
+		float scale;
 		for (Ship ship : manager.getAllShipsInSphere(
 				getState().position, distance)) {
 			if (ship == this || ship.isDestroyed()) {
 				continue;
 			}
 			
-			damage = 50 * (1 - getState().position.distance(ship.getState().position) / distance);
+			scale = 1 - getState().position.distance(ship.getState().position) / distance;
+			damage = data.mass * scale;
 			ship.damage((int)damage);
 		}
 	}
@@ -173,17 +170,19 @@ public class Ship extends ModelEntity implements Vulnerable {
 		return pilot;
 	}
 	
+	public void killed(Ship target) {
+		pilot.killedPlayer();
+		for (Player gunner : gunners) {
+			gunner.killedPlayer();
+		}
+	}
+	
 	public void setPilot(Player pilot) {
 		this.pilot = pilot;
 	}
 
 	@Override
 	public void spawn() {
-	}
-	
-	public void draw(GL2 gl) {
-		assert DISPLAY_LISTS.containsKey(this.getClass());
-		
-		gl.glCallList(DISPLAY_LISTS.get(this.getClass()));
+		assert pilot != null;
 	}
 }
