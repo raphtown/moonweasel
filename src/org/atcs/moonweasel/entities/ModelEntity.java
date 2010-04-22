@@ -2,37 +2,35 @@ package org.atcs.moonweasel.entities;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 import javax.media.opengl.GL2;
 
 import org.atcs.moonweasel.gui.Loader;
-import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.util.Matrix;
-import org.atcs.moonweasel.util.TimedDerivative;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 public abstract class ModelEntity extends Entity implements Positional {
-	private final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
+	public final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
 	
 	static {
 		DISPLAY_LISTS = new HashMap<Class<? extends ModelEntity>, Integer>();
 	}
 	
-	private BoundingShape bounding;
-	private State lastRenderState;
-	private State state;
-		
-	protected ModelEntity(BoundingShape bounding, float mass, Matrix inertiaTensor) {
+	protected State lastRenderState;
+	protected State state;
+	
+	protected ModelEntity(float mass, Matrix inertiaTensor) 
+	{
 		super();
 		
-		this.bounding = bounding;
-		this.lastRenderState = new State(mass, inertiaTensor);
-		this.state = new State(mass, inertiaTensor);
+		this.lastRenderState = new State(this, mass, inertiaTensor);
+		this.state = new State(this, mass, inertiaTensor);
 	}
+
 	
 	public void collidedWith(ModelEntity other) {
+		System.out.println("collidedWith method called");
 	}
 	
 	public void draw(GL2 gl) {
@@ -41,9 +39,6 @@ public abstract class ModelEntity extends Entity implements Positional {
 		gl.glCallList(DISPLAY_LISTS.get(this.getClass()));
 	}
 	
-	public BoundingShape getBoundingShape() {
-		return bounding;
-	}
 	
 	public State getLastRenderState() {
 		return this.lastRenderState;
@@ -82,6 +77,7 @@ public abstract class ModelEntity extends Entity implements Positional {
 	protected void setVelocity(Vector velocity) {
 		this.state.velocity = velocity;
 	}
+
 	
 	public void setPosition(Vector position) {
 		this.state.position = position;

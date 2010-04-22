@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.entities.ships;
 
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.Vulnerable;
 import org.atcs.moonweasel.entities.particles.Explosion;
@@ -21,19 +22,31 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	private Player pilot;
 	private Player[] gunners;
-	private Vector[] gunnerPositions;
 	
 	protected Ship(ShipData data) {
-		super(data.bounds, data.mass, BASE_TENSOR.scale(data.mass / 100));
+		super(data.mass, BASE_TENSOR.scale(data.mass / 100));
 
 		this.data = data;
 		this.health = this.data.health;
 		
 		this.gunners = new Player[data.gunners.length];
-		this.gunnerPositions = data.gunners;
 	}
 	
 	public void apply(UserCommand command) {
+		//Shooting
+		if (command.get(Commands.ATTACK_1))
+		{
+//			EntityManager manager = EntityManager.getEntityManager();
+//			Laser laser = manager.create("laser");
+//			laser.getState().orientation = this.getState().orientation;
+//			laser.getState().position = this.getPosition().add(new Vector(0.0f, 0.0f, 0.0f));
+//			laser.spawn();
+		}
+		
+		applyMovement(command);
+	}
+	
+	private void applyMovement(UserCommand command) {
 		State state = getState();
 		float f = data.thrust * 0.00001f; //50 newtons or 50 newton-meters, depending on context
 		Vector relativeVelocity = state.orientation.inverse().rotate(state.velocity);
@@ -91,10 +104,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 			relativeForce.y -= 20 * relativeVelocity.y;
 		}
 		
-		// A little forward thrust.
-		if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
-			relativeForce.z -= f / 2;
-		}
+		//// A little forward thrust.
+		//if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+		//	relativeForce.z -= f / 2;
+		//}
 		
 		force.sum(state.orientation.rotate(relativeForce.toVector()));
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
@@ -121,19 +134,20 @@ public class Ship extends ModelEntity implements Vulnerable {
 		}
 		
 		EntityManager manager = EntityManager.getEntityManager();
-
 		Explosion explosion = manager.create("explosion");
 		explosion.setPosition(this.getPosition());
 
 		float distance = getState().mass / 1000;
 		float damage;
+		float scale;
 		for (Ship ship : manager.getAllShipsInSphere(
 				getState().position, distance)) {
 			if (ship == this || ship.isDestroyed()) {
 				continue;
 			}
 			
-			damage = 50 * (1 - getState().position.distance(ship.getState().position) / distance);
+			scale = 1 - getState().position.distance(ship.getState().position) / distance;
+			damage = data.mass * scale;
 			ship.damage((int)damage);
 		}
 	}
@@ -156,11 +170,19 @@ public class Ship extends ModelEntity implements Vulnerable {
 		return pilot;
 	}
 	
+	public void killed(Ship target) {
+		pilot.killedPlayer();
+		for (Player gunner : gunners) {
+			gunner.killedPlayer();
+		}
+	}
+	
 	public void setPilot(Player pilot) {
 		this.pilot = pilot;
 	}
 
 	@Override
 	public void spawn() {
+		assert pilot != null;
 	}
 }

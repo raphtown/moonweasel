@@ -5,12 +5,14 @@ import java.util.TreeMap;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Networking;
 import org.atcs.moonweasel.physics.Physics;
+import org.atcs.moonweasel.util.Vector;
 
 public class Moonweasel {
 	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
@@ -39,6 +41,7 @@ public class Moonweasel {
 		addEntityClass(Player.class);
 		addEntityClass(Snowflake.class);
 		addEntityClass(Explosion.class);
+		addEntityClass(Laser.class);
 	}
 
 	public static void main(String[] args) {
@@ -70,6 +73,10 @@ public class Moonweasel {
 		snowflake.spawn();
 		player.setShip(snowflake);
 		
+		Snowflake snowflake2 = this.entityManager.create("snowflake");
+		snowflake2.setPosition(new Vector(0,0,-10));
+		snowflake2.spawn();
+		
 		this.physics = new Physics();
 		this.view = new WeaselView(width, height, fullscreen, player);
 		this.input = new InputController(view.getWindow());
@@ -81,7 +88,7 @@ public class Moonweasel {
 	}
 	
 	private void run() {
-		final int TICKS_PER_SECOND = 25;
+		final int TICKS_PER_SECOND = 50;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
 

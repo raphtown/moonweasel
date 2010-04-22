@@ -5,9 +5,6 @@ import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.atcs.moonweasel.physics.BoundingBox;
-import org.atcs.moonweasel.physics.BoundingShape;
-import org.atcs.moonweasel.physics.BoundingSphere;
 import org.atcs.moonweasel.util.Vector;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -51,25 +48,48 @@ public class ShipData {
 				gunners.add(new Vector(
 						((Double)position.get(0)).floatValue(),
 						((Double)position.get(1)).floatValue(), 
-						((Double)position.get(3)).floatValue()));
+						((Double)position.get(2)).floatValue()));
 			}
 			
 			factory.gunners = gunners.toArray(new Vector[0]);
 		} else {
 			factory.gunners = new Vector[0];
 		}
+				
+		if (object.containsKey("cameraPosOffset"))
+		{
+			JSONArray position = (JSONArray)object.get("cameraPosOffset");
+			factory.cameraPosOffset = (new Vector(
+					((Double)position.get(0)).floatValue(),
+					((Double)position.get(1)).floatValue(), 
+					((Double)position.get(2)).floatValue()));
+		}
 		
-		if (object.containsKey("shape")) {
-			if (object.get("shape").equals("box")) {
-				JSONArray array = (JSONArray)object.get("bounds");
-				factory.bounds = new BoundingBox(
-						((Double)array.get(0)).floatValue(),
-						((Double)array.get(1)).floatValue(), 
-						((Double)array.get(2)).floatValue());
-			} else if (object.get("shape").equals("sphere")) {
-				factory.bounds = new BoundingSphere(
-						((Double)object.get("bounds")).floatValue());
-			}
+		if (object.containsKey("cameraLookOffset"))
+		{
+			JSONArray position = (JSONArray)object.get("cameraLookOffset");
+			factory.cameraLookOffset = (new Vector(
+					((Double)position.get(0)).floatValue(),
+					((Double)position.get(1)).floatValue(), 
+					((Double)position.get(2)).floatValue()));
+		}
+		
+		if (object.containsKey("cameraPosOffset"))
+		{
+			JSONArray position = (JSONArray)object.get("cameraPosOffset");
+			factory.cameraPosOffset = (new Vector(
+					((Double)position.get(0)).floatValue(),
+					((Double)position.get(1)).floatValue(), 
+					((Double)position.get(2)).floatValue()));
+		}
+		
+		if (object.containsKey("cameraLookOffset"))
+		{
+			JSONArray position = (JSONArray)object.get("cameraLookOffset");
+			factory.cameraLookOffset = (new Vector(
+					((Double)position.get(0)).floatValue(),
+					((Double)position.get(1)).floatValue(), 
+					((Double)position.get(2)).floatValue()));
 		}
 		
 		return factory.build();
@@ -82,11 +102,12 @@ public class ShipData {
 		private int attack;
 		private float thrust;
 		private Vector[] gunners;
+		private Vector cameraPosOffset;
+		private Vector cameraLookOffset;
 		
-		private BoundingShape bounds;
 		
 		public ShipData build() {
-			return new ShipData(name, mass, health, attack, thrust, gunners, bounds);
+			return new ShipData(name, mass, health, attack, thrust, gunners, cameraPosOffset, cameraLookOffset);
 		}
 	}
 	
@@ -96,25 +117,30 @@ public class ShipData {
 	public final int attack;
 	public final float thrust;
 	public final Vector[] gunners;
-	
-	public final BoundingShape bounds;
-	
+	public final Vector cameraPosOffset;
+	public final Vector cameraLookOffset;
+
 	private ShipData(String name, float mass, int health, int attack,
-			float thrust, Vector[] gunners, BoundingShape bounds) {
+			float thrust, Vector[] gunners, Vector cameraPosOffset, 
+			Vector cameraLookOffset) {
 		assert name != null && name.length() > 0;
 		assert mass > 0;
 		assert health > 0;
 		assert attack > 0;
 		assert thrust > 0;
+
 		assert gunners != null;
-		assert bounds != null;
-		
+		assert cameraPosOffset != null;
+		assert cameraLookOffset != null;
+
 		this.name = name;
 		this.mass = mass;
 		this.health = health;
 		this.attack = attack;
 		this.thrust = thrust;
 		this.gunners = gunners;
-		this.bounds = bounds;
+
+		this.cameraPosOffset = cameraPosOffset;
+		this.cameraLookOffset = cameraLookOffset;
 	}
 }

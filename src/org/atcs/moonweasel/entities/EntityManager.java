@@ -26,26 +26,25 @@ public class EntityManager extends Manager<Entity> {
 	private EntityManager() {
 		this.thoughts = new TreeMap<Long, Entity>();
 	}
-	
+
 	@Override
 	public <E extends Entity> E create(String type) {
 		E ent = super.create(type);
-		ent.spawn();
 		return ent;
 	}
 
 	protected Class<? extends Entity> getClass(String type) {
 		return Moonweasel.getEntityClassByName(type);
 	}
-	
+
 	public SphericalRange<ModelEntity> getAllInSphere(Vector center, float radius) {
 		return new SphericalRange<ModelEntity>(center, radius, getAllOfType(ModelEntity.class));
 	}
-	
+
 	public TypeRange<Ship> getAllShipsInSphere(Vector center, float radius) {
 		return new TypeRange<Ship>(Ship.class, getAllInSphere(center, radius));
 	}
-	
+
 	public long getTime() {
 		return System.currentTimeMillis() + offset;
 	}
@@ -59,7 +58,7 @@ public class EntityManager extends Manager<Entity> {
 
 	public void update(long t) {
 		offset = t - System.currentTimeMillis();
-		
+
 		while (thoughts.size() > 0
 				&& thoughts.firstKey() < System.currentTimeMillis()) {
 			thoughts.remove(thoughts.firstKey()).think();

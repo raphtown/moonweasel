@@ -27,6 +27,37 @@ public class ObjLoader extends Loader
 		return EXTENSION;
 	}
 	
+	protected Vector[] loadGeometry(String path, String name) throws IOException
+	{
+		Scanner sc = new Scanner(new File(path + name + ".obj"));
+		ArrayList<Vector> vertices = new ArrayList<Vector>();
+		
+		while(sc.hasNext())
+		{
+			String nextToken = sc.next();
+			if(nextToken.equals("v"))
+			{
+				float[] coordinates = new float[3];
+				coordinates[0] = sc.nextFloat();
+				coordinates[1] = sc.nextFloat();
+				coordinates[2] = sc.nextFloat();
+				Vector insertVertex = new Vector(coordinates[0], coordinates[1], coordinates[2]);
+				vertices.add(insertVertex);
+			}
+			
+			if(sc.hasNextLine())
+			{
+				sc.nextLine();
+			}
+		}
+		
+		Vector[] array = new Vector[vertices.size()];
+		for (int i = 0; i < vertices.size(); i++) {
+			array[i] = vertices.get(i);
+		}
+		return array;
+	}
+	
 	@Override
 	protected boolean loadModel(String path, String name, GL2 gl) throws IOException
 	{
