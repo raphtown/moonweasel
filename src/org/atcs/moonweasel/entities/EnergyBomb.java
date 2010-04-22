@@ -1,6 +1,5 @@
 package org.atcs.moonweasel.entities;
 
-import org.atcs.moonweasel.physics.BoundingBox;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.Quaternion;
 import org.atcs.moonweasel.util.State;
@@ -14,7 +13,7 @@ public class EnergyBomb extends ModelEntity
 	private ModelEntity target;
 	private EnergyBomb() 
 	{
-		super(new BoundingBox(1,2,3), 100, Matrix.IDENTITY);
+		super(100, Matrix.IDENTITY);
 	}
 
 	public void spawn()
@@ -27,7 +26,6 @@ public class EnergyBomb extends ModelEntity
 	{
 		target = x;
 	}
-	
 	
 	public void think()
 	{
@@ -50,9 +48,7 @@ public class EnergyBomb extends ModelEntity
 		state.addDerivative(new TimedDerivative(getTime(), force, Vector.ZERO));
 
 		state.orientation = new Quaternion(0, (float) (Math.random()), (float)(Math.random()), (float)(Math.random())).normalize();
-		
-		
-		System.out.println(currentPosition);
+
 		scheduleThink(THINK_TIME);
 	}
 }
