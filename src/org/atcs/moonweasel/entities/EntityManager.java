@@ -51,6 +51,9 @@ public class EntityManager extends Manager<Entity> {
 	}
 
 	public void registerThink(Entity entity, int ms) {
+		while (thoughts.containsKey(System.currentTimeMillis() + ms)) { 
+			ms += 1;
+		}
 		this.thoughts.put(System.currentTimeMillis() + ms, entity);
 	}
 
