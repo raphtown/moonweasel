@@ -8,9 +8,8 @@ import java.util.Map;
 
 import org.atcs.moonweasel.Identifiable;
 import org.atcs.moonweasel.networking.changes.ChangeList;
-import org.atcs.moonweasel.networking.changes.Trackable;
 
-public abstract class Entity implements Identifiable, Serializable, Trackable {
+public abstract class Entity implements Identifiable, Serializable {
 	private static int nextID = 0;
 	
 	public static String getEntityType(Class<? extends Entity> clazz) {

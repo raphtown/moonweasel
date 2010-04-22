@@ -121,7 +121,6 @@ public class InputController implements KeyListener, MouseListener {
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -131,7 +130,6 @@ public class InputController implements KeyListener, MouseListener {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 }

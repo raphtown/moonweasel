@@ -3,10 +3,7 @@ package org.atcs.moonweasel.networking;
 import static org.atcs.moonweasel.networking.RMIConfiguration.CLIENT_OBJECT_NAME;
 import static org.atcs.moonweasel.networking.RMIConfiguration.RMI_PORT;
 import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME;
-import static org.atcs.moonweasel.networking.actions.ActionMessages.COMMAND_RECEIVED;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -18,21 +15,19 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 
 import org.atcs.moonweasel.Debug;
+import org.atcs.moonweasel.Moonweasel;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
-import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
+import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.entities.ships.ShipType;
-import org.atcs.moonweasel.networking.actions.ActionSource;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.ranges.Range;
-import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 /**
@@ -47,34 +42,25 @@ import org.atcs.moonweasel.util.Vector;
  * 
  * @author Maxime Serrano, Raphael Townshend
  */
-public class Server extends RMIObject implements IServer, ActionSource
+public class Server extends RMIObject implements IServer
 {
 	/**
 	 * The clients that have called the connect() method remotely.
 	 */
 	private Map<String, IClient> connectedClients = new HashMap<String, IClient>();
-
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
-
 	private ArrayList<String> newlyConnectedClients = new ArrayList<String>();
-	
 	private Map<String, IClient> connectingClients = new HashMap<String, IClient>();
-
-
-	public static void main(String args[])
-	{
-		Scanner console = new Scanner(System.in);
-		System.out.print("Input Server Name...");
-		String name = console.nextLine();
-		new Server(name);
-	}
+	private final Map<Player, Long> playerCommandMap = new HashMap<Player, Long>();
+	private Moonweasel m;
 
 	/**
 	 * Creates a new Server instance with the given name. Starts an announcer announce its presence and attempts to register itself in the RMI registry.
 	 */
-	public Server(final String serverName)
+	public Server(final String serverName, Moonweasel m)
 	{
 		super(SERVER_OBJECT_NAME);
+		this.m = m;
 
 		try
 		{
@@ -107,7 +93,7 @@ public class Server extends RMIObject implements IServer, ActionSource
 		catch (NotBoundException e)
 		{
 			e.printStackTrace();
-		}	
+		}
 	}
 
 
@@ -122,8 +108,22 @@ public class Server extends RMIObject implements IServer, ActionSource
 			throw new RemoteException("Unconnected client trying to execute command!");
 
 		Debug.print("Received command " + command + " from " + c + ".");
-
-		fireActionEvent(COMMAND_RECEIVED + " " + command + " " + mouse.x + " " + mouse.y + " " + c);
+		
+		Debug.print("Artemis to Lycanthrope ... we have lift-off");
+		float mouseX = mouse.x;
+		float mouseY = mouse.y;
+		Player plr = playerMap.get(c);
+		if (playerCommandMap.get(plr) != null)
+			if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
+				return;
+		System.out.println("Command received from client: " + c + "  command: " + command  + "Player: " + plr);
+		UserCommand ucommand = new UserCommand();
+		ucommand.setKeysAsBitmask(command);
+		ucommand.setMouse(mouseX, mouseY);
+		ucommand.setTime(m.getT() - 5);
+		plr.addCommand(ucommand);
+		System.out.println("Wow: " + plr.getID() + "   " + plr.getCommandsBefore(m.getT()));
+		playerCommandMap.put(plr, new Long(command));
 	}
 
 	/**
@@ -259,45 +259,6 @@ public class Server extends RMIObject implements IServer, ActionSource
 		}
 	}
 
-	public void sendStatesToAll()
-	{
-		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
-		Map<Integer, State> sList = new HashMap<Integer, State>();
-		synchronized (EntityManager.getEntityManager())
-		{
-			while(range.hasNext())
-			{
-				ModelEntity e = range.next();
-				if(e.sentToAll)
-				{
-					//					System.out.println("Sending state: " + e.getID() + " ,  " + e.getState());
-					sList.put(e.getID(), e.getState());
-				}
-
-			}
-		}
-		Set<String> temp = new HashSet<String>();
-		for(String clientName : connectedClients.keySet())
-		{
-			temp.add(clientName);
-		}
-		Iterator<String> i = temp.iterator();
-		while(i.hasNext())
-		{
-			String clientName = i.next();
-			IClient c = connectedClients.get(clientName);
-			try
-			{
-				c.receiveUpdatedStates(sList);
-			} 
-			catch (RemoteException e)
-			{ 
-				System.err.println("Invalid client in client list...");
-				disconnectClient(clientName);
-			}
-		}
-	}
-
 	public void sendChangesToAll()
 	{
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
@@ -386,23 +347,5 @@ public class Server extends RMIObject implements IServer, ActionSource
 		}
 		newlyConnectedClients.clear();
 		sendChangesToAll();
-	}
-
-	private Set<ActionListener> actionListeners = new HashSet<ActionListener>();
-
-	public void fireActionEvent(String command)
-	{
-		for(ActionListener al : actionListeners)
-			al.actionPerformed(new ActionEvent(this, 0, command));
-	}
-
-	public void addActionListener(ActionListener e)
-	{
-		actionListeners.add(e);
-	}
-
-	public void removeActionListener(ActionListener e)
-	{
-		actionListeners.remove(e);
 	}
 }

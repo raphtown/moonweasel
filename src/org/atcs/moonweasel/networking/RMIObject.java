@@ -11,19 +11,16 @@ import java.rmi.server.UnicastRemoteObject;
 
 import org.atcs.moonweasel.Debug;
 
-
-public abstract class RMIObject implements IRMIObject 
+public abstract class RMIObject implements Remote
 {
-	protected String ip;
+	private String ip;
 	
 	protected RMIObject(String objectName)
 	{
-		try 
-		{
+		try {
 			ip = InetAddress.getLocalHost().getHostAddress();
 		} 
 		catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -44,18 +41,15 @@ public abstract class RMIObject implements IRMIObject
 			Remote stub = UnicastRemoteObject.exportObject(object, 0);
 			registry.rebind(name, stub); 	
 			Debug.print(name + " bound");
-		} catch (RemoteException e) 
+		}
+		catch (RemoteException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
 	}
 	
 	public String getIP() throws RemoteException
 	{
 		return ip;
 	}
-	
-	public abstract void act();
 }

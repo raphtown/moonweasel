@@ -11,19 +11,15 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
-import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
-import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.networking.changes.ChangeCompiler;
 import org.atcs.moonweasel.networking.changes.ChangeList;
-import org.atcs.moonweasel.util.State;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 
@@ -39,11 +35,6 @@ import org.atcs.moonweasel.util.State;
 public class Client extends RMIObject implements IClient
 {
 	private IServer server = null;
-	
-	public static void main(String args[])
-	{
-		new Client().findAndConnectToServer();
-	}
 
 	public Client()
 	{
@@ -67,8 +58,7 @@ public class Client extends RMIObject implements IClient
 	{
 		Registry registry = LocateRegistry.getRegistry(serverHostName, RMI_PORT);
 		server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
-		Object[] parameters = {ip};
-		Protocol.sendPacket("connect", parameters, server);
+		server.connect(getIP());
 	}
 	
 	public void connectionInitializationComplete()
@@ -115,60 +105,30 @@ public class Client extends RMIObject implements IClient
 		return (String) hostnames.get(number - 1).split(" ")[0];
 	}
 
-
-
-	@SuppressWarnings("unchecked")
-	public void requestUpdateFromServer()
-	{
-		Object[] parameters = { getIP() };
-		Map<Integer, State> sList = (Map<Integer, State>) Protocol.sendPacket("requestUpdate", parameters, server);
-		EntityManager mgr = EntityManager.getEntityManager();
-		
-		if (sList == null)
-		{
-			System.out.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
-			System.exit(0);
-			return;
-		}
-
-		for (Integer id : sList.keySet())
-		{
-			ModelEntity m = mgr.get(id);
-			System.out.println("Obtained model entity: " + m + " with id: " + id);
-			m.setState(sList.get(id));
-		}
-	}
-
 	public IServer getServer()
 	{
 		return server;
 	}
 
-	public String getIP()
-	{
-		return ip;
-	}
-
 	public void sendCommandToServer(UserCommand command)
 	{
-		Object[] parameters = {command.getAsBitmask(), command.getMouse(), getIP()};
-		long start = System.currentTimeMillis();
-		Protocol.sendPacket("doCommand", parameters, server);
-		long end = System.currentTimeMillis() - start;
-		Debug.print("RMI delay: " + end);
+		try {
+			server.doCommand(command.getAsBitmask(), command.getMouse(), getIP());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public int getMyID()
 	{
 		try
 		{
-			int id = server.getMyID(ip);
+			int id = server.getMyID(getIP());
 			System.out.println("Got id: " + id);
 			return id;
 		} 
 		catch (RemoteException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return -1;
@@ -191,25 +151,6 @@ public class Client extends RMIObject implements IClient
 		}
 	}
 	
-	public void receiveUpdatedStates(Map<Integer, State> sList) throws RemoteException
-	{
-		EntityManager mgr = EntityManager.getEntityManager();
-		if (sList == null)
-		{
-			System.err.println("ERROR ERROR ERROR - STATE LIST IS NULL");
-			System.exit(0);
-		}
-
-		for (Integer id : sList.keySet())
-		{
-			ModelEntity m = mgr.get(id);
-			if(m == null)
-				System.err.println("This id was not located: " + id);
-
-			m.setState(sList.get(id));
-		}
-	}
-	
 	public void receiveChanges(List<ChangeList> changes) throws RemoteException
 	{
 		EntityManager mgr = EntityManager.getEntityManager();
@@ -226,12 +167,5 @@ public class Client extends RMIObject implements IClient
 	public ShipType sendShipChoice() throws RemoteException
 	{
 		return ShipType.SNOWFLAKE;
-	}
-	
-	@Override
-	public void act()
-	{
-		// TODO Auto-generated method stub
-		
 	}
 }

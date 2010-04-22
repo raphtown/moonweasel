@@ -29,42 +29,12 @@ public abstract class Protocol
 		}
 	}
 
-	/*
-
-	public static short getShortValue(String command)
-	{
-		return simap.get(command).shortValue();
-	}
-
-	public static String getMethodName(short command)
-	{
-		return ismap.get(command);
-	}
-
-	public static Class<?> getReturnValue(String command)
-	{
-		return returnmap.get(command);
-	}
-
-	public static int getNumParams(String command)
-	{
-		return parammap.get(command).length;
-	}
-
-	public static Object[] getEmptyParamList(String command)
-	{
-		Object[] params = new Object[Protocol.getNumParams(command)];
-		return params;
-	}
-
-	 */
-
 	public static Class<?>[] getParameters(String command)
 	{
 		return parammap.get(command);
 	}
 
-	public static Object sendPacket(String command, Object[] parameters, IServer server)
+	/* public static Object sendPacket(String command, Object[] parameters, IServer server)
 	{
 		try
 		{
@@ -80,5 +50,5 @@ public abstract class Protocol
 			e.printStackTrace();
 		}
 		return null;
-	}
+	} */
 }

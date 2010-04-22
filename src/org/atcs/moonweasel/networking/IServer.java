@@ -1,5 +1,6 @@
 package org.atcs.moonweasel.networking;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import org.atcs.moonweasel.util.Vector;
@@ -9,13 +10,13 @@ import org.atcs.moonweasel.util.Vector;
  * RMI happy.
  * @author Maxime Serrano, Raphael Townshend
  */
-public interface IServer extends IRMIObject
+public interface IServer extends Remote
 {
 	/**
 	 * Connects the given client to the server. Given that we don't yet have a 
 	 * reliable way of disconnecting, we should perhaps hope that nobody's going 
 	 * to have their program randomly crash. 
-	 * @param clientName ip of the Client connecting to the server
+	 * @param clientName ip ofx the Client connecting to the server
 	 * @throws RemoteException If bad things happen  server goes away, that sort of thing.
 	 */
 	public void connect(final String clientName) throws RemoteException;
@@ -32,8 +33,6 @@ public interface IServer extends IRMIObject
 	 * @param c The client that is asking for an update.
 	 */
 	public void requestUpdate(final String c) throws RemoteException;
-	
 	public Integer getMyID(String ip) throws RemoteException;
-
 	public void connectionInitializationComplete(String c) throws RemoteException;
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.*;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -89,7 +90,8 @@ public class Physics
 	public void update(long t, int dt) //updates all models
 	{
 		EntityManager em = EntityManager.getEntityManager();
-		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
+		Range<ModelEntity> range = em.getAllOfType(ModelEntity.class);
+		for(ModelEntity e : range)
 		{
 			integrator.integrate(e.getState(), t, dt);
 			e.getState().setDangerZone(dt);
