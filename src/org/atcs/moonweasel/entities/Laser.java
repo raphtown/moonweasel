@@ -1,14 +1,9 @@
 package org.atcs.moonweasel.entities;
 
-import javax.media.opengl.GL2;
-
 import org.atcs.moonweasel.entities.ships.Ship;
-import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.TimedDerivative;
 import org.atcs.moonweasel.util.Vector;
-
-import com.sun.opengl.util.gl2.GLUT;
 
 public class Laser extends ModelEntity
 {
@@ -36,17 +31,6 @@ public class Laser extends ModelEntity
 	@Override
 	public void destroy()
 	{
-	}
-	
-	@Override
-	public void draw(GL2 gl)
-	{
-		GLUT glut = WeaselView.glut;
-		gl.glPushAttrib(GL2.GL_CURRENT_BIT);
-		gl.glScalef(5, 5, 5);
-		gl.glColor3f(0.0f, 0.1f, 0.9f);
-		glut.glutSolidCylinder(0.02, 1.5, 30, 30);
-		gl.glPopAttrib();
 	}
 	
 	public void setSource(Ship ship) {

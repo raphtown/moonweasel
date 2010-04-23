@@ -3,12 +3,11 @@ package org.atcs.moonweasel.entities;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL2;
-
 import org.atcs.moonweasel.gui.Loader;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
+import org.lwjgl.opengl.GL11;
 
 public abstract class ModelEntity extends Entity implements Positional {
 	public final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
@@ -33,10 +32,10 @@ public abstract class ModelEntity extends Entity implements Positional {
 		System.out.println("collidedWith method called");
 	}
 	
-	public void draw(GL2 gl) {
+	public void draw() {
 		assert DISPLAY_LISTS.containsKey(this.getClass());
 		
-		gl.glCallList(DISPLAY_LISTS.get(this.getClass()));
+		GL11.glCallList(DISPLAY_LISTS.get(this.getClass()));
 	}
 	
 	
@@ -56,17 +55,17 @@ public abstract class ModelEntity extends Entity implements Positional {
 		return DISPLAY_LISTS.containsKey(this.getClass());
 	}
 	
-	public void precache(GL2 gl) {
-		int list = gl.glGenLists(1);
+	public void precache() {
+		int list = GL11.glGenLists(1);
 
-		gl.glNewList(list, GL2.GL_COMPILE);
-			if (!Loader.load(getEntityType(), gl)) {
+		GL11.glNewList(list, GL11.GL_COMPILE);
+			if (!Loader.load(getEntityType())) {
 				// Something blew up, assume draw is overridden.
-				gl.glEndList();
-				gl.glNewList(list, GL2.GL_COMPILE);
-				draw(gl);
+				GL11.glEndList();
+				GL11.glNewList(list, GL11.GL_COMPILE);
+				draw();
 			}
-		gl.glEndList();
+		GL11.glEndList();
 		DISPLAY_LISTS.put(this.getClass(), list);
 	}
 	

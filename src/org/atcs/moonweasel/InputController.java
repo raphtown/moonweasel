@@ -1,138 +1,69 @@
 package org.atcs.moonweasel;
 
-import java.awt.AWTException;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.Robot;
+import java.awt.event.MouseEvent;
 
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
 import org.atcs.moonweasel.util.Vector;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
-import com.sun.javafx.newt.KeyEvent;
-import com.sun.javafx.newt.KeyListener;
-import com.sun.javafx.newt.MouseEvent;
-import com.sun.javafx.newt.MouseListener;
-import com.sun.javafx.newt.Window;
-
-public class InputController implements KeyListener, MouseListener {
-	private Window window;
-	private Robot robot;
-	private UserCommand command;
+public class InputController {
+	private UserCommand lastCommand;
 	
-	public InputController(Window window) {
-		this.window = window;
-		
+	public InputController() {
 		try {
-			this.robot = new Robot();
-		} catch (AWTException e) {
-			throw new RuntimeException("Error initializing robot.", e);
+			Keyboard.create();
+			Mouse.create();
+			Mouse.setGrabbed(true);			
+		} catch (LWJGLException e) {
+			throw new RuntimeException("Unable to create keyboard or mouse.", e);
 		}
 		
-		this.command = new UserCommand();
-		
-		window.addKeyListener(this);
-		window.addMouseListener(this);
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_W: command.set(Commands.UP, true); break;
-		case KeyEvent.VK_S: command.set(Commands.DOWN, true); break;
-		case KeyEvent.VK_A: command.set(Commands.LEFT, true); break;
-		case KeyEvent.VK_D: command.set(Commands.RIGHT, true); break;
-		case KeyEvent.VK_R: command.set(Commands.FORWARD, true); break;
-		case KeyEvent.VK_F: command.set(Commands.BACKWARD, true); break;
-		case KeyEvent.VK_SHIFT: command.set(Commands.BOOST, true); break;
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_W: command.set(Commands.UP, false); break;
-		case KeyEvent.VK_S: command.set(Commands.DOWN, false); break;
-		case KeyEvent.VK_A: command.set(Commands.LEFT, false); break;
-		case KeyEvent.VK_D: command.set(Commands.RIGHT, false); break;
-		case KeyEvent.VK_R: command.set(Commands.FORWARD, false); break;
-		case KeyEvent.VK_F: command.set(Commands.BACKWARD, false); break;
-		case KeyEvent.VK_SHIFT: command.set(Commands.BOOST, false); break;
-		case KeyEvent.VK_SPACE: command.toggle(Commands.AUTOMATIC_THRUSTER_CONTROL); break;
-		}
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON1) {
-			command.set(Commands.ATTACK_1, true);			
-		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			command.set(Commands.ROLLING, false);
-		}
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON1) {
-			command.set(Commands.ATTACK_1, false);			
-		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			command.set(Commands.ROLLING, true);
-		}
+		lastCommand = new UserCommand();
 	}
 	
-	private float[] getMouseDelta() {
-		int centerX = window.getX() + window.getWidth() / 2;
-		int centerY = window.getY() + window.getHeight() / 2;
-		Point mouse = MouseInfo.getPointerInfo().getLocation();
-		float[] delta = new float[2];
-		delta[0] = (float)(centerX - mouse.x) / window.getWidth() * 2; 
-		delta[1] = (float)(mouse.y - centerY) / window.getHeight() * 2; 
-		robot.mouseMove(centerX, centerY);
-		return delta;
-	}
-
 	public UserCommand poll(long t) {
-		UserCommand old = command;
-		command = new UserCommand();
-		command.copyKeyState(old);
-
-		float[] mouse = getMouseDelta();
-		old.setMouse(new Vector(mouse[0], mouse[1], 0));
-		old.setTime(t);
+		UserCommand command = new UserCommand();
+		command.copyKeyState(lastCommand);
+		lastCommand = command;
 		
-		return old;
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		Keyboard.poll();
+		while (Keyboard.next()) {
+			int key = Keyboard.getEventKey();
+			switch (key) {
+				case Keyboard.KEY_W: command.set(Commands.UP, Keyboard.getEventKeyState()); break;
+				case Keyboard.KEY_S: command.set(Commands.DOWN, Keyboard.getEventKeyState()); break;
+				case Keyboard.KEY_A: command.set(Commands.LEFT, Keyboard.getEventKeyState()); break;
+				case Keyboard.KEY_D: command.set(Commands.RIGHT, Keyboard.getEventKeyState()); break;
+				case Keyboard.KEY_R: command.set(Commands.FORWARD, Keyboard.getEventKeyState()); break;
+				case Keyboard.KEY_F: command.set(Commands.BACKWARD, Keyboard.getEventKeyState()); break;
+				case Keyboard.KEY_LSHIFT:
+				case Keyboard.KEY_RSHIFT: command.set(Commands.BOOST, Keyboard.getEventKeyState()); break;
+			}
+			
+			if (key == Keyboard.KEY_SPACE && 
+					!Keyboard.getEventKeyState()) {
+				command.toggle(Commands.AUTOMATIC_THRUSTER_CONTROL);
+			}
+		}
 		
-	}
-	
-	@Override
-	public void mouseMoved(MouseEvent arg0) {
-	}
-
-	@Override
-	public void mouseWheelMoved(MouseEvent e) {
-		int scrollAmnt = e.getWheelRotation();
-		System.out.println("scrolled " + scrollAmnt + " units");
+		Mouse.poll();
+		while (Mouse.next()) {
+			switch (Mouse.getEventButton()) {
+				case MouseEvent.BUTTON1:
+					command.set(Commands.ATTACK_1, Mouse.getEventButtonState());
+					break;
+				case MouseEvent.BUTTON3: 
+					command.set(Commands.ROLLING, !Mouse.getEventButtonState());
+					break;
+			}
+		}
 		
+		command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
+		command.setTime(t);
+		
+		return command;
 	}
 }

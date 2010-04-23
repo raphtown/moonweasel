@@ -1,10 +1,9 @@
 package org.atcs.moonweasel.gui;
 
-import javax.media.opengl.GL2;
-
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.util.Vector;
+import org.lwjgl.opengl.GL11;
 
 public class HealthBar extends UIElement
 {
@@ -22,33 +21,33 @@ public class HealthBar extends UIElement
 	}
 
 	@Override
-	public void draw(GL2 gl) 
+	public void draw() 
 	{
 		Ship ship = p.getShip();
 		float healthPercent = ((float)ship.getHealth()) / ship.getOriginalHealth();
 		
-		gl.glPushMatrix();
-			gl.glPushAttrib(GL2.GL_CURRENT_BIT);
-			gl.glBegin(GL2.GL_TRIANGLE_FAN);
-			gl.glColor3f(1, 0, 0);
-				gl.glVertex3f(xmin, ymin, 0);
-				gl.glVertex3f(xmax, ymin, 0);
-				gl.glColor3f(0,0,0);
-				gl.glVertex3f(xmax, ymax, 0);
-				gl.glVertex3f(xmin, ymax, 0);
-			gl.glEnd();
+		GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+			GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+			GL11.glColor3f(1, 0, 0);
+				GL11.glVertex3f(xmin, ymin, 0);
+				GL11.glVertex3f(xmax, ymin, 0);
+				GL11.glColor3f(0,0,0);
+				GL11.glVertex3f(xmax, ymax, 0);
+				GL11.glVertex3f(xmin, ymax, 0);
+			GL11.glEnd();
 			
-			gl.glBegin(GL2.GL_TRIANGLE_FAN);
-			gl.glColor3f(0, 1, 0);
-				gl.glVertex3f(xmin, ymin, 1);
-				gl.glVertex3f((xmax*healthPercent), ymin, 1);
-			gl.glColor4f(1, 1, 1, (float) 0.1);
-				gl.glVertex3f((xmax*healthPercent), ymax, 1);
-				gl.glVertex3f(xmin, ymax, 1);
-			gl.glEnd();
+			GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+			GL11.glColor3f(0, 1, 0);
+				GL11.glVertex3f(xmin, ymin, 1);
+				GL11.glVertex3f((xmax*healthPercent), ymin, 1);
+			GL11.glColor4f(1, 1, 1, (float) 0.1);
+				GL11.glVertex3f((xmax*healthPercent), ymax, 1);
+				GL11.glVertex3f(xmin, ymax, 1);
+			GL11.glEnd();
 			
-			gl.glPopAttrib();
+			GL11.glPopAttrib();
 			
-		gl.glPopMatrix();
+		GL11.glPopMatrix();
 	}
 }

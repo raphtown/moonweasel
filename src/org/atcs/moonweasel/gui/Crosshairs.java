@@ -1,8 +1,7 @@
 package org.atcs.moonweasel.gui;
 
 import org.atcs.moonweasel.util.Vector;
-
-import javax.media.opengl.GL2;
+import org.lwjgl.opengl.GL11;
 
 public class Crosshairs extends UIElement
 {
@@ -20,27 +19,27 @@ public class Crosshairs extends UIElement
 		super(v);
 	}
 
-	public void draw(GL2 gl) 
+	public void draw() 
 	{
-		gl.glPushMatrix();
-			gl.glPushAttrib(GL2.GL_CURRENT_BIT);
-				gl.glBegin(GL2.GL_LINES);
-				gl.glColor3f(0, 1, 0);
-				gl.glVertex2i(x1,y3);
-				gl.glVertex2i(x2,y4);
-				gl.glVertex2i(x3, y4);
-				gl.glVertex2i(x4, y3);
-				gl.glVertex2i(x4, y2);
-				gl.glVertex2i(x3, y1);
-				gl.glVertex2i(x2, y1);
-				gl.glVertex2i(x1, y2);
-				gl.glVertex2i((x1 + x2)/10, (y3 + y4)/10);
-				gl.glVertex2i((x3 + x4)/10, (y1 + y2)/10);
-				gl.glVertex2i((x1 + x2)/10, (y1 + y2)/10);
-				gl.glVertex2i((x3 + x4)/10, (y3 + y4)/10);
-			gl.glEnd();
-			gl.glPopAttrib();
-		gl.glPopMatrix();
+		GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+				GL11.glBegin(GL11.GL_LINES);
+				GL11.glColor3f(0, 1, 0);
+				GL11.glVertex2i(x1,y3);
+				GL11.glVertex2i(x2,y4);
+				GL11.glVertex2i(x3, y4);
+				GL11.glVertex2i(x4, y3);
+				GL11.glVertex2i(x4, y2);
+				GL11.glVertex2i(x3, y1);
+				GL11.glVertex2i(x2, y1);
+				GL11.glVertex2i(x1, y2);
+				GL11.glVertex2i((x1 + x2)/10, (y3 + y4)/10);
+				GL11.glVertex2i((x3 + x4)/10, (y1 + y2)/10);
+				GL11.glVertex2i((x1 + x2)/10, (y1 + y2)/10);
+				GL11.glVertex2i((x3 + x4)/10, (y3 + y4)/10);
+			GL11.glEnd();
+			GL11.glPopAttrib();
+		GL11.glPopMatrix();
 
 	}
 }
