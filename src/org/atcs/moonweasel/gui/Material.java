@@ -1,16 +1,18 @@
 package org.atcs.moonweasel.gui;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
-import com.sun.opengl.util.texture.Texture;
-import com.sun.opengl.util.texture.TextureIO;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 
 public class Material 
 {
+	private static final TextureLoader textureLoader;
+	static {
+		textureLoader = new TextureLoader();
+	}
+	
 	String name;
 	Texture texture;
 	String bumpFileName;
@@ -75,7 +77,7 @@ public class Material
 	}
 	public void setTextureFileName(String fileNameIn) throws IOException
 	{
-		texture = TextureIO.newTexture(new File(filePath + fileNameIn), false);
+		texture = textureLoader.getTexture(filePath + fileNameIn);
 		hasTextureFile = true;
 	}
 	
@@ -95,19 +97,38 @@ public class Material
 	{
 		filePath = pathIn;
 	}
-	public void applyMaterial(GL2 gl)
+	
+	public void disable() {
+		if (hasTextureFile) {
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
+	}
+	
+	public void enable()
 	{
 		if(hasAmbient)
 		{
-			gl.glMaterialfv(GL.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
+			FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
+			buffer.put(ambient);
+			buffer.put(1);
+			buffer.flip();
+			GL11.glMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT, buffer);
 		}
 		if(hasDiffuse)
 		{
-			gl.glMaterialfv(GL.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
+			FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
+			buffer.put(diffuse);
+			buffer.put(1);
+			buffer.flip();
+			GL11.glMaterial(GL11.GL_FRONT, GL11.GL_DIFFUSE, buffer);
 		}
 		if(hasSpecular)
 		{
-			gl.glMaterialfv(GL.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
+			FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
+			buffer.put(specular);
+			buffer.put(1);
+			buffer.flip();
+			GL11.glMaterial(GL11.GL_FRONT, GL11.GL_SPECULAR, buffer);
 		}
 		if(hasD)
 		{
@@ -126,8 +147,12 @@ public class Material
 		}
 		if(hasTextureFile)
 		{
-			texture.enable();
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			texture.bind();
+			GL11.glTexCoord2f(0, 0);
+			GL11.glTexCoord2f(0, texture.getHeight());
+			GL11.glTexCoord2f(texture.getWidth(), texture.getHeight());
+			GL11.glTexCoord2f(texture.getWidth(), 0);
 		}
 		if(hasBumpFile)
 		{
