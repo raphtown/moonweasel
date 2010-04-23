@@ -11,7 +11,6 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -160,17 +159,9 @@ public class Server extends RMIObject implements IServer
 
 	public void sendCurrentEntitiesToAll()
 	{
-		Set<String> temp = new HashSet<String>();
-		for(String clientName : connectedClients.keySet())
-		{
-			temp.add(clientName);
-		}
-		Iterator<String> i = temp.iterator();
-		while(i.hasNext())
-		{
-			String clientName = i.next();
+		Set<String> temp = getSafeConnectedClientsSet();
+		for (String clientName : temp)
 			sendCurrentEntitiesToClient(clientName);
-		}
 	}
 
 	public void sendCurrentEntitiesToClient(String clientName)
@@ -215,34 +206,19 @@ public class Server extends RMIObject implements IServer
 			}
 		}
 		
-		Set<String> temp = new HashSet<String>();
-		for(String clientName : connectedClients.keySet())
-		{
-			temp.add(clientName);
-		}
-		Iterator<String> i = temp.iterator();
-		while(i.hasNext())
-		{
-			String clientName = i.next();
+		Set<String> temp = getSafeConnectedClientsSet();
+
+		for (String clientName : temp)
 			sendEntities(true, eList, clientName);
-		}
 
 		System.out.println("Finished send new entities...");
 	}
 	
 	public void sendDeletedEntitiesToAll(ArrayList<Entity> eList)
 	{
-		Set<String> temp = new HashSet<String>();
-		for(String clientName : connectedClients.keySet())
-		{
-			temp.add(clientName);
-		}
-		Iterator<String> i = temp.iterator();
-		while(i.hasNext())
-		{
-			String clientName = i.next();
+		Set<String> temp = getSafeConnectedClientsSet();
+		for (String clientName : temp)
 			sendEntities(false, eList, clientName);
-		}
 	}
 	
 	private void sendEntities(boolean add, ArrayList<Entity> eList, String clientName)
@@ -275,15 +251,11 @@ public class Server extends RMIObject implements IServer
 				}
 			}
 		}
-		Set<String> temp = new HashSet<String>();
-		for(String clientName : connectedClients.keySet())
+
+		Set<String> temp = getSafeConnectedClientsSet();
+
+		for (String clientName : temp)
 		{
-			temp.add(clientName);
-		}
-		Iterator<String> i = temp.iterator();
-		while(i.hasNext())
-		{
-			String clientName = i.next();
 			IClient c = connectedClients.get(clientName);
 			try
 			{
@@ -347,5 +319,14 @@ public class Server extends RMIObject implements IServer
 		}
 		newlyConnectedClients.clear();
 		sendChangesToAll();
+	}
+	
+	private Set<String> getSafeConnectedClientsSet()
+	{
+		Set<String> temp = new HashSet<String>();
+		for(String clientName : connectedClients.keySet())
+			temp.add(clientName);
+
+		return temp;
 	}
 }
