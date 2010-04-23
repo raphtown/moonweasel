@@ -60,7 +60,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		if (command.get(Commands.ROLLING)) { // User wants to roll.
 			relativeTorque.z += -0.000005 * command.getMouse().x; // Scale mouse position. 
 		} else { // Turn rather than roll.
-			relativeTorque.y += -0.000005 * command.getMouse().x;			
+			relativeTorque.y += -0.000005 * command.getMouse().x;
 		}
 
 		// Mouse movement in y axis.

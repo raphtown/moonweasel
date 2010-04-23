@@ -1,5 +1,6 @@
 package org.atcs.moonweasel;
 
+import java.awt.RenderingHints.Key;
 import java.awt.event.MouseEvent;
 
 import org.atcs.moonweasel.entities.players.UserCommand;
@@ -46,6 +47,10 @@ public class InputController {
 			if (key == Keyboard.KEY_SPACE && 
 					!Keyboard.getEventKeyState()) {
 				command.toggle(Commands.AUTOMATIC_THRUSTER_CONTROL);
+			} else if (key == Keyboard.KEY_ESCAPE &&
+					!Keyboard.getEventKeyState()) {
+				// This sucks but no better way atm.
+				System.exit(0);
 			}
 		}
 		
