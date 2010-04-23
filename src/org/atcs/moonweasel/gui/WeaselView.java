@@ -10,6 +10,7 @@ import javax.media.opengl.glu.GLU;
 
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
+import org.atcs.moonweasel.entities.ParticleEntity;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.util.AxisAngle;
@@ -262,7 +263,21 @@ public class WeaselView extends View {
         	gl.glPopMatrix();
         }
         
-   		gl.glMatrixMode(GL2.GL_PROJECTION);
+        for (ParticleEntity entity : em.getAllOfType(ParticleEntity.class)) {
+        	rotation = entity.getOrientation().toAxisAngle();
+        	
+            gl.glPushMatrix();
+	        	gl.glTranslatef(entity.getPosition().x, entity.getPosition().y,
+	        			entity.getPosition().z);
+	        	if (!rotation.axis.equals(Vector.ZERO)) {
+		        	gl.glRotated(Math.toDegrees(rotation.angle), rotation.axis.x, rotation.axis.y,
+		        			rotation.axis.z);
+	        	}
+	        	entity.draw(gl);
+        	gl.glPopMatrix();
+        }
+        
+        gl.glMatrixMode(GL2.GL_PROJECTION);
    		gl.glPushMatrix();
    		gl.glPushAttrib(GL2.GL_LIGHTING_BIT);
    			gl.glDisable(GL2.GL_LIGHTING);
