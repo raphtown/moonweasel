@@ -1,6 +1,8 @@
 package org.atcs.moonweasel.entities;
 
+import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.atcs.moonweasel.Manager;
 import org.atcs.moonweasel.Moonweasel;
@@ -50,6 +52,9 @@ public class EntityManager extends Manager<Entity> {
 	}
 
 	public void registerThink(Entity entity, int ms) {
+		while (thoughts.containsKey(System.currentTimeMillis() + ms)) { 
+			ms += 1;
+		}
 		this.thoughts.put(System.currentTimeMillis() + ms, entity);
 	}
 
@@ -59,6 +64,15 @@ public class EntityManager extends Manager<Entity> {
 		while (thoughts.size() > 0
 				&& thoughts.firstKey() < System.currentTimeMillis()) {
 			thoughts.remove(thoughts.firstKey()).think();
+		}
+		
+		Iterator<Entry<Integer, Entity>> iter = elements.entrySet().iterator();
+		Entry<Integer, Entity> entry;
+		while (iter.hasNext()) {
+			entry = iter.next();
+			if (entry.getValue().isDestroyed()) {
+				iter.remove();
+			}
 		}
 	}
 }

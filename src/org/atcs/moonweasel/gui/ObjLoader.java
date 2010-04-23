@@ -10,18 +10,15 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.media.opengl.GL2;
-
 import org.atcs.moonweasel.util.Vector;
-
-import com.sun.opengl.util.texture.Texture;
+import org.lwjgl.opengl.GL11;
 
 public class ObjLoader extends Loader 
 {
 	private static final String EXTENSION = "obj";
 	private static final Pattern FACE_PHRASE = Pattern.compile("(\\d+)/?(\\d+)?/?(\\d+)?");
 	
-	private Texture lastTexture = null;
+	private Material lastMaterial = null;
 	
 	protected String getExtension() {
 		return EXTENSION;
@@ -59,9 +56,11 @@ public class ObjLoader extends Loader
 	}
 	
 	@Override
-	protected boolean loadModel(String path, String name, GL2 gl) throws IOException
+	protected boolean loadModel(String path, String name) throws IOException
 	{
 		Map<String, Material> materials = new HashMap<String, Material>();
+		lastMaterial = new Material();
+		materials.put("(null)", lastMaterial);
 		Scanner sc = new Scanner(new File(path + name + ".obj"));
 		ArrayList<Vector> vertices = new ArrayList<Vector>();
 		vertices.add(null);
@@ -101,17 +100,15 @@ public class ObjLoader extends Loader
 			}
 			else if(nextToken.equals("f"))//Face
 			{
-				handleFace(sc, gl, vertices, textures, normals);
+				handleFace(sc, vertices, textures, normals);
 			}
 			else if(nextToken.equals("usemtl"))
 			{
-				if (lastTexture != null) 
-					lastTexture.disable();
+				lastMaterial.disable();
 				
 				String materialName = sc.next();
-				Material useMaterial = materials.get(materialName);
-				useMaterial.applyMaterial(gl);
-				lastTexture = useMaterial.texture;
+				lastMaterial = materials.get(materialName);
+				lastMaterial.enable();
 			}
 			else if(nextToken.equals("mtllib"))
 			{
@@ -199,9 +196,9 @@ public class ObjLoader extends Loader
 		}
 	}
 	
-	private void handleFace(Scanner sc, GL2 gl, List<Vector> vertices, 
+	private void handleFace(Scanner sc, List<Vector> vertices, 
 			List<Vector> textures, List<Vector> normals) {
-		gl.glBegin(GL2.GL_POLYGON);
+		GL11.glBegin(GL11.GL_POLYGON);
 			Matcher phrase;
 			while (sc.hasNext("\\d+.+")) {
 				phrase = FACE_PHRASE.matcher(sc.next());
@@ -216,26 +213,26 @@ public class ObjLoader extends Loader
 					vn = normals.get(Integer.parseInt(phrase.group(3)));
 				}
 				
-				applyFace(gl, v, vt, vn);
+				applyFace(v, vt, vn);
 			}
-		gl.glEnd();	
+		GL11.glEnd();	
 	}
 	
-	private void applyFace(GL2 gl, Vector v, Vector vt, Vector normal) {
+	private void applyFace(Vector v, Vector vt, Vector normal) {
 		if (vt != null) {
 			if (vt.y != Float.NaN && vt.z != Float.NaN) {
-				gl.glTexCoord3f(vt.x, 1 - vt.y, vt.z);
+				GL11.glTexCoord3f(vt.x, 1 - vt.y, vt.z);
 			} else if (vt.y != Float.NaN) {
-				gl.glTexCoord2f(vt.x, 1 - vt.y);
+				GL11.glTexCoord2f(vt.x, 1 - vt.y);
 			} else {
-				gl.glTexCoord1f(vt.x);
+				GL11.glTexCoord1f(vt.x);
 			}
 		}
 		
 		if (normal != null) {
-			gl.glNormal3f(normal.x, normal.y, normal.z);
+			GL11.glNormal3f(normal.x, normal.y, normal.z);
 		}
 
-		gl.glVertex3f(v.x, v.y, v.z);
+		GL11.glVertex3f(v.x, v.y, v.z);
 	}
 }

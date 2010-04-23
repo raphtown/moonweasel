@@ -13,6 +13,10 @@ import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Networking;
 import org.atcs.moonweasel.physics.Physics;
 import org.atcs.moonweasel.util.Vector;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 
 public class Moonweasel {
 	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
@@ -45,7 +49,29 @@ public class Moonweasel {
 	}
 
 	public static void main(String[] args) {
-		Moonweasel weasel = new Artemis(800, 600, false);
+		int width = 800, height = 600;
+		DisplayMode mode = null;
+		try {
+			DisplayMode[] modes = Display.getAvailableDisplayModes();
+
+			for (int i = 0; i < modes.length; i++) {
+				if ((modes[i].getWidth() == width)
+						&& (modes[i].getHeight() == height)) {
+					mode = modes[i];
+					break;
+				}
+			}
+			
+			if (mode == null) {
+				throw new RuntimeException(String.format(
+						"Unable to find target display mode width %d, height %d.",
+						width, height));
+			}
+		} catch (LWJGLException e) {
+			throw new RuntimeException("Unable to choose display mode.", e);
+		}
+		
+		Moonweasel weasel = new Artemis(mode, false);
 
 		// weasel.seeFox();
 		weasel.run();
@@ -62,7 +88,7 @@ public class Moonweasel {
 	private EntityManager entityManager;
 	private Player player;
 
-	protected Moonweasel(int width, int height, boolean fullscreen) {
+	protected Moonweasel(DisplayMode mode, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
 		
 		player = this.entityManager.create("player");
@@ -78,8 +104,8 @@ public class Moonweasel {
 		snowflake2.spawn();
 		
 		this.physics = new Physics();
-		this.view = new WeaselView(width, height, fullscreen, player);
-		this.input = new InputController(view.getWindow());
+		this.view = new WeaselView(mode, fullscreen, player);
+		this.input = new InputController();
 	}
 
 	private void destroy() {
