@@ -131,6 +131,7 @@ public class WeaselView extends View {
 		uiElements = new ArrayList<UIElement>();
 		uiElements.add(new HealthBar(new Vector(10, 10, 0), me));
 		uiElements.add(new Crosshairs(new Vector(width/2, height/2, 0)));
+		uiElements.add(new Speedometer(new Vector(10,-10,0), me));
 	}
 	
 	private void setUpLighting(GL2 gl)
