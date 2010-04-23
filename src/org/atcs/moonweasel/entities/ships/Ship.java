@@ -36,11 +36,11 @@ public class Ship extends ModelEntity implements Vulnerable {
 		//Shooting
 		if (command.get(Commands.ATTACK_1))
 		{
-//			EntityManager manager = EntityManager.getEntityManager();
-//			Laser laser = manager.create("laser");
-//			laser.getState().orientation = this.getState().orientation;
-//			laser.getState().position = this.getPosition().add(new Vector(0.0f, 0.0f, 0.0f));
-//			laser.spawn();
+			EntityManager manager = EntityManager.getEntityManager();
+			Laser laser = manager.create("laser");
+			laser.getState().orientation = this.getState().orientation;
+			laser.getState().position = this.getPosition().add(new Vector(0.0f, 0.0f, 0.0f));
+			laser.spawn();
 		}
 		
 		applyMovement(command);
