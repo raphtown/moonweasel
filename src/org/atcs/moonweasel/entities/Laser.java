@@ -7,13 +7,15 @@ import org.lwjgl.util.glu.Cylinder;
 
 public class Laser extends ParticleEntity
 {
-	private static final float VELOCITY = 100.0f;
-	private static final int LIFESPAN = 50;
+	private static final float VELOCITY = 150.0f;
+	private static final int LIFESPAN = 10;
 	
 	private int age;
 	private Ship source;
+	private Vector offset;
 	
 	public Laser() {
+		offset = Vector.ZERO;
 	}
 	
 	@Override
@@ -23,12 +25,13 @@ public class Laser extends ParticleEntity
 		GL11.glScalef(5, 5, 5);
 		GL11.glColor3f(0.0f, 0.1f, 0.9f);
 		Cylinder cylinder = new Cylinder();
-		cylinder.draw(0.001f, 0.001f, 1.0f, 30, 30);
+		cylinder.draw(0.01f, 0.01f, 1.0f, 30, 30);
 		GL11.glPopAttrib();
 	}
 	
-	public void setSource(Ship ship) {
+	public void setSource(Ship ship, Vector offset) {
 		this.source = ship;
+		this.offset = offset;
 	}
 	
 	@Override
@@ -39,6 +42,7 @@ public class Laser extends ParticleEntity
 		age = 0;
 		this.setPosition(source.getState().position);
 		this.setOrientation(source.getState().orientation);
+		this.setPosition(getPosition().add(getOrientation().rotate(offset)));
 		
 		scheduleThink(50);
 	}
@@ -54,6 +58,6 @@ public class Laser extends ParticleEntity
 		Vector speed = new Vector(0.0f, 0.0f, -VELOCITY * 0.02f);
 		this.setPosition(getPosition().add(getOrientation().rotate(speed)));
 		
-		scheduleThink(50);
+		scheduleThink(30);
 	}
 }

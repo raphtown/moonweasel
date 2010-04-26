@@ -16,12 +16,16 @@ import org.atcs.moonweasel.util.Vector;
 
 public class Ship extends ModelEntity implements Vulnerable {
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
+	private static float LASER_OFFSET = 0.3f;
+	private static long COOLDOWN = 200;
 	
 	private ShipData data;
 	private int health;
 	
 	private Player pilot;
 	private Player[] gunners;
+	private float laserOffset;
+	private long nextFireTime;
 	
 	protected Ship(ShipData data) {
 		super(data.mass, BASE_TENSOR.scale(data.mass / 100));
@@ -30,16 +34,21 @@ public class Ship extends ModelEntity implements Vulnerable {
 		this.health = this.data.health;
 		
 		this.gunners = new Player[data.gunners.length];
+		this.laserOffset = LASER_OFFSET;
+		this.nextFireTime = 0;
 	}
 	
 	public void apply(UserCommand command) {
 		//Shooting
-		if (command.get(Commands.ATTACK_1))
+		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
 		{
 			EntityManager manager = EntityManager.getEntityManager();
 			Laser laser = manager.create("laser");
-			laser.setSource(this);
+			laser.setSource(this, new Vector(laserOffset, 0, -6f));
+			laserOffset = -laserOffset;
 			laser.spawn();
+			
+			nextFireTime = getTime() + COOLDOWN;
 		}
 		
 		applyMovement(command);
