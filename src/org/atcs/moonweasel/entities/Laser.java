@@ -40,8 +40,8 @@ public class Laser extends ParticleEntity
 		assert source != null;
 		
 		age = 0;
-		this.setPosition(source.getState().position);
 		this.setOrientation(source.getState().orientation);
+		this.setPosition(source.getPosition());
 		this.setPosition(getPosition().add(getOrientation().rotate(offset)));
 		
 		scheduleThink(50);

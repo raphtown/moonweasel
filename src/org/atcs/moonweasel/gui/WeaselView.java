@@ -225,7 +225,6 @@ public class WeaselView extends View {
 			entity.setLastRenderState(entity.getState().clone());
 			rotation = interpolated.orientation.toAxisAngle();
 
-			GL11.glColor4d(Math.random(), Math.random(), Math.random(), Math.random());
 			GL11.glPushMatrix();
 			GL11.glTranslatef(interpolated.position.x, interpolated.position.y,
 					interpolated.position.z);

@@ -93,9 +93,9 @@ public class NumericalIntegration
 		s1.angularMomentum = s1.inertiaTensor.transform(s1.angularVelocity);
 		s2.angularMomentum = s2.inertiaTensor.transform(s2.angularVelocity);
 
-		System.out.println("Post-collision momentum");
-		System.out.println("s1 angular momentum: " + s1.angularMomentum);
-		System.out.println("s2 angular momentum: " + s2.angularMomentum);
+//		System.out.println("Post-collision momentum");
+//		System.out.println("s1 angular momentum: " + s1.angularMomentum);
+//		System.out.println("s2 angular momentum: " + s2.angularMomentum);
 		
 		s1.recalculate(); //updates velocity from new momentum
 		s2.recalculate();

@@ -50,7 +50,7 @@ public class Moonweasel {
 	}
 
 	public static void main(String[] args) {
-		int width = 1440, height = 900;
+		int width = 800, height = 600;
 		DisplayMode mode = null;
 		try {
 			DisplayMode[] modes = Display.getAvailableDisplayModes();
@@ -72,7 +72,7 @@ public class Moonweasel {
 			throw new RuntimeException("Unable to choose display mode.", e);
 		}
 		
-		Moonweasel weasel = new Artemis(mode, true);
+		Moonweasel weasel = new Artemis(mode, false);
 
 		// weasel.seeFox();
 		weasel.run();
