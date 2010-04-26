@@ -3,6 +3,7 @@ package org.atcs.moonweasel;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.atcs.moonweasel.entities.EnergyBomb;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
@@ -14,7 +15,6 @@ import org.atcs.moonweasel.networking.Networking;
 import org.atcs.moonweasel.physics.Physics;
 import org.atcs.moonweasel.util.Vector;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
@@ -46,10 +46,11 @@ public class Moonweasel {
 		addEntityClass(Snowflake.class);
 		addEntityClass(Explosion.class);
 		addEntityClass(Laser.class);
+		addEntityClass(EnergyBomb.class);
 	}
 
 	public static void main(String[] args) {
-		int width = 800, height = 600;
+		int width = 1440, height = 900;
 		DisplayMode mode = null;
 		try {
 			DisplayMode[] modes = Display.getAvailableDisplayModes();
@@ -71,7 +72,7 @@ public class Moonweasel {
 			throw new RuntimeException("Unable to choose display mode.", e);
 		}
 		
-		Moonweasel weasel = new Artemis(mode, false);
+		Moonweasel weasel = new Artemis(mode, true);
 
 		// weasel.seeFox();
 		weasel.run();
@@ -99,8 +100,9 @@ public class Moonweasel {
 		snowflake.spawn();
 		player.setShip(snowflake);
 		
-		Snowflake snowflake2 = this.entityManager.create("snowflake");
+		EnergyBomb snowflake2 = this.entityManager.create("energybomb");
 		snowflake2.setPosition(new Vector(0,0,-10));
+		snowflake2.setTarget(snowflake);
 		snowflake2.spawn();
 		
 		this.physics = new Physics();

@@ -1,2 +1,22 @@
-# Blender3D MTL File: 
-# Material Count: 0
+# Blender3D MTL File: star.blend
+# Material Count: 2
+newmtl Material.002
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.764444 0.735566 0.331259
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+
+
+newmtl Material.003
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.728889 0.542618 0.170074
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+
+
