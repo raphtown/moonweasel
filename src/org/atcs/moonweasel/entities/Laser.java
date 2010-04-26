@@ -7,7 +7,7 @@ import org.lwjgl.util.glu.Cylinder;
 
 public class Laser extends ParticleEntity
 {
-	private static final float VELOCITY = 100.0f;
+	private static final float VELOCITY = 200.0f;
 	private static final int LIFESPAN = 50;
 	
 	private int age;
@@ -36,9 +36,11 @@ public class Laser extends ParticleEntity
 	{
 		assert source != null;
 		
+		Vector displacementVector = new Vector(0,0,-5);
+		
 		age = 0;
-		this.setPosition(source.getState().position);
 		this.setOrientation(source.getState().orientation);
+		this.setPosition(source.getState().position.add(getOrientation().rotate(displacementVector)));
 		
 		scheduleThink(50);
 	}

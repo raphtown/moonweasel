@@ -17,6 +17,8 @@ import org.atcs.moonweasel.util.Vector;
 public class Ship extends ModelEntity implements Vulnerable {
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	
+	final static float MAX_SPEED = 0.1f;
+	
 	private ShipData data;
 	private int health;
 	
@@ -107,6 +109,12 @@ public class Ship extends ModelEntity implements Vulnerable {
 		//if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
 		//	relativeForce.z -= f / 2;
 		//}
+		
+		if(this.getState().velocity.length() >= MAX_SPEED && (relativeForce.z)/(this.getState().velocity.z) > 0)
+		{
+			relativeForce.z = 0;
+		}
+			
 		
 		force.sum(state.orientation.rotate(relativeForce.toVector()));
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
