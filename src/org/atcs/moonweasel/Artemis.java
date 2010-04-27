@@ -4,11 +4,17 @@ import org.atcs.moonweasel.networking.Server;
 
 
 public class Artemis extends Moonweasel {
-	public Artemis(int width, int height, boolean fullscreen) {
-		super(width, height, fullscreen);
 
-		//		System.out.print("Enter server name: ");
-		//		String serverName = new java.util.Scanner(System.in).nextLine();
+	protected Server server;
+	
+	public Artemis(int width, int height, boolean fullscreen) 
+	{
+		super(width, height, fullscreen);
 		server = new Server("Moonweasel Server", this);
+	}
+
+	protected void act(long next_logic_tick) 
+	{
+		server.act();	
 	}
 }

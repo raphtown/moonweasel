@@ -1,42 +1,24 @@
 package org.atcs.moonweasel;
 
-import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
-import org.atcs.moonweasel.physics.Physics;
 
-public class Lycanthrope
+public class Lycanthrope extends Moonweasel
 {
-	protected WeaselView view;
-	protected InputController input;
+	private WeaselView view;
+	private InputController input;
 	private Player player;
 	private short lastCommand = 0;
-	protected Client client;
-	protected long t;
-	private EntityManager entityManager;
-	protected Physics physics;
-	
-	public static void main(String args[])
-	{
-		Lycanthrope vervolf = new Lycanthrope(800, 600, false);
-
-		vervolf.run();
-		vervolf.destroy(); // eaten
-
-		System.exit(0);
-	}
+	private Client client;
 	
 	public Lycanthrope(int width, int height, boolean fullscreen)
 	{
+		super(width, height, fullscreen);
 		this.client = new Client();
 		client.findAndConnectToServer();
-	
 		client.connectionInitializationComplete();
-
-		this.physics = new Physics();
-		this.entityManager = EntityManager.getEntityManager();
 
 		while (player == null)
 		{
@@ -51,50 +33,30 @@ public class Lycanthrope
 		this.input = new InputController(view.getWindow());
 	}
 	
-	private void destroy() {
-		physics.destroy();
+	protected void destroy() {
+		super.destroy();
 		view.destroy();
 	}
 
-	public void run()
+	protected void act(long next_logic_tick) 
 	{
-		final int TICKS_PER_SECOND = 25;
-		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-		final int MAX_FRAMESKIP = 5;
-		long next_logic_tick = System.currentTimeMillis();
-		int loops;
 		float interpolation;
+		t = System.currentTimeMillis();
+		UserCommand command = input.poll(t);
 		
-		while (!view.shouldQuit()) 
+		if (command.getAsBitmask() != lastCommand)
 		{
-			loops = 0;
-			while (System.currentTimeMillis() > next_logic_tick &&
-					loops < MAX_FRAMESKIP) {
-				entityManager.update(t);
-				physics.update(t, SKIP_TICKS);
-
-				t += SKIP_TICKS;
-				next_logic_tick += SKIP_TICKS;
-				loops++;
-			}
-			
-			t = System.currentTimeMillis();
-			UserCommand command = input.poll(t);
-			
-			if (command.getAsBitmask() != lastCommand)
-			{
-				player.addCommand(command);
-				client.sendCommandToServer(command);
-			}
-				
-			lastCommand = command.getAsBitmask();
-			
-			player.clearCommandsBefore(t);
-			
-			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
-			/ SKIP_TICKS;
-			view.render(interpolation);
+			player.addCommand(command);
+			client.sendCommandToServer(command);
 		}
+			
+		lastCommand = command.getAsBitmask();
+		
+		player.clearCommandsBefore(t);
+		
+		interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) / SKIP_TICKS;
+		view.render(interpolation);
+		
 	}
 
 }

@@ -1,6 +1,7 @@
 package org.atcs.moonweasel;
 
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 import org.atcs.moonweasel.entities.Entity;
@@ -8,10 +9,9 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
-import org.atcs.moonweasel.networking.Server;
 import org.atcs.moonweasel.physics.Physics;
 
-public class Moonweasel
+public abstract class Moonweasel
 {
 	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
 	private static final Map<Integer, Class<? extends Entity>> ENTITY_TYPE_ID_MAP;
@@ -42,16 +42,29 @@ public class Moonweasel
 	}
 
 	public static void main(String[] args) {
-		Moonweasel weasel = new Artemis(800, 600, false);
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Server (0) or Client (1)?");
+		Moonweasel weasel;
+		int choice = scanner.nextInt();
+		if(choice == 0)
+		{
+			weasel = new Artemis(800, 600, false);
+		}
+		else
+		{
+			weasel = new Lycanthrope(800, 600, false);
+		}
 		weasel.run();
 		weasel.destroy(); // eaten
 
 		System.exit(0);
 	}
 
+	protected final int TICKS_PER_SECOND = 25;
+	protected final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+	protected final int MAX_FRAMESKIP = 5;
+	
 	protected Physics physics;
-
-	protected Server server;
 
 	protected EntityManager entityManager;
 
@@ -64,47 +77,36 @@ public class Moonweasel
 		this.physics = new Physics();
 	}
 
-	private void destroy() {
+	protected void destroy() {
 		physics.destroy();
 	}
 
-	protected void run() {
+	protected void run() 
+	{
 		final int TICKS_PER_SECOND = 25;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
-
-		t = 0;
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
-		long time = System.currentTimeMillis();
-		long delta = 0;
-		long temp = 0;
-		int count = 0;
+		
 		while (true) {
 			
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) 
 			{
-				server.act();
-				time = System.currentTimeMillis();
 				entityManager.update(t);
 				physics.update(t, SKIP_TICKS);
-				temp = System.currentTimeMillis();
-				delta = temp - time;
-				time = temp;
-				if(delta > 10)
-				{
-					Debug.print("Mini: " + delta);
-				}
 				
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
-				count++;
 			}
+			this.act(next_logic_tick);
 		}
 	}
+	
+	protected abstract void act(long next_logic_tick);
 
 	public long getT()
 	{

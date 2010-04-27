@@ -115,13 +115,11 @@ public class Server extends RMIObject implements IServer
 		if (playerCommandMap.get(plr) != null)
 			if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
 				return;
-		System.out.println("Command received from client: " + c + "  command: " + command  + "Player: " + plr);
 		UserCommand ucommand = new UserCommand();
 		ucommand.setKeysAsBitmask(command);
 		ucommand.setMouse(mouseX, mouseY);
 		ucommand.setTime(m.getT() - 5);
 		plr.addCommand(ucommand);
-		System.out.println("Wow: " + plr.getID() + "   " + plr.getCommandsBefore(m.getT()));
 		playerCommandMap.put(plr, new Long(command));
 	}
 
