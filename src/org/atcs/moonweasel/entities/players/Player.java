@@ -41,7 +41,6 @@ public class Player extends Entity
 	public void addCommand(UserCommand command) {
 		synchronized (commands)
 		{
-//			System.out.println("WOW" + this + "  " + command);
 			this.commands.add(command);
 			addChange("add command " + command);
 		}
@@ -97,7 +96,6 @@ public class Player extends Entity
 			synchronized (commands)
 			{
 				for (UserCommand command : commands) {
-				System.out.println("Processing command" + this.getID() + "  " + command);
 					ship.apply(command);
 				}
 			}

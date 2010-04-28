@@ -162,7 +162,6 @@ public class Server extends RMIObject implements IServer
 
 	public void sendCurrentEntitiesToClient(String clientName)
 	{
-		System.out.println("In Send All Current Entities To Clinet...");
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		synchronized (EntityManager.getEntityManager())
@@ -172,20 +171,16 @@ public class Server extends RMIObject implements IServer
 				Entity e = range.next();
 				if(e.sentToAll)
 				{
-					System.out.println("Sending object: " + e.getID());
 					eList.add(e);
 				}
 			}
 		}
 
 		sendEntities(true, eList, clientName);
-
-		System.out.println("Finished send all entities to Client: " + clientName);
 	}
 
 	public void sendNewEntitiesToAll()
 	{
-		System.out.println("In Send New Entities To All...");
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		synchronized (EntityManager.getEntityManager())
@@ -196,7 +191,6 @@ public class Server extends RMIObject implements IServer
 				if(!e.sentToAll)
 				{
 					e.sentToAll = true;
-					System.out.println("Sending new object: " + e.getID());
 					eList.add(e);
 				}
 			}
@@ -207,7 +201,6 @@ public class Server extends RMIObject implements IServer
 		for (String clientName : temp)
 			sendEntities(true, eList, clientName);
 
-		System.out.println("Finished send new entities...");
 	}
 	
 	public void sendDeletedEntitiesToAll(ArrayList<Entity> eList)

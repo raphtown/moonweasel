@@ -48,7 +48,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 		MutableVector relativeForce = new MutableVector();
 		MutableVector torque = new MutableVector();
 		MutableVector relativeTorque = new MutableVector();
-		System.out.println("Mouse moved: " + this.getID() + "  " + command.getTime() + "  " + command.getMouse());
 		// Mouse movement in x axis.
 		if (command.get(Commands.ROLLING)) { // User wants to roll.
 			relativeTorque.z += 0.001 * command.getMouse().x; // Scale mouse position. 
