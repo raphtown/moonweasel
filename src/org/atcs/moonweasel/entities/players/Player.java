@@ -3,6 +3,7 @@ package org.atcs.moonweasel.entities.players;
 import java.util.PriorityQueue;
 
 import org.atcs.moonweasel.entities.Entity;
+import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
@@ -55,6 +56,12 @@ public class Player extends Entity
 			}
 		}
 	}
+	
+	public void destroy() 
+	{
+		super.destroy();
+		ship.destroy();
+	}
 
 	public void died() {
 		deaths++;
@@ -100,6 +107,7 @@ public class Player extends Entity
 
 		scheduleThink(50);
 	}
+	
 
 	public Status getStatus() {
 		return status;

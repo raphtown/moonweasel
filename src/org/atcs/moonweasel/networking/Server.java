@@ -147,8 +147,6 @@ public class Server extends RMIObject implements IServer
 		toDelete.add(s);
 		this.sendDeletedEntitiesToAll(toDelete);
 
-		EntityManager.getEntityManager().delete(plr);
-		EntityManager.getEntityManager().delete(s);
 		playerMap.remove(clientName);
 
 		s.destroy();
