@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.entities;
 
 import org.atcs.moonweasel.entities.ships.Ship;
+
 import org.atcs.moonweasel.util.Vector;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;

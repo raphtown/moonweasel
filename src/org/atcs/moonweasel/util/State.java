@@ -2,6 +2,7 @@ package org.atcs.moonweasel.util;
 
 import java.util.PriorityQueue;
 
+import org.atcs.moonweasel.Moonweasel;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
@@ -112,14 +113,14 @@ public class State
 	}
 
 	public void recalculate() {
-		
+		orientation = Moonweasel.fh.getQuaternion();
 		velocity = momentum.scale(inverseMass);
 		angularVelocity = inverseInertiaTensor.transform(angularMomentum);
 		orientation = orientation.normalize();
 
 		Quaternion tempUpdate = new Quaternion(0, angularVelocity.x, angularVelocity.y, angularVelocity.z);
 		spin = tempUpdate.scale(0.5f).multiply(orientation);
-
+//		spin = Moonweasel.fh.getQuaternion();
 		// dealing with local vs global coordinates now
 		bodyToWorld = new Matrix(position).multiply(orientation.toMatrix());
 		worldToBody = bodyToWorld.inverse();

@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.gui;
 
 import java.io.IOException;
+
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
@@ -166,7 +167,8 @@ public class WeaselView extends View {
 
 		Vector cameraPos = interp.position.add(relative);
 		Vector cameraLook = interp.position.add(look);
-		Vector up = interp.orientation.rotate(new Vector(0, 1, 0));
+//		Vector up = interp.orientation.rotate(new Vector(0, 1, 0));
+		Vector up = new Vector(0, 1, 0);
 
 		GLU.gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z, cameraLook.x,
 				cameraLook.y, cameraLook.z, up.x, up.y, up.z);
