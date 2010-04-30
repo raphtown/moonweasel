@@ -4,8 +4,6 @@ import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.util.Vector;
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Font;
-
 
 
 public class Speedometer extends UIElement
