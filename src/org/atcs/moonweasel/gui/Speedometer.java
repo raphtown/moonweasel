@@ -25,7 +25,7 @@ public class Speedometer extends UIElement
 		GL11.glColor4f(0.0f, 0.2f, 0.8f, 0.75f);
 			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
 				GL11.glRasterPos2i(650, 20);
-				GL11.glColor3f(0.0f, 0.0f, 1.0f);
+				GL11.glColor3f(0.0f, 0.0f, 1.0f);	
 				
 			GL11.glPopAttrib();
 	}
