@@ -2,301 +2,266 @@ package org.atcs.moonweasel.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
-
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.glu.GLU;
 
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
+import org.atcs.moonweasel.entities.ParticleEntity;
 import org.atcs.moonweasel.entities.players.Player;
-import org.atcs.moonweasel.physics.BoundingBox;
-import org.atcs.moonweasel.physics.BoundingShape;
-import org.atcs.moonweasel.physics.BoundingSphere;
+import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
-
-
-
-import com.sun.opengl.util.texture.Texture;
-import com.sun.opengl.util.texture.TextureCoords;
-import com.sun.opengl.util.texture.TextureIO;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 
 public class WeaselView extends View {
 	private enum BaseTextures {
-		WALL("dev_measuregeneric01.png"),
-		NUM_TEXTURES(null);
-		
+		WALL("dev_measuregeneric01.png"), NUM_TEXTURES(null);
+
 		public final String filename;
-		
+
 		private BaseTextures(String filename) {
 			this.filename = filename;
 		}
 	}
-	
-    /* OpenGL objects */
-	private static GLU glu;
-	
+
 	/* UI components */
 	private ArrayList<UIElement> uiElements;
-	
+
 	/* Camera parameters */
-	private static final double CAMERA_FOV_ANGLE = 60.0;		/* Camera (vertical) field of view angle */
-	private static final float CAMERA_PILOT_OFFSET_SCALAR = 1.5f;
-	private static final double CAMERA_CLIPPING_NEAR = 0.1;
-	private static final double CAMERA_CLIPPING_FAR = 10000;
-	
-	private static void drawCubeFace(TextureCoords tc, float radius, GL2 gl) {
-    	gl.glBegin(GL2.GL_QUADS);
-			gl.glTexCoord2f(tc.left() * 5, tc.bottom() * 5);
-	    	gl.glVertex3f(radius, -radius, 0.f);
-			gl.glTexCoord2f(tc.right() * 5, tc.bottom() * 5);
-	    	gl.glVertex3f(radius, radius, 0.f);
-			gl.glTexCoord2f(tc.right() * 5, tc.top() * 5);
-	    	gl.glVertex3f(-radius, radius, 0.f);
-			gl.glTexCoord2f(tc.left() * 5, tc.top() * 5);
-	    	gl.glVertex3f(-radius, -radius, 0.f);
-    	gl.glEnd();
-    }
-	
-	/* Window size*/
-	private int width;
-	private int height;
-	
+	private static final float CAMERA_FOV_ANGLE = 60.0f; /*
+														 * Camera (vertical)
+														 * field of view angle
+														 */
+	private static final float CAMERA_CLIPPING_NEAR = 0.1f;
+	private static final float CAMERA_CLIPPING_FAR = 10000;
+
+	private static void drawCubeFace(Texture texture, float radius) {
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glTexCoord2f(0, 0);
+		GL11.glVertex3f(radius, -radius, 0.f);
+		GL11.glTexCoord2f(0, texture.getHeight() * 5);
+		GL11.glVertex3f(radius, radius, 0.f);
+		GL11.glTexCoord2f(texture.getWidth() * 5, texture.getHeight() * 5);
+		GL11.glVertex3f(-radius, radius, 0.f);
+		GL11.glTexCoord2f(texture.getWidth() * 5, 0);
+		GL11.glVertex3f(-radius, -radius, 0.f);
+		GL11.glEnd();
+	}
+
 	private Texture[] textures;
-	
-    /* Game objects */
-    private Player me;
-    //private boolean updating = false;
-	
-	public WeaselView(int w, int h, boolean fullscreen, Player p) {
-		super(w, h, fullscreen);
 
-		width = w;
-		height = h;
-		
+	/* Game objects */
+	private Player me;
+
+	public WeaselView(DisplayMode mode, boolean fullscreen, Player p) {
+		super(mode, fullscreen);
+
 		textures = new Texture[BaseTextures.NUM_TEXTURES.ordinal()];
-		
 		me = p;
-	}
-	
-//	public void toggleUpdating()
-//	{
-//		updating = !updating;
-//	}
-//	
-	public Player getMe()
-	{
-		return me;
-	}
-	
-	public void setMe(Player p)
-	{
-		me = p;
+		init();
 	}
 
-	@Override
-	public void init(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
-		
-		glu = new GLU();
-
+	private void init() {
+		TextureLoader loader = new TextureLoader();
 		for (int i = 0; i < textures.length; i++) {
 			try {
-				textures[i] = TextureIO.newTexture(
-						new File("data/textures/" + BaseTextures.values()[i].filename),
-						false);
+				textures[i] = loader.getTexture("data/textures/"
+						+ BaseTextures.values()[i].filename);
 			} catch (IOException e) {
-				throw new RuntimeException("Unable to load texture " + 
-						BaseTextures.values()[i].name(), e);
+				throw new RuntimeException("Unable to load texture "
+						+ BaseTextures.values()[i].name(), e);
 			}
-
-			textures[i].setTexParameteri(GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
-			textures[i].setTexParameteri(GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
 		}
-		
-		textures[BaseTextures.WALL.ordinal()].setTexParameteri(
-				GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
-		textures[BaseTextures.WALL.ordinal()].setTexParameteri(
-				GL2.GL_TEXTURE_WRAP_T, GL2.GL_REPEAT);
 
-        /* Set viewport */
-        gl.glViewport(0, 0, width, height);
-        
-        /* Set up lighting */
-        setUpLighting(gl);
-        
-        /* Enable things */
-        gl.glEnable(GL2.GL_LIGHTING);
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-        gl.glShadeModel(GL2.GL_SMOOTH);
-        
-        initComponents();
-        
+		/* Set viewport */
+		GL11.glViewport(0, 0, mode.getWidth(), mode.getHeight());
+
+		/* Set up lighting */
+		setUpLighting();
+
+		/* Enable things */
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+
+		initComponents();
 	}
-	
-	public void initComponents()
-	{
+
+	public void initComponents() {
 		uiElements = new ArrayList<UIElement>();
 		uiElements.add(new HealthBar(new Vector(10, 10, 0), me));
+		uiElements.add(new Crosshairs(new Vector(mode.getWidth() / 2, mode
+				.getHeight() / 2, 0)));
 	}
-	
-	
-	private void setUpLighting(GL2 gl)
-	{
-        gl.glEnable(GL2.GL_LIGHT0);
-        
-        float[] lamb = { 0.8f, 0.8f, 0.8f, 1.0f };
-        float[] ldiff = { 0.6f, 0.6f, 0.6f, 1.0f };
-        float[] lspec = { 0.4f, 0.4f, 0.4f, 1.0f };
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, lamb, 0);
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, ldiff, 0);
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, lspec, 0);
-        
-        float[] pos = {-9, -9, 10, 1};
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, pos, 0);
-        
-        gl.glLightf(GL2.GL_LIGHT0, GL2.GL_CONSTANT_ATTENUATION, 0);
-        gl.glLightf(GL2.GL_LIGHT0, GL2.GL_QUADRATIC_ATTENUATION, 0.005f);
-       
-        gl.glLightModeli(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, GL2.GL_TRUE);
-        float[] amb = { 0.4f, 0.4f, 0.4f, 1.0f };
-        gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, amb, 0);
-        gl.glLightModeli(GL2.GL_LIGHT_MODEL_TWO_SIDE, GL2.GL_TRUE);
-	}
-	
-	private void setProjection(GL2 gl, float alpha)
-	{
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity();
-        
-        /* Specify perspective transformation */
-        glu.gluPerspective(
-        		CAMERA_FOV_ANGLE,
-        		((float) width) / ((float) height),
-        		CAMERA_CLIPPING_NEAR,
-        		CAMERA_CLIPPING_FAR);
-        
-        ModelEntity ent = me.getShip();
-        BoundingShape shape = ent.getBoundingShape();
-        float radius;
-        if (shape instanceof BoundingBox) {
-        	radius = ((BoundingBox)shape).maxZ;
-        } else if (shape instanceof BoundingSphere) {
-        	radius = ((BoundingSphere)shape).radius;
-        } else {
-        	throw new RuntimeException(String.format(
-        			"Unknown bounding shape of type %s.", 
-        			shape.getClass().getName()));
-        }
-        
-        State interp = State.interpolate(ent.getLastRenderState(), ent.getState(), alpha);
-        Vector relative = interp.orientation.rotate(
-        		new Vector(0, 0, radius * CAMERA_PILOT_OFFSET_SCALAR));
-        Vector camera = interp.position.add(relative);
-        Vector up = interp.orientation.rotate(new Vector(0, 1, 0));
 
-        glu.gluLookAt(
-        		camera.x, camera.y, camera.z,
-        		interp.position.x, interp.position.y, interp.position.z,
-        		up.x, up.y, up.z);
-    }
+	private void setUpLighting() {
+		GL11.glEnable(GL11.GL_LIGHT0);
 
-	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-			int height) {
-        drawable.getGL().getGL2().glViewport(0, 0, width, height);
+		FloatBuffer lamb = BufferUtils.createFloatBuffer(4);
+		lamb.put(new float[] { 0.8f, 0.8f, 0.8f,
+				1.0f });
+		lamb.flip();
+		// float[] ldiff = { 0.6f, 0.6f, 0.6f, 1.0f };
+		// float[] lspec = { 0.4f, 0.4f, 0.4f, 1.0f };
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, lamb);
+		// GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, ldiff, 0);
+		// GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_SPECULAR, lspec, 0);
+
+		FloatBuffer pos = BufferUtils.createFloatBuffer(4);
+		pos.put(new float[] { -9, -9, 10, 1 });
+		pos.flip();
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
+
+		GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_CONSTANT_ATTENUATION, 0);
+		GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_QUADRATIC_ATTENUATION, 0.005f);
+
+		GL11.glLightModeli(GL11.GL_LIGHT_MODEL_LOCAL_VIEWER, GL11.GL_TRUE);
+		FloatBuffer amb = BufferUtils.createFloatBuffer(4);
+		amb.put(new float[] { 0.4f, 0.4f, 0.4f, 1.0f });
+		amb.flip();
+		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, amb);
+		GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
 	}
-	
-	@Override
-	public void display(GL2 gl, float alpha) {
-	//	if (!updating)
-			setProjection(gl, alpha);
-		
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity();
-	       
-        gl.glClearColor(0.47f, 0.53f, 0.67f, 0);
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-        
-        gl.glPushAttrib(GL2.GL_DEPTH_BUFFER_BIT);
-        	gl.glDisable(GL2.GL_LIGHTING);
-        	gl.glEnable(GL2.GL_TEXTURE_2D);
-        	Texture tex = textures[BaseTextures.WALL.ordinal()];
-        	TextureCoords tc = tex.getImageTexCoords();
-        	tex.enable();
-        	tex.bind();
+
+	private void setProjection(float alpha) {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+
+		/* Specify perspective transformation */
+		GLU.gluPerspective(CAMERA_FOV_ANGLE, ((float) mode.getWidth())
+				/ ((float) mode.getHeight()), CAMERA_CLIPPING_NEAR,
+				CAMERA_CLIPPING_FAR);
+
+		Ship ent = me.getShip();
+
+		State interp = State.interpolate(ent.getLastRenderState(), ent
+				.getState(), alpha);
+		// Vector relative = interp.orientation.rotate(
+		// new Vector(0, radius*CAMERA_PILOT_OFFSET_SCALAR, radius *
+		// CAMERA_PILOT_OFFSET_SCALAR));
+
+		Vector relative = interp.orientation.rotate(new Vector(
+				ent.getData().cameraPosOffset.x,
+				ent.getData().cameraPosOffset.y,
+				ent.getData().cameraPosOffset.z));
+		Vector look = interp.orientation.rotate(new Vector(
+				ent.getData().cameraLookOffset.x,
+				ent.getData().cameraLookOffset.y,
+				ent.getData().cameraLookOffset.z));
+
+		Vector cameraPos = interp.position.add(relative);
+		Vector cameraLook = interp.position.add(look);
+		Vector up = interp.orientation.rotate(new Vector(0, 1, 0));
+
+		GLU.gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z, cameraLook.x,
+				cameraLook.y, cameraLook.z, up.x, up.y, up.z);
+	}
+
+	public void render(float alpha) {
+		setProjection(alpha);
+
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+
+		GL11.glClearColor(0.47f, 0.53f, 0.67f, 0);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+		GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		Texture texture = textures[BaseTextures.WALL.ordinal()];
+		texture.bind();
+
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, 0, 2000.f);
+		drawCubeFace(texture, 2000.f);
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(2000.f, 0, 0);
+		GL11.glRotatef(90, 0, 1, 0);
+		drawCubeFace(texture, 2000.f);
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(-2000.f, 0, 0);
+		GL11.glRotatef(90, 0, 1, 0);
+		drawCubeFace(texture, 2000.f);
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, 0, -2000.f);
+		GL11.glRotatef(0, 0, 1, 0);
+		drawCubeFace(texture, 2000.f);
+		GL11.glPopMatrix();
+
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glPopAttrib();
+
+		EntityManager em = EntityManager.getEntityManager();
+		State interpolated;
+		AxisAngle rotation;
+		for (ModelEntity entity : em.getAllOfType(ModelEntity.class)) {
+			if (!entity.isPreCached()) {
+				entity.precache();
+			}
+
+			interpolated = State.interpolate(entity.getLastRenderState(),
+					entity.getState(), alpha);
+			entity.setLastRenderState(entity.getState().clone());
+			rotation = interpolated.orientation.toAxisAngle();
+
+			GL11.glPushMatrix();
+			GL11.glTranslatef(interpolated.position.x, interpolated.position.y,
+					interpolated.position.z);
+			if (!rotation.axis.equals(Vector.ZERO)) {
+				GL11.glRotatef((float) Math.toDegrees(rotation.angle),
+						rotation.axis.x, rotation.axis.y, rotation.axis.z);
+			}
+			entity.draw();
+			GL11.glPopMatrix();
+		}
+
+        for (ParticleEntity entity : em.getAllOfType(ParticleEntity.class)) {
+        	rotation = entity.getOrientation().toAxisAngle();
         	
-        	gl.glPushMatrix();
-	        	gl.glTranslatef(0, 0, 200.f);
-	        	drawCubeFace(tc, 200.f, gl);
-        	gl.glPopMatrix();
-        	gl.glPushMatrix();
-	        	gl.glTranslatef(200.f, 0, 0);
-	        	gl.glRotatef(90, 0, 1, 0);
-	        	drawCubeFace(tc, 200.f, gl);
-	        gl.glPopMatrix();
-	    	gl.glPushMatrix();
-		    	gl.glTranslatef(-200.f, 0, 0);
-		    	gl.glRotatef(90, 0, 1, 0);
-		    	drawCubeFace(tc, 200.f, gl);
-		    gl.glPopMatrix();
-			gl.glPushMatrix();
-				gl.glTranslatef(0, 0, -200.f);
-				gl.glRotatef(0, 0, 1, 0);
-				drawCubeFace(tc, 200.f, gl);
-			gl.glPopMatrix();
-        	
-        	gl.glDisable(GL2.GL_TEXTURE_2D);
-        	gl.glEnable(GL2.GL_LIGHTING);
-        gl.glPopAttrib();
-        	
-        
-        EntityManager em = EntityManager.getEntityManager();
-        State interpolated;
-        AxisAngle rotation;
-        for (ModelEntity entity : em.getAllOfType(ModelEntity.class)) {
-        	if (!entity.isPreCached()) {
-        		entity.precache(gl);
-        	}
-        	
-        	interpolated = State.interpolate(entity.getLastRenderState(), entity.getState(), 
-        			alpha);
-        	entity.setLastRenderState(entity.getState().clone());
-        	rotation = interpolated.orientation.toAxisAngle();
-        	
-            gl.glPushMatrix();
-	        	gl.glTranslatef(interpolated.position.x, interpolated.position.y,
-	        			interpolated.position.z);
+            GL11.glPushMatrix();
+	        	GL11.glTranslatef(entity.getPosition().x, entity.getPosition().y,
+	        			entity.getPosition().z);
 	        	if (!rotation.axis.equals(Vector.ZERO)) {
-		        	gl.glRotated(Math.toDegrees(rotation.angle), rotation.axis.x, rotation.axis.y,
+		        	GL11.glRotatef((float)Math.toDegrees(rotation.angle), rotation.axis.x, rotation.axis.y,
 		        			rotation.axis.z);
 	        	}
-	        	entity.draw(gl);
-        	gl.glPopMatrix();
+	        	entity.draw();
+        	GL11.glPopMatrix();
         }
-        
-   		gl.glMatrixMode(GL2.GL_PROJECTION);
-   		gl.glPushMatrix();
-   		gl.glPushAttrib(GL2.GL_LIGHTING_BIT);
-   			gl.glDisable(GL2.GL_LIGHTING);
-   			gl.glLoadIdentity();
-   			glu.gluOrtho2D(0, width, 0, height);
-   			gl.glMatrixMode(GL2.GL_MODELVIEW);
-   			gl.glLoadIdentity();
-   			
-   			for(UIElement e : uiElements)
-   			{
-   				gl.glTranslated(e.pos.x,e.pos.y,e.pos.z);
-   				e.draw(gl);
-   			}
-   		gl.glPopAttrib();
-   		gl.glMatrixMode(GL2.GL_PROJECTION);
-   		gl.glPopMatrix();
-   		
-        
-        gl.glFlush();
+
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glLoadIdentity();
+		GLU.gluOrtho2D(0, mode.getWidth(), 0, mode.getHeight());
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+
+		for (UIElement e : uiElements) {
+			GL11.glPushMatrix();
+			GL11.glTranslated(e.pos.x, e.pos.y, e.pos.z);
+			e.draw();
+			GL11.glPopMatrix();
+		}
+		GL11.glPopAttrib();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+
+		GL11.glPopMatrix();
+
+		GL11.glFlush();
+		Display.update();
 	}
 }

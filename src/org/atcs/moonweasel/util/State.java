@@ -1,21 +1,18 @@
 package org.atcs.moonweasel.util;
 
-import java.io.IOException;
-import java.io.ObjectStreamException;
-import java.io.Serializable;
 import java.util.PriorityQueue;
 
+import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
-public class State implements Serializable
+public class State 
 {
-	private static final long serialVersionUID = 1954935768443886969L;
-
 	// interpolation used for animating in between states
 	public static State interpolate(State a, State b, float alpha) 
 	{
 		State interpolated = new State(
+				a.entity,
 				a.position.scale(1 - alpha).add(b.position.scale(alpha)), 
 				a.momentum.scale(1 - alpha).add(b.momentum.scale(alpha)), 
 				Quaternion.slerp(a.orientation,b.orientation, alpha), 
@@ -39,26 +36,26 @@ public class State implements Serializable
 	public Quaternion spin;
 	public Matrix bodyToWorld;
 	public Matrix worldToBody;
-	public Vector[] verticesOfBoundingRegion;
 	public float dangerZoneRadius;
 
 	// constant
-	private float mass;
-	private float inverseMass;
-	private Matrix inertiaTensor;
-	private Matrix inverseInertiaTensor;
+	public final ModelEntity entity;
+	public final float mass;
+	public final float inverseMass;
+	public final Matrix inertiaTensor;
+	public final Matrix inverseInertiaTensor;
 
 	private PriorityQueue<TimedDerivative> derivatives;
 
-	public State(float mass, Matrix inertia) 
+	public State(ModelEntity entity, float mass, Matrix inertia) 
 	{
-		this(Vector.ZERO, Vector.ZERO, Quaternion.ZERO,
-				Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
+		this(entity, Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
 	}
-
-	private State(Vector position, Vector momentum, Quaternion orientation, 
-			Vector angularMomentum, float mass, float inverseMass, Matrix inertiaTensor,
-			Matrix inverseInertiaTensor) {
+	
+	private State(ModelEntity entity, Vector position, Vector momentum, 
+			Quaternion orientation, Vector angularMomentum, float mass, 
+			float inverseMass, Matrix inertiaTensor, Matrix inverseInertiaTensor) {
+		this.entity = entity;
 		this.position = position;
 		this.momentum = momentum;
 		this.orientation = orientation;
@@ -84,25 +81,15 @@ public class State implements Serializable
 		this.spin = other.spin;
 		this.bodyToWorld = other.bodyToWorld;
 		this.worldToBody = other.worldToBody;
-		this.verticesOfBoundingRegion = other.verticesOfBoundingRegion;
 		this.dangerZoneRadius = other.dangerZoneRadius;
 
+		this.entity = other.entity;
 		this.mass = other.mass;
 		this.inverseMass = other.inverseMass;
 		this.inertiaTensor = other.inertiaTensor;
 		this.inverseInertiaTensor = other.inverseInertiaTensor;
 
 		this.derivatives = other.derivatives;
-	}
-	
-	public float getMass()
-	{
-		return mass;
-	}
-
-	public Matrix getInertiaTensor()
-	{
-		return inertiaTensor;
 	}
 
 	public void addDerivative(TimedDerivative derivative) {
@@ -125,6 +112,7 @@ public class State implements Serializable
 	}
 
 	public void recalculate() {
+		
 		velocity = momentum.scale(inverseMass);
 		angularVelocity = inverseInertiaTensor.transform(angularMomentum);
 		orientation = orientation.normalize();
@@ -139,33 +127,11 @@ public class State implements Serializable
 
 	public void setDangerZone(float dt)
 	{
-		dangerZoneRadius = velocity.scale(dt).length();
-	}
-
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException
-	{
-		out.writeObject(position);
-		out.writeObject(momentum);
-		out.writeObject(orientation);
-		out.writeObject(angularMomentum);
-		out.writeObject(inertiaTensor);
-		out.writeFloat(mass);
+		dangerZoneRadius = 5 + velocity.scale(dt).length();
 	}
 	
-	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+	public float getMass()
 	{
-		position = (Vector) in.readObject();
-		momentum = (Vector) in.readObject();
-		orientation = (Quaternion) in.readObject();
-		angularMomentum = (Vector) in.readObject();
-		inertiaTensor = (Matrix) in.readObject();
-		mass = in.readFloat();	
-	}
-	
-	private Object readResolve() throws ObjectStreamException
-	{
-		return new State(position, momentum, orientation, 
-				angularMomentum, mass, 1 / mass, inertiaTensor,
-				 inertiaTensor.inverse());
+		return mass;
 	}
 }

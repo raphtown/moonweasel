@@ -1,6 +1,8 @@
 package org.atcs.moonweasel.entities;
 
+import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.atcs.moonweasel.Manager;
 import org.atcs.moonweasel.Moonweasel;
@@ -30,7 +32,6 @@ public class EntityManager extends Manager<Entity> {
 	@Override
 	public <E extends Entity> E create(String type) {
 		E ent = super.create(type);
-		ent.spawn();
 		return ent;
 	}
 
@@ -51,11 +52,12 @@ public class EntityManager extends Manager<Entity> {
 	}
 
 	public void registerThink(Entity entity, int ms) {
-		long time = System.currentTimeMillis() + ms;
-		int offset = 0;
-		while (this.thoughts.containsKey(time + offset)) offset++;
-		time = time + offset;
-		this.thoughts.put(time, entity);
+		 long time = System.currentTimeMillis() + ms;
+		 int offset = 0;
+		 while (this.thoughts.containsKey(time + offset))
+			 	offset++;
+		 time = time + offset;
+		 this.thoughts.put(time, entity);
 	}
 
 	public void update(long t) {
@@ -64,6 +66,15 @@ public class EntityManager extends Manager<Entity> {
 		while (thoughts.size() > 0
 				&& thoughts.firstKey() < System.currentTimeMillis()) {
 			thoughts.remove(thoughts.firstKey()).think();
+		}
+		
+		Iterator<Entry<Integer, Entity>> iter = elements.entrySet().iterator();
+		Entry<Integer, Entity> entry;
+		while (iter.hasNext()) {
+			entry = iter.next();
+			if (entry.getValue().isDestroyed()) {
+				iter.remove();
+			}
 		}
 	}
 

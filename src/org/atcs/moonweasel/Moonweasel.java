@@ -4,12 +4,18 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import org.atcs.moonweasel.entities.EnergyBomb;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.physics.Physics;
+import org.atcs.moonweasel.util.Vector;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 
 public abstract class Moonweasel
 {
@@ -39,21 +45,47 @@ public abstract class Moonweasel
 		addEntityClass(Player.class);
 		addEntityClass(Snowflake.class);
 		addEntityClass(Explosion.class);
+		addEntityClass(Laser.class);
+		addEntityClass(EnergyBomb.class);
 	}
 
 	public static void main(String[] args) {
+		int width = 800, height = 600;
+		DisplayMode mode = null;
+		try {
+			DisplayMode[] modes = Display.getAvailableDisplayModes();
+
+			for (int i = 0; i < modes.length; i++) {
+				if ((modes[i].getWidth() == width)
+						&& (modes[i].getHeight() == height)) {
+					mode = modes[i];
+					break;
+				}
+			}
+			
+			if (mode == null) {
+				throw new RuntimeException(String.format(
+						"Unable to find target display mode width %d, height %d.",
+						width, height));
+			}
+		} catch (LWJGLException e) {
+			throw new RuntimeException("Unable to choose display mode.", e);
+		}
+
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Server (0) or Client (1)?");
 		Moonweasel weasel;
 		int choice = scanner.nextInt();
 		if(choice == 0)
 		{
-			weasel = new Artemis(800, 600, false);
+			weasel = new Artemis(mode, false);
 		}
 		else
 		{
-			weasel = new Lycanthrope(800, 600, false);
+			weasel = new Lycanthrope(mode, false);
 		}
+
+		// weasel.seeFox();
 		weasel.run();
 		weasel.destroy(); // eaten
 
@@ -70,20 +102,16 @@ public abstract class Moonweasel
 
 	protected long t;
 
-	protected Moonweasel(int width, int height, boolean fullscreen) {
+	protected Moonweasel(DisplayMode mode, boolean fullscreen) {
 		this.entityManager = EntityManager.getEntityManager();
-
-
 		this.physics = new Physics();
 	}
 
 	protected void destroy() {
 		physics.destroy();
 	}
-
-	protected void run() 
-	{
-		final int TICKS_PER_SECOND = 25;
+	protected void run() {
+		final int TICKS_PER_SECOND = 50;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
 		long next_logic_tick = System.currentTimeMillis();

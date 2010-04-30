@@ -2,47 +2,43 @@ package org.atcs.moonweasel.entities;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.media.opengl.GL2;
-
 import org.atcs.moonweasel.gui.Loader;
-import org.atcs.moonweasel.physics.BoundingShape;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
+import org.lwjgl.opengl.GL11;
 
 public abstract class ModelEntity extends Entity implements Positional {
-	private final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
+	public final static Map<Class<? extends ModelEntity>, Integer> DISPLAY_LISTS;
 	
 	static {
 		DISPLAY_LISTS = new HashMap<Class<? extends ModelEntity>, Integer>();
 	}
 	
-	private BoundingShape bounding;
-	private State lastRenderState;
-	private State state;
-		
-	protected ModelEntity(BoundingShape bounding, float mass, Matrix inertiaTensor) {
+	protected State lastRenderState;
+	protected State state;
+	
+	protected ModelEntity(float mass, Matrix inertiaTensor) 
+	{
 		super();
-		
-		this.bounding = bounding;
-		this.lastRenderState = new State(mass, inertiaTensor);
-		this.state = new State(mass, inertiaTensor);
-		this.addChange("create modelentity " + bounding + " " + mass + " " + inertiaTensor);
+
+		this.lastRenderState = new State(this, mass, inertiaTensor);
+		this.state = new State(this, mass, inertiaTensor);
+
+		this.addChange("create modelentity " + mass + " " + inertiaTensor);
 	}
+
 	
 	public void collidedWith(ModelEntity other) {
+		System.out.println("collidedWith method called");
 	}
 	
-	public void draw(GL2 gl) {
+	public void draw() {
 		assert DISPLAY_LISTS.containsKey(this.getClass());
 		
-		gl.glCallList(DISPLAY_LISTS.get(this.getClass()));
+		GL11.glCallList(DISPLAY_LISTS.get(this.getClass()));
 	}
 	
-	public BoundingShape getBoundingShape() {
-		return bounding;
-	}
 	
 	public State getLastRenderState() {
 		return this.lastRenderState;
@@ -60,17 +56,17 @@ public abstract class ModelEntity extends Entity implements Positional {
 		return DISPLAY_LISTS.containsKey(this.getClass());
 	}
 	
-	public void precache(GL2 gl) {
-		int list = gl.glGenLists(1);
+	public void precache() {
+		int list = GL11.glGenLists(1);
 
-		gl.glNewList(list, GL2.GL_COMPILE);
-			if (!Loader.load(getEntityType(), gl)) {
+		GL11.glNewList(list, GL11.GL_COMPILE);
+			if (!Loader.load(getEntityType())) {
 				// Something blew up, assume draw is overridden.
-				gl.glEndList();
-				gl.glNewList(list, GL2.GL_COMPILE);
-				draw(gl);
+				GL11.glEndList();
+				GL11.glNewList(list, GL11.GL_COMPILE);
+				draw();
 			}
-		gl.glEndList();
+		GL11.glEndList();
 		DISPLAY_LISTS.put(this.getClass(), list);
 	}
 	
@@ -82,6 +78,7 @@ public abstract class ModelEntity extends Entity implements Positional {
 		this.state.velocity = velocity;
 		this.addChange("set velocity " + velocity);
 	}
+
 	
 	public void setPosition(Vector position) {
 		this.state.position = position;

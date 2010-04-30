@@ -10,7 +10,7 @@ import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TypeRange;
 
 public abstract class Manager<T extends Identifiable> implements Iterable<T> {
-	private Map<Integer, T> elements;
+	protected Map<Integer, T> elements;
 	
 	protected Manager() {
 		this.elements = new TreeMap<Integer, T>();

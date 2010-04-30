@@ -21,6 +21,38 @@ public class Vector implements Serializable
 		return new Vector(x, y, z);
 	}
 	
+	private interface IDirection {
+		public float get(Vector v);
+	}
+	
+	public enum Direction {
+		X(new IDirection() {
+			public float get(Vector v) {
+				return v.x;
+			}
+		}),
+		Y(new IDirection() {
+			public float get(Vector v) {
+				return v.y;
+			}
+		}),
+		Z(new IDirection() {
+			public float get(Vector v) {
+				return v.z;
+			}
+		});
+		
+		private IDirection impl;
+		
+		private Direction(IDirection impl) {
+			this.impl = impl;
+		}
+		
+		public float get(Vector v) {
+			return impl.get(v);
+		}
+	}
+	
 	public final float x, y, z;
 	
 	public Vector(float x, float y, float z) 
@@ -39,12 +71,21 @@ public class Vector implements Serializable
 	
 	public Vector cross(Vector o) 
 	{
+//		if(o.equals(this))
+//		{
+//			System.out.println("crap. zero crossproduct");
+//		}
 		return new Vector(y * o.z - z * o.y, z*o.x - x*o.z, x*o.y - y*o.x);
 	}
 	
 	public float distance(Vector o)
 	{
 		return this.subtract(o).length();
+	}
+	
+	public float squareDistance(Vector o)
+	{
+		return (x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) + (z-o.z)*(z-o.z);
 	}
 	
 	public float dot(Vector o) 
@@ -69,7 +110,7 @@ public class Vector implements Serializable
 			return false;
 		return true;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -80,6 +121,10 @@ public class Vector implements Serializable
 		return result;
 	}
 
+	public float get(Direction d) {
+		return d.get(this);
+	}
+	
 	public float length() {
 		return (float)Math.sqrt(x * x + y * y + z * z);
 	}
@@ -87,13 +132,16 @@ public class Vector implements Serializable
 	public Vector normalize()
 	{
 		float length = this.length();
+		if(length == 0f)
+		{
+			System.out.println("Attempting to normalize, about to divide by zero.");
+		}
 		return new Vector(x / length, y / length, z / length);
 	}
 	
 	public Vector roundMe(int decimalPrecision)
 	{
 		return new Vector(
-				
 	(float) (Math.floor(x*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)),
 	(float) (Math.floor(y*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)),
 	(float) (Math.floor(z*(Math.pow(10,decimalPrecision)))*Math.pow(10,-1*decimalPrecision)) 	
@@ -110,18 +158,9 @@ public class Vector implements Serializable
 		return new Vector(x - o.x, y - o.y, z - o.z);
 	}
 	
-	public Vector projectIntoXY()
+	public Vector projectOnto(Vector v)
 	{
-		return new Vector(x, y, 0);
-	}
-	
-	public Vector projectIntoZX()
-	{
-		return new Vector(x, 0, z);
-	}
-	public Vector projectIntoYZ()
-	{
-		return new Vector(0, y, z);
+		return v.normalize().scale(this.dot(v.normalize()));
 	}
 	
 	public float angleBetween(Vector v)

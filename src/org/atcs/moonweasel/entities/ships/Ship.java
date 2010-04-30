@@ -1,6 +1,7 @@
 package org.atcs.moonweasel.entities.ships;
 
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.Vulnerable;
 import org.atcs.moonweasel.entities.particles.Explosion;
@@ -17,6 +18,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private static final long serialVersionUID = 6162008933132397822L;
 
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
+	private static float LASER_OFFSET = 0.3f;
+	private static long COOLDOWN = 200;
+	
+	final static float MAX_SPEED = 0.1f;
 	
 	private ShipData data;
 	private int health;
@@ -24,22 +29,40 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	private Player pilot;
 	private Player[] gunners;
-	@SuppressWarnings("unused")
-	private Vector[] gunnerPositions;
+	private float laserOffset;
+	private long nextFireTime;
 	
 	protected Ship(ShipData data) {
-		super(data.bounds, data.mass, BASE_TENSOR.scale(data.mass / 100));
+		super(data.mass, BASE_TENSOR.scale(data.mass / 100));
 
 		this.data = data;
 		this.health = this.data.health;
 		this.MAX_HEALTH = this.health;
 		
 		this.gunners = new Player[data.gunners.length];
-		this.gunnerPositions = data.gunners;
 		addChange("created ship " + data);
+
+		this.laserOffset = LASER_OFFSET;
+		this.nextFireTime = 0;
 	}
 	
 	public void apply(UserCommand command) {
+		//Shooting
+		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
+		{
+			EntityManager manager = EntityManager.getEntityManager();
+			Laser laser = manager.create("laser");
+			laser.setSource(this, new Vector(laserOffset, 0, -6f));
+			laserOffset = -laserOffset;
+			laser.spawn();
+			
+			nextFireTime = getTime() + COOLDOWN;
+		}
+		
+		applyMovement(command);
+	}
+	
+	private void applyMovement(UserCommand command) {
 		State state = getState();
 		float f = data.thrust * 0.00001f; //50 newtons or 50 newton-meters, depending on context
 		Vector relativeVelocity = state.orientation.inverse().rotate(state.velocity);
@@ -50,13 +73,13 @@ public class Ship extends ModelEntity implements Vulnerable {
 		MutableVector relativeTorque = new MutableVector();
 		// Mouse movement in x axis.
 		if (command.get(Commands.ROLLING)) { // User wants to roll.
-			relativeTorque.z += 0.001 * command.getMouse().x; // Scale mouse position. 
+			relativeTorque.z += -0.000005 * command.getMouse().x; // Scale mouse position. 
 		} else { // Turn rather than roll.
-			relativeTorque.y += 0.001 * command.getMouse().x;			
+			relativeTorque.y += -0.000005 * command.getMouse().x;
 		}
 
 		// Mouse movement in y axis.
-		relativeTorque.x += 0.001 * command.getMouse().y;
+		relativeTorque.x += -0.00001 * command.getMouse().y;
 				
 		// Damp that angular motion!!!
 		if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
@@ -96,10 +119,16 @@ public class Ship extends ModelEntity implements Vulnerable {
 			relativeForce.y -= 20 * relativeVelocity.y;
 		}
 		
-		// A little forward thrust.
-		if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
-			relativeForce.z -= f / 2;
+		//// A little forward thrust.
+		//if (command.get(Commands.AUTOMATIC_THRUSTER_CONTROL)) {
+		//	relativeForce.z -= f / 2;
+		//}
+		
+		if(this.getState().velocity.length() >= MAX_SPEED && (relativeForce.z)/(this.getState().velocity.z) > 0)
+		{
+			relativeForce.z = 0;
 		}
+			
 		
 		force.sum(state.orientation.rotate(relativeForce.toVector()));
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
@@ -128,19 +157,20 @@ public class Ship extends ModelEntity implements Vulnerable {
 		}
 		
 		EntityManager manager = EntityManager.getEntityManager();
-
 		Explosion explosion = manager.create("explosion");
 		explosion.setPosition(this.getPosition());
 
 		float distance = getState().getMass() / 1000;
 		float damage;
+		float scale;
 		for (Ship ship : manager.getAllShipsInSphere(
 				getState().position, distance)) {
 			if (ship == this || ship.isDestroyed()) {
 				continue;
 			}
 			
-			damage = 50 * (1 - getState().position.distance(ship.getState().position) / distance);
+			scale = 1 - getState().position.distance(ship.getState().position) / distance;
+			damage = data.mass * scale;
 			ship.damage((int)damage);
 		}
 		addChange("destroy");
@@ -164,6 +194,13 @@ public class Ship extends ModelEntity implements Vulnerable {
 		return pilot;
 	}
 	
+	public void killed(Ship target) {
+		pilot.killedPlayer();
+		for (Player gunner : gunners) {
+			gunner.killedPlayer();
+		}
+	}
+	
 	public void setPilot(Player pilot) {
 		this.pilot = pilot;
 		addChange("set pilot " + pilot.getID());
@@ -171,5 +208,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 	@Override
 	public void spawn() {
+		assert pilot != null;
 	}
 }

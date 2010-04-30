@@ -1,20 +1,19 @@
 package org.atcs.moonweasel;
 
 import org.atcs.moonweasel.networking.Server;
-
+import org.lwjgl.opengl.DisplayMode;
 
 public class Artemis extends Moonweasel {
-
 	protected Server server;
 	
-	public Artemis(int width, int height, boolean fullscreen) 
+	public Artemis(DisplayMode mode, boolean fullscreen) 
 	{
-		super(width, height, fullscreen);
+		super(mode, fullscreen);
 		server = new Server("Moonweasel Server", this);
 	}
 
 	protected void act(long next_logic_tick) 
 	{
-		server.act();	
+		server.act();
 	}
 }

@@ -4,6 +4,7 @@ import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
+import org.lwjgl.opengl.DisplayMode;
 
 public class Lycanthrope extends Moonweasel
 {
@@ -13,9 +14,9 @@ public class Lycanthrope extends Moonweasel
 	private short lastCommand = 0;
 	private Client client;
 	
-	public Lycanthrope(int width, int height, boolean fullscreen)
+	public Lycanthrope(DisplayMode mode, boolean fullscreen)
 	{
-		super(width, height, fullscreen);
+		super(mode, fullscreen);
 		this.client = new Client();
 		client.findAndConnectToServer();
 		client.connectionInitializationComplete();
@@ -29,8 +30,8 @@ public class Lycanthrope extends Moonweasel
 			}
 			this.player = (Player) entityManager.get(client.getMyID());
 		}
-		this.view = new WeaselView(width, height, fullscreen, player);
-		this.input = new InputController(view.getWindow());
+		this.view = new WeaselView(mode, fullscreen, player);
+		this.input = new InputController();
 	}
 	
 	protected void destroy() {
