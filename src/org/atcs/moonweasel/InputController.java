@@ -8,7 +8,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class InputController {
-	private UserCommand lastCommand;
+//	private UserCommand lastCommand;
 	
 	public InputController() {
 		try {
@@ -19,13 +19,13 @@ public class InputController {
 			throw new RuntimeException("Unable to create keyboard or mouse.", e);
 		}
 		
-		lastCommand = new UserCommand();
+		//lastCommand = new UserCommand();
 	}
 	
 	public UserCommand poll(long t) {
 		UserCommand command = new UserCommand();
-		command.copyKeyState(lastCommand);
-		lastCommand = command;
+//		command.copyKeyState(lastCommand);
+//		lastCommand = command;
 		
 		Keyboard.poll();
 		while (Keyboard.next()) {

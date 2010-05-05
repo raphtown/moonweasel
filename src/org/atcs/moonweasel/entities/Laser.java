@@ -7,6 +7,7 @@ import org.lwjgl.util.glu.Cylinder;
 
 public class Laser extends ParticleEntity
 {
+	private static final long serialVersionUID = 6253870822665981065L;
 	private static final float VELOCITY = 150.0f;
 	private static final int LIFESPAN = 10;
 	

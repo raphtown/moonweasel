@@ -12,7 +12,7 @@ public class Artemis extends Moonweasel {
 		server = new Server("Moonweasel Server", this);
 	}
 
-	protected void act(long next_logic_tick) 
+	protected void act(final long next_logic_tick) 
 	{
 		server.act();
 	}

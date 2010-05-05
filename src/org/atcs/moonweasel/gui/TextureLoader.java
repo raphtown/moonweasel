@@ -37,7 +37,8 @@ import org.lwjgl.opengl.GL11;
  */
 public class TextureLoader {
     /** The table of textures that have been loaded in this loader */
-    private HashMap table = new HashMap();
+    @SuppressWarnings("unchecked")
+	private HashMap table = new HashMap();
 
     /** The colour model including alpha for the GL image */
     private ColorModel glAlphaColorModel;
@@ -85,7 +86,8 @@ public class TextureLoader {
      * @return The loaded texture
      * @throws IOException Indicates a failure to access the resource
      */
-    public Texture getTexture(String resourceName) throws IOException {
+    @SuppressWarnings("unchecked")
+	public Texture getTexture(String resourceName) throws IOException {
         Texture tex = (Texture) table.get(resourceName);
         
         if (tex != null) {
@@ -191,7 +193,8 @@ public class TextureLoader {
      * @param texture The texture to store the data into
      * @return A buffer containing the data
      */
-    private ByteBuffer convertImageData(BufferedImage bufferedImage,Texture texture) { 
+    @SuppressWarnings({ "unchecked", "unchecked" })
+	private ByteBuffer convertImageData(BufferedImage bufferedImage,Texture texture) { 
         ByteBuffer imageBuffer = null; 
         WritableRaster raster;
         BufferedImage texImage;

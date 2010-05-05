@@ -8,6 +8,8 @@ import org.atcs.moonweasel.util.Vector;
 
 public class EnergyBomb extends ModelEntity
 {
+	private static final long serialVersionUID = -7964430923577915469L;
+
 	private static final int THINK_TIME = 20;
 	
 	private ModelEntity target;
@@ -32,7 +34,6 @@ public class EnergyBomb extends ModelEntity
 		State state = getState();
 		
 		float forceConstant = .000014f;
-		float torqueConstant = .000182f;
 		
 		if(getPosition().equals(target.getPosition())) //if they are in the same position
 		{

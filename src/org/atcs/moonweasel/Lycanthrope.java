@@ -57,7 +57,6 @@ public class Lycanthrope extends Moonweasel
 		
 		interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) / SKIP_TICKS;
 		view.render(interpolation);
-		
 	}
 
 }

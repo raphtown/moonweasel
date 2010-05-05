@@ -46,9 +46,6 @@ public class ServerAnnouncer extends Thread implements Runnable, Destructible
 			socket = new DatagramSocket();
 			while (running)
 			{
-// 				this is annoying
-				Debug.print("Sending packet");
-
 				socket.send(packet);
 				Thread.sleep(ANNOUNCER_SLEEP_TIME);
 			}

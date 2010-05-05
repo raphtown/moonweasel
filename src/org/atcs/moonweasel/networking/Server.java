@@ -107,8 +107,7 @@ public class Server extends RMIObject implements IServer
 			throw new RemoteException("Unconnected client trying to execute command!");
 
 		Debug.print("Received command " + command + " from " + c + ".");
-		
-		Debug.print("Artemis to Lycanthrope ... we have lift-off");
+
 		float mouseX = mouse.x;
 		float mouseY = mouse.y;
 		Player plr = playerMap.get(c);
@@ -155,6 +154,7 @@ public class Server extends RMIObject implements IServer
 
 	public void sendCurrentEntitiesToAll()
 	{
+		Debug.print("Sending out entities.");
 		Set<String> temp = getSafeConnectedClientsSet();
 		for (String clientName : temp)
 			sendCurrentEntitiesToClient(clientName);
@@ -162,6 +162,7 @@ public class Server extends RMIObject implements IServer
 
 	public void sendCurrentEntitiesToClient(String clientName)
 	{
+		Debug.print("Sending out entities to " + clientName);
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		synchronized (EntityManager.getEntityManager())
@@ -181,6 +182,7 @@ public class Server extends RMIObject implements IServer
 
 	public void sendNewEntitiesToAll()
 	{
+		Debug.print("Sending out new entities to all.");
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		synchronized (EntityManager.getEntityManager())
@@ -205,6 +207,8 @@ public class Server extends RMIObject implements IServer
 	
 	public void sendDeletedEntitiesToAll(ArrayList<Entity> eList)
 	{
+		Debug.print("Sending out deleted entities to all.");
+
 		Set<String> temp = getSafeConnectedClientsSet();
 		for (String clientName : temp)
 			sendEntities(false, eList, clientName);
@@ -219,6 +223,7 @@ public class Server extends RMIObject implements IServer
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			System.err.println("Invalid client in client list...");
 			disconnectClient(clientName);
 		}
@@ -226,6 +231,7 @@ public class Server extends RMIObject implements IServer
 
 	public void sendChangesToAll()
 	{
+
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		List<ChangeList> list = new LinkedList<ChangeList>();
 		synchronized (EntityManager.getEntityManager())
@@ -260,6 +266,7 @@ public class Server extends RMIObject implements IServer
 
 	public void connectionInitializationComplete(String c)
 	{
+		Debug.print("Completed connection initialization for " + c);
 		connectedClients.put(c, connectingClients.get(c));
 		connectingClients.remove(c);
 		newlyConnectedClients.add(c);
@@ -268,11 +275,24 @@ public class Server extends RMIObject implements IServer
 
 	public Integer getMyID(String ip) throws RemoteException
 	{
+		while (playerMap.get(ip) == null)
+		{
+			Debug.print("DERP");
+
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return playerMap.get(ip).getID();
 	}
 
 	private void setupClient(String clientName)
 	{
+		Debug.print("Setting up client " + clientName);
+
 		EntityManager mgr = EntityManager.getEntityManager();
 		IClient client = connectedClients.get(clientName);
 		ShipType shipType;
