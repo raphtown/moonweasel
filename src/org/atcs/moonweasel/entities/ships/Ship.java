@@ -4,6 +4,7 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.Vulnerable;
+import org.atcs.moonweasel.entities.particles.Exhaust;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
@@ -28,6 +29,8 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private Player[] gunners;
 	private float laserOffset;
 	private long nextFireTime;
+	
+	private Exhaust tailPipe;
 	
 	protected Ship(ShipData data) {
 		super(data.mass, BASE_TENSOR.scale(data.mass / 100));
@@ -200,5 +203,8 @@ public class Ship extends ModelEntity implements Vulnerable {
 	@Override
 	public void spawn() {
 		assert pilot != null;
+		tailPipe = EntityManager.getEntityManager().create("exhaust");
+		tailPipe.setShip(this);
+		tailPipe.spawn();
 	}
 }
