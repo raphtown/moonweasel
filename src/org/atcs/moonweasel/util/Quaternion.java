@@ -68,8 +68,9 @@ public class Quaternion {
 	}
 	
 	public Quaternion inverse() {
-		Quaternion normalized = this.normalize();
-		return new Quaternion(normalized.w, -normalized.x, -normalized.y, -normalized.z);
+		Quaternion inverse = new Quaternion(w, -x, -y, -z);
+		float scaleFactor = w*w + x*x + y*y + z*z;
+		return inverse.scale(1/scaleFactor);
 	}
 
 	public float length() {

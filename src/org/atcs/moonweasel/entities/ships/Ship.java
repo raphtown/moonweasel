@@ -1,5 +1,7 @@
 package org.atcs.moonweasel.entities.ships;
 
+import java.util.ArrayList;
+
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -18,8 +20,12 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	private static float LASER_OFFSET = 0.3f;
 	private static long COOLDOWN = 200;
+	//private static final float STERN = 0.1f;
+	private static final float LASER_SCANNING_RANGE_Y = 0.15f; //radians
+	private static final float LASER_SCANNING_RANGE_X = 0.05f;
 	
-	final static float MAX_SPEED = 0.1f;
+	
+	final static float MAX_SPEED = 0.05f;
 	
 	private ShipData data;
 	private int health;
@@ -28,6 +34,8 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private Player[] gunners;
 	private float laserOffset;
 	private long nextFireTime;
+	
+	
 	
 	protected Ship(ShipData data) {
 		super(data.mass, BASE_TENSOR.scale(data.mass / 100));
@@ -46,10 +54,21 @@ public class Ship extends ModelEntity implements Vulnerable {
 		{
 			EntityManager manager = EntityManager.getEntityManager();
 			Laser laser = manager.create("laser");
-			laser.setSource(this, new Vector(laserOffset, 0, -6f));
+			laser.setSource(this, new Vector(laserOffset, 0, 0));
 			laserOffset = -laserOffset;
-			laser.spawn();
 			
+			ModelEntity enemy = autoTargetingLaser();
+			if (enemy != null)
+			{
+				System.out.println("Targeted an enemy - firing an auto-targeted laser");
+				laser.setTarget(enemy);
+			}
+			else
+			{
+				System.out.println("Did not find an enemy - firing a straight laser");
+			}
+			laser.spawn();
+
 			nextFireTime = getTime() + COOLDOWN;
 		}
 		
@@ -119,11 +138,20 @@ public class Ship extends ModelEntity implements Vulnerable {
 		//	relativeForce.z -= f / 2;
 		//}
 		
-		if(this.getState().velocity.length() >= MAX_SPEED && (relativeForce.z)/(this.getState().velocity.z) > 0)
-		{
-			relativeForce.z = 0;
+		if(this.getState().velocity.length() >= MAX_SPEED) {
+			if ((relativeForce.x)/(this.getState().velocity.x) > 0) {
+				relativeForce.x = 0;
+			}
+			if ((relativeForce.y)/(this.getState().velocity.y) > 0) {
+				relativeForce.y = 0;
+			}
+			if ((relativeForce.z)/(this.getState().velocity.z) > 0) {
+				relativeForce.z = 0;
+			}			
 		}
-			
+		
+		
+		System.out.println(this.getState().velocity.length());
 		
 		force.sum(state.orientation.rotate(relativeForce.toVector()));
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
@@ -144,7 +172,8 @@ public class Ship extends ModelEntity implements Vulnerable {
 	public void destroy() {
 		super.destroy();
 		
-		pilot.died();
+		if (pilot != null)
+			pilot.died();
 		for (Player gunner : gunners) {
 			gunner.died();
 		}
@@ -200,5 +229,79 @@ public class Ship extends ModelEntity implements Vulnerable {
 	@Override
 	public void spawn() {
 		assert pilot != null;
+	}
+	
+	public ModelEntity autoTargetingLaser()
+	{
+		ArrayList<ModelEntity> entitiesToCheck = entitiesInFront();
+		for(ModelEntity me : entitiesToCheck)
+		{
+			Vector enemyPosition = this.getState().worldToBody.transform(me.getState().position).normalize();
+			
+			float thetaY = (new Vector(0,enemyPosition.y,enemyPosition.z)).angleBetween((new Vector(0,0,-1)));
+			float thetaX = (new Vector(enemyPosition.x,0,enemyPosition.z)).angleBetween((new Vector(0,0,-1)));
+			
+			
+			System.out.println("ThetaY: " + thetaY);
+			System.out.println("ThetaX: " + thetaX);
+			
+			
+			if (thetaY <= LASER_SCANNING_RANGE_Y)
+			{
+				if (thetaX <= LASER_SCANNING_RANGE_X)
+				{
+					if (me instanceof Ship)
+					{
+						((Ship) me).damage(20);
+						System.out.println("Auto-targeted hitscan");
+					}
+					return me;
+				}
+				
+			}
+		}
+		return null;
+		
+	}
+	
+//	public ModelEntity laserHitScan() //returns null if no collision, otherwise the object that was hit
+//	{
+//		// <a,b,c> + t*<x,y,z>
+//		Vector x1 = this.getState().position;
+//		Vector x2 = this.getState().bodyToWorld.transform(new Vector(0,0,-1));
+//		
+//		
+//		ArrayList<ModelEntity> entitiesToCheck = entitiesInFront();
+//		for(ModelEntity me : entitiesToCheck) //just checks hitscan on centroids
+//		{
+//			Vector x0 = me.getState().position;
+//			float distance = (x0.subtract(x1).cross(x0.subtract(x2))).length()/(x2.subtract(x1)).length();
+//			if(distance < Laser_Hitscan_Threshold)
+//			{
+//				System.out.println("LAZORED");
+//				if(me instanceof Ship)
+//				{
+//					((Ship) me).damage(25);
+//				}
+//				return me;	 
+//			}
+//		}
+//		System.out.println("Missed");
+//		return null;
+//	}
+	
+	public ArrayList<ModelEntity> entitiesInFront() //returns a list of all entities in front of this ship
+	{
+		ArrayList<ModelEntity> forwardEntities = new ArrayList<ModelEntity>();
+		for(ModelEntity me : EntityManager.getEntityManager().getAllOfType(Ship.class))
+		{
+			if(this.getState().worldToBody.transform(me.getState().position).z < 0)
+			{
+				forwardEntities.add(me);
+			}
+		}
+		//todo: add asteroid class here
+		
+		return forwardEntities;
 	}
 }

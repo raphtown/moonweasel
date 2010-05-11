@@ -87,7 +87,7 @@ public class Vector
 	
 	public float dot(Vector o) 
 	{
-		return x * o.x + y * o.y + x * o.z;
+		return x * o.x + y * o.y + z * o.z;
 	}
 
 	@Override

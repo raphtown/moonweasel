@@ -21,7 +21,7 @@ import org.lwjgl.util.glu.GLU;
 
 public class WeaselView extends View {
 	private enum BaseTextures {
-		WALL("dev_measuregeneric01.png"), NUM_TEXTURES(null);
+		WALL("starfield2.png"), NUM_TEXTURES(null);
 
 		public final String filename;
 
@@ -39,17 +39,21 @@ public class WeaselView extends View {
 														 * field of view angle
 														 */
 	private static final float CAMERA_CLIPPING_NEAR = 0.1f;
-	private static final float CAMERA_CLIPPING_FAR = 10000;
+	private static final float CAMERA_CLIPPING_FAR = 500000000;
+
 
 	private static void drawCubeFace(Texture texture, float radius) {
+
+		final float TILE_CONSTANT = 2;
+		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(0, 0);
 		GL11.glVertex3f(radius, -radius, 0.f);
-		GL11.glTexCoord2f(0, texture.getHeight() * 5);
+		GL11.glTexCoord2f(0, texture.getHeight() * TILE_CONSTANT);
 		GL11.glVertex3f(radius, radius, 0.f);
-		GL11.glTexCoord2f(texture.getWidth() * 5, texture.getHeight() * 5);
+		GL11.glTexCoord2f(texture.getWidth() * TILE_CONSTANT, texture.getHeight() * TILE_CONSTANT);
 		GL11.glVertex3f(-radius, radius, 0.f);
-		GL11.glTexCoord2f(texture.getWidth() * 5, 0);
+		GL11.glTexCoord2f(texture.getWidth() * TILE_CONSTANT, 0);
 		GL11.glVertex3f(-radius, -radius, 0.f);
 		GL11.glEnd();
 	}
@@ -174,6 +178,7 @@ public class WeaselView extends View {
 
 	@Override
 	public void render(float alpha) {
+		
 		setProjection(alpha);
 
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -188,24 +193,36 @@ public class WeaselView extends View {
 		Texture texture = textures[BaseTextures.WALL.ordinal()];
 		texture.bind();
 
+		final float BG_DISTANCE = 5000.f;
+		
 		GL11.glPushMatrix();
-		GL11.glTranslatef(0, 0, 2000.f);
-		drawCubeFace(texture, 2000.f);
+		GL11.glTranslatef(0, 0, BG_DISTANCE);
+		drawCubeFace(texture, BG_DISTANCE);
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
-		GL11.glTranslatef(2000.f, 0, 0);
+		GL11.glTranslatef(BG_DISTANCE, 0, 0);
 		GL11.glRotatef(90, 0, 1, 0);
-		drawCubeFace(texture, 2000.f);
+		drawCubeFace(texture, BG_DISTANCE);
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
-		GL11.glTranslatef(-2000.f, 0, 0);
+		GL11.glTranslatef(-BG_DISTANCE, 0, 0);
 		GL11.glRotatef(90, 0, 1, 0);
-		drawCubeFace(texture, 2000.f);
+		drawCubeFace(texture, BG_DISTANCE);
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
-		GL11.glTranslatef(0, 0, -2000.f);
+		GL11.glTranslatef(0, 0, -BG_DISTANCE);
 		GL11.glRotatef(0, 0, 1, 0);
-		drawCubeFace(texture, 2000.f);
+		drawCubeFace(texture, BG_DISTANCE);
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, -BG_DISTANCE, 0);
+		GL11.glRotatef(90, 1, 0, 0);
+		drawCubeFace(texture, BG_DISTANCE);
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, BG_DISTANCE, 0);
+		GL11.glRotatef(90, 1, 0, 0);
+		drawCubeFace(texture, BG_DISTANCE);
 		GL11.glPopMatrix();
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
