@@ -1,32 +1,73 @@
 package org.atcs.moonweasel.entities;
 
 import org.atcs.moonweasel.entities.ships.Ship;
+import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
+import org.atcs.moonweasel.util.Quaternion;
 
 public class Laser extends ParticleEntity
 {
 	private static final float VELOCITY = 150.0f;
-	private static final int LIFESPAN = 10;
+	private static final int LIFESPAN = 2;
 	
 	private int age;
 	private Ship source;
 	private Vector offset;
 	
+	private boolean autoTargeting = false;
+	private ModelEntity target;
+	
 	public Laser() {
 		offset = Vector.ZERO;
+	}
+	
+	public void setTarget(ModelEntity me){
+		autoTargeting = true;
+		target = me;
 	}
 	
 	@Override
 	public void draw()
 	{
-		GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
-		GL11.glScalef(5, 5, 5);
-		GL11.glColor3f(0.0f, 0.1f, 0.9f);
-		Cylinder cylinder = new Cylinder();
-		cylinder.draw(0.01f, 0.01f, 1.0f, 30, 30);
-		GL11.glPopAttrib();
+		State me = State.interpolate(source.getLastRenderState(),
+				source.getState(), 0.1f);
+		
+		if(autoTargeting == false)
+		{
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+//			GL11.glScalef(5, 5, 5);
+			GL11.glColor3f(0.0f, 0.1f, 0.9f);
+//			Cylinder cylinder = new Cylinder();
+//			cylinder.draw(0.005f, 0.005f, 1.0f, 3000, 300);
+			Vector laserEnd = source.getState().bodyToWorld.transform(new Vector(0,0,-1000));
+			
+			GL11.glPushMatrix();
+			GL11.glLoadIdentity();
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glVertex3f(me.position.x, me.position.y, me.position.z);
+			GL11.glVertex3f(laserEnd.x, laserEnd.y, laserEnd.z);
+			GL11.glEnd();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+			
+		}
+		else
+		{
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+			GL11.glColor3f(0.0f, 0.1f, 0.9f);
+			
+			GL11.glPushMatrix();
+			GL11.glLoadIdentity();
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glVertex3f(me.position.x, me.position.y, me.position.z);
+			GL11.glVertex3f(target.getState().position.x, target.getState().position.y, target.getState().position.z);
+			GL11.glEnd();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+			
+		}
 	}
 	
 	public void setSource(Ship ship, Vector offset) {
@@ -37,15 +78,36 @@ public class Laser extends ParticleEntity
 	@Override
 	public void spawn()
 	{
+		if (autoTargeting == true) System.out.println("This laser is auto-targeting");
+		if (autoTargeting == false) System.out.println("This laser is not auto-targeting");
 		assert source != null;
 		
 		age = 0;
-		this.setOrientation(source.getState().orientation);
-		this.setPosition(source.getPosition());
-		this.setPosition(getPosition().add(getOrientation().rotate(offset)));
+		//if(autoTargeting == false)
+		{
+//		
+			this.setOrientation(Quaternion.ZERO);
+			this.setPosition(source.getPosition());
+//			this.setPosition(getPosition().add(getOrientation().rotate(offset)));
+		}
+//		else
+//		{
+//			Vector centroidToCentroid = target.getPosition().subtract(this.getPosition());
+//			float alpha = (centroidToCentroid.angleBetween(new Vector(1,0,0)));
+//			
+//			Vector partialQuaternion = new Vector(1,0,0).scale((float)Math.sin(alpha/2));
+//			Quaternion orientation = new Quaternion((float)Math.cos(alpha/2), partialQuaternion.x, partialQuaternion.y, partialQuaternion.z);
+//			
+//			this.setOrientation(orientation);
+//			this.setPosition(source.getPosition());
+//			this.setPosition(getPosition().add(getOrientation().rotate(offset)));
+//		}
+	
+		
 		
 		scheduleThink(50);
 	}
+	
 	
 	@Override
 	public void think() {
@@ -54,9 +116,17 @@ public class Laser extends ParticleEntity
 			return;
 		}
 		age++;
-		
-		Vector speed = new Vector(0.0f, 0.0f, -VELOCITY * 0.02f);
-		this.setPosition(getPosition().add(getOrientation().rotate(speed)));
+//		
+//		if (autoTargeting == false)
+//		{
+//			Vector speed = new Vector(0.0f, 0.0f, -VELOCITY * 0.02f);
+//			this.setPosition(getPosition().add(getOrientation().rotate(speed)));
+//		}
+//		else
+//		{
+//			Vector speed = source.getState().worldToBody.transform(target.getPosition()).subtract(source.getPosition()).normalize().scale(150*0.02f);
+//			this.setPosition(getPosition().add(getOrientation().rotate(speed)));
+//		}
 		
 		scheduleThink(30);
 	}

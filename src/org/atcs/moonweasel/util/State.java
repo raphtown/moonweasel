@@ -129,4 +129,13 @@ public class State
 	{
 		dangerZoneRadius = 5 + velocity.scale(dt).length();
 	}
+	
+	public Vector getUnitVectorOrientation()
+	{
+		Vector v1 = new Vector(0,0,0);
+		Vector v2 = new Vector(0,0,-1);
+		v1 = bodyToWorld.transform(v1);
+		v2 = bodyToWorld.transform(v2);
+		return (v2.subtract(v1).normalize());
+	}
 }

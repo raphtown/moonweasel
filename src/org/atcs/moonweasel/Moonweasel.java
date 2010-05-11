@@ -96,15 +96,16 @@ public class Moonweasel {
 		
 		player = this.entityManager.create("player");
 		player.spawn();
-
+		
+		
 		Snowflake snowflake = this.entityManager.create("snowflake");
 		snowflake.setPilot(player);
 		snowflake.spawn();
 		player.setShip(snowflake);
 		
-		EnergyBomb snowflake2 = this.entityManager.create("energybomb");
-		snowflake2.setPosition(new Vector(0,0,-10));
-		snowflake2.setTarget(snowflake);
+		Snowflake snowflake2 = this.entityManager.create("snowflake");
+		snowflake2.setPosition(new Vector(0,20,0));
+		snowflake2.setPilot(player);
 		snowflake2.spawn();
 		
 		this.physics = new Physics();

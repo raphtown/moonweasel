@@ -31,7 +31,10 @@ public class EnergyBomb extends ModelEntity
 	{
 		State state = getState();
 		
-		float forceConstant = .000014f;
+		float speed = state.velocity.length();
+		
+		
+		float forceConstant = .000114f;
 		float torqueConstant = .000182f;
 		
 		if(getPosition().equals(target.getPosition())) //if they are in the same position
@@ -42,13 +45,20 @@ public class EnergyBomb extends ModelEntity
 		
 		Vector currentPosition = getPosition();
 		Vector targetPosition = target.getPosition();
+		Vector velocityFudge = currentPosition.subtract(targetPosition);
 		
 		Vector force = currentPosition.subtract(targetPosition).scale(-1 * forceConstant);
-
+	
+		
+		state.velocity = state.velocity.add(velocityFudge);
+		
+		
 		state.addDerivative(new TimedDerivative(getTime(), force, Vector.ZERO));
 
 		state.orientation = new Quaternion(0, (float) (Math.random()), (float)(Math.random()), (float)(Math.random())).normalize();
 
 		scheduleThink(THINK_TIME);
+		
+		state.velocity = state.velocity.scale(speed/(state.velocity.length())); //keep speed constant
 	}
 }
