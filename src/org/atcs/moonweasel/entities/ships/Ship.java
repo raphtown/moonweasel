@@ -87,20 +87,29 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	private void drawExhaust()
 	{
-		GL11.glPushMatrix();
-
-		Vector v = new Vector(0f, 0f, 0.5f);
-		GL11.glTranslatef(v.x,v.y,v.z);
-		
 		GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
 		float green = this.getState().velocity.length() * 100;
-		GL11.glColor3f(1.0f, 1.0f - green, 0.0f);
 		Cylinder cylinder = new Cylinder();
-		cylinder.draw(.025f,0.001f, .25f, 30, 30);
+		Vector v;
+
+		GL11.glPushMatrix();
+		v = new Vector(-0.0305f, -0.015f, 0.491f);
+		GL11.glTranslatef(v.x,v.y,v.z);
+		GL11.glColor3f(1.0f, 1.0f - green, 0.0f);
+		cylinder.draw(.015f,0.001f, .1f, 30, 30);
 		GL11.glColor4f(0.8f, 0.75f * (1.0f - green), 0.0f, 0.5f);
-		cylinder.draw(.03f,0.001f, .25f, 30, 30);
-		GL11.glPopAttrib();
+		cylinder.draw(.02f,0.001f, .1f, 30, 30);
 		GL11.glPopMatrix();
+		
+		GL11.glPushMatrix();
+		v = new Vector(0.0305f, -0.015f, 0.491f);
+		GL11.glTranslatef(v.x,v.y,v.z);
+		GL11.glColor3f(1.0f, 1.0f - green, 0.0f);
+		cylinder.draw(.015f,0.001f, .1f, 30, 30);
+		GL11.glColor4f(0.8f, 0.75f * (1.0f - green), 0.0f, 0.5f);
+		cylinder.draw(.02f,0.001f, .1f, 30, 30);
+		GL11.glPopMatrix();
+		GL11.glPopAttrib();
 	}
 	
 	private void applyMovement(UserCommand command) {
