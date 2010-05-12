@@ -10,7 +10,6 @@ import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
-import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.State;
@@ -56,7 +55,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		{
 			EntityManager manager = EntityManager.getEntityManager();
 			Laser laser = manager.create("laser");
-			laser.setSource(this, new Vector(laserOffset, 0, 0));
+			laser.setSource(this);
 			laserOffset = -laserOffset;
 			
 			ModelEntity enemy = autoTargetingLaser();

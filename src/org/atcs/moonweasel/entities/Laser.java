@@ -4,23 +4,19 @@ import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Cylinder;
 import org.atcs.moonweasel.util.Quaternion;
 
 public class Laser extends ParticleEntity
 {
-	private static final float VELOCITY = 150.0f;
 	private static final int LIFESPAN = 2;
 	
 	private int age;
 	private Ship source;
-	private Vector offset;
 	
 	private boolean autoTargeting = false;
 	private ModelEntity target;
 	
 	public Laser() {
-		offset = Vector.ZERO;
 	}
 	
 	public void setTarget(ModelEntity me){
@@ -70,9 +66,8 @@ public class Laser extends ParticleEntity
 		}
 	}
 	
-	public void setSource(Ship ship, Vector offset) {
+	public void setSource(Ship ship) {
 		this.source = ship;
-		this.offset = offset;
 	}
 	
 	@Override

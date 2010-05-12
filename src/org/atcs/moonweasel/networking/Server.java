@@ -1,11 +1,8 @@
 package org.atcs.moonweasel.networking;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class Server extends Thread implements Networking

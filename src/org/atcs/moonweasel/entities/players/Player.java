@@ -14,6 +14,7 @@ public class Player extends Entity {
 		DEAD, PILOT, GUNNER;
 	}
 	
+	@SuppressWarnings("unused")
 	private Status status;
 	private Ship ship;
 	

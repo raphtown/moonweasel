@@ -34,9 +34,7 @@ public class EnergyBomb extends ModelEntity
 		float speed = state.velocity.length();
 		
 		
-		float forceConstant = .000114f;
-		float torqueConstant = .000182f;
-		
+		float forceConstant = .000114f;		
 		if(getPosition().equals(target.getPosition())) //if they are in the same position
 		{
 			scheduleThink(THINK_TIME);

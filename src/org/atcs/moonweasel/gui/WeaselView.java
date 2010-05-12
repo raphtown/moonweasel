@@ -1,7 +1,6 @@
 package org.atcs.moonweasel.gui;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import org.atcs.moonweasel.entities.EntityManager;
@@ -12,8 +11,6 @@ import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -112,35 +109,6 @@ public class WeaselView extends View {
 		uiElements.add(new HealthBar(new Vector(10, 10, 0), me));
 		uiElements.add(new Crosshairs(new Vector(mode.getWidth() / 2, mode
 				.getHeight() / 2, 0)));
-	}
-
-	private void setUpLighting() {
-		GL11.glEnable(GL11.GL_LIGHT0);
-
-		FloatBuffer lamb = BufferUtils.createFloatBuffer(4);
-		lamb.put(new float[] { 0.8f, 0.8f, 0.8f,
-				1.0f });
-		lamb.flip();
-		// float[] ldiff = { 0.6f, 0.6f, 0.6f, 1.0f };
-		// float[] lspec = { 0.4f, 0.4f, 0.4f, 1.0f };
-		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, lamb);
-		// GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, ldiff, 0);
-		// GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_SPECULAR, lspec, 0);
-
-		FloatBuffer pos = BufferUtils.createFloatBuffer(4);
-		pos.put(new float[] { -9, -9, 10, 1 });
-		pos.flip();
-		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
-
-		GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_CONSTANT_ATTENUATION, 0);
-		GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_QUADRATIC_ATTENUATION, 0.005f);
-
-		GL11.glLightModeli(GL11.GL_LIGHT_MODEL_LOCAL_VIEWER, GL11.GL_TRUE);
-		FloatBuffer amb = BufferUtils.createFloatBuffer(4);
-		amb.put(new float[] { 0.4f, 0.4f, 0.4f, 1.0f });
-		amb.flip();
-		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, amb);
-		GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
 	}
 
 	private void setProjection(float alpha) {
