@@ -6,16 +6,18 @@ import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.Vulnerable;
-import org.atcs.moonweasel.entities.particles.Exhaust;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
+import org.atcs.moonweasel.util.AxisAngle;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.TimedDerivative;
 import org.atcs.moonweasel.util.Vector;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.Cylinder;
 
 public class Ship extends ModelEntity implements Vulnerable {
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
@@ -36,7 +38,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private float laserOffset;
 	private long nextFireTime;
 	
-	private Exhaust tailPipe;
 	
 	protected Ship(ShipData data) {
 		super(data.mass, BASE_TENSOR.scale(data.mass / 100));
@@ -74,6 +75,33 @@ public class Ship extends ModelEntity implements Vulnerable {
 		}
 		
 		applyMovement(command);
+	}
+	
+	public void draw()
+	{
+		GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+		GL11.glColor3f(0.5f, 0.5f, 0.5f);
+		super.draw();
+		GL11.glPopAttrib();
+		drawExhaust();
+	}
+	
+	private void drawExhaust()
+	{
+		GL11.glPushMatrix();
+
+		Vector v = new Vector(0f, 0f, 0.5f);
+		GL11.glTranslatef(v.x,v.y,v.z);
+		
+		GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+		float green = this.getState().velocity.length() * 100;
+		GL11.glColor3f(1.0f, 1.0f - green, 0.0f);
+		Cylinder cylinder = new Cylinder();
+		cylinder.draw(.025f,0.001f, .25f, 30, 30);
+		GL11.glColor4f(0.8f, 0.75f * (1.0f - green), 0.0f, 0.5f);
+		cylinder.draw(.03f,0.001f, .25f, 30, 30);
+		GL11.glPopAttrib();
+		GL11.glPopMatrix();
 	}
 	
 	private void applyMovement(UserCommand command) {
@@ -223,9 +251,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 	@Override
 	public void spawn() {
 		assert pilot != null;
-		tailPipe = EntityManager.getEntityManager().create("exhaust");
-		tailPipe.setShip(this);
-		tailPipe.spawn();
 	}
 	
 	public ModelEntity autoTargetingLaser()

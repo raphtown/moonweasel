@@ -7,7 +7,6 @@ import org.atcs.moonweasel.entities.EnergyBomb;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
-import org.atcs.moonweasel.entities.particles.Exhaust;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
@@ -47,7 +46,6 @@ public class Moonweasel {
 		addEntityClass(Snowflake.class);
 		addEntityClass(Explosion.class);
 		addEntityClass(Laser.class);
-		addEntityClass(Exhaust.class);
 		addEntityClass(EnergyBomb.class);
 	}
 
