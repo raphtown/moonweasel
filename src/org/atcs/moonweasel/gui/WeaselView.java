@@ -223,6 +223,8 @@ public class WeaselView extends View {
 		}
 
         for (ParticleEntity entity : em.getAllOfType(ParticleEntity.class)) {
+        	if (entity == null || entity.getOrientation() == null)
+        		continue;
         	rotation = entity.getOrientation().toAxisAngle();
         	
             GL11.glPushMatrix();
