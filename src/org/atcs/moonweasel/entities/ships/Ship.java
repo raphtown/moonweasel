@@ -26,7 +26,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private static final float LASER_SCANNING_RANGE_X = 0.05f;
 	
 	
-	final static float MAX_SPEED = 0.05f;
+	final static float MAX_SPEED = 0.01f;
 	
 	private ShipData data;
 	private int health;
@@ -78,7 +78,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	private void applyMovement(UserCommand command) {
 		State state = getState();
-		float f = data.thrust * 0.00001f; //50 newtons or 50 newton-meters, depending on context
+		float f = data.thrust * 0.0000025f; //50 newtons or 50 newton-meters, depending on context
 		Vector relativeVelocity = state.orientation.inverse().rotate(state.velocity);
 		
 		MutableVector force = new MutableVector();
@@ -140,15 +140,8 @@ public class Ship extends ModelEntity implements Vulnerable {
 		//}
 		
 		if(this.getState().velocity.length() >= MAX_SPEED) {
-			if ((relativeForce.x)/(this.getState().velocity.x) > 0) {
-				relativeForce.x = 0;
-			}
-			if ((relativeForce.y)/(this.getState().velocity.y) > 0) {
-				relativeForce.y = 0;
-			}
-			if ((relativeForce.z)/(this.getState().velocity.z) > 0) {
-				relativeForce.z = 0;
-			}			
+			Vector unit = this.getState().velocity.normalize();
+			this.getState().momentum = unit.scale(MAX_SPEED * data.mass);
 		}
 		
 		

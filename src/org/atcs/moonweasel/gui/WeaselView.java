@@ -21,7 +21,7 @@ import org.lwjgl.util.glu.GLU;
 
 public class WeaselView extends View {
 	private enum BaseTextures {
-		WALL("starfield2.png"), NUM_TEXTURES(null);
+		WALL("dev_measuregeneric01.png"), NUM_TEXTURES(null);
 
 		public final String filename;
 
@@ -88,10 +88,11 @@ public class WeaselView extends View {
 		GL11.glViewport(0, 0, mode.getWidth(), mode.getHeight());
 
 		/* Set up lighting */
-		setUpLighting();
+		//setUpLighting();
 
 		/* Enable things */
-		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 
@@ -188,7 +189,7 @@ public class WeaselView extends View {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 		GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glDisable(GL11.GL_LIGHTING);
+		//GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		Texture texture = textures[BaseTextures.WALL.ordinal()];
 		texture.bind();
@@ -226,7 +227,7 @@ public class WeaselView extends View {
 		GL11.glPopMatrix();
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_LIGHTING);
+		//GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopAttrib();
 
 		EntityManager em = EntityManager.getEntityManager();
@@ -269,8 +270,8 @@ public class WeaselView extends View {
         
         GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glPushMatrix();
-		GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-		GL11.glDisable(GL11.GL_LIGHTING);
+		//GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+		//GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glLoadIdentity();
 		GLU.gluOrtho2D(0, mode.getWidth(), 0, mode.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -282,7 +283,7 @@ public class WeaselView extends View {
 			e.draw();
 			GL11.glPopMatrix();
 		}
-		GL11.glPopAttrib();
+//		GL11.glPopAttrib();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 
 		GL11.glPopMatrix();

@@ -17,14 +17,16 @@ public class Exhaust extends ParticleEntity {
 	public void draw() {
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
-		Vector v = s.getPosition().add(new Vector(0f,0f,6f));
+		Vector v = s.getPosition().add(new Vector(0f,0f,2f));
 		GL11.glTranslatef(v.x,v.y,v.z);
 		
 		GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
-		float red = s.getState().velocity.length();
-		GL11.glColor3f(red, 0.3f, 0.3f);
+		float green = s.getState().velocity.length() * 100;
+		GL11.glColor3f(1.0f, 1.0f - green, 0.0f);
 		Cylinder cylinder = new Cylinder();
-		cylinder.draw(0.001f, .05f, .25f, 30, 30);
+		cylinder.draw(.04f,0.001f, .25f, 30, 30);
+		GL11.glColor4f(0.8f, 0.75f * (1.0f - green), 0.0f, 0.5f);
+		cylinder.draw(.05f,0.001f, .25f, 30, 30);
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}
