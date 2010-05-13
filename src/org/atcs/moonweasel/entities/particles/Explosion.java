@@ -16,7 +16,7 @@ public class Explosion extends ParticleEntity {
 	public void draw() {
 		float factor = (float)age / MAX_LIFE;
 		
-		float[] amb = {1.0f, 0.8f * factor, 0.0f, (0.8f * (1 - factor))};
+		//float[] amb = {1.0f, 0.8f * factor, 0.0f, (0.8f * (1 - factor))};
 		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);

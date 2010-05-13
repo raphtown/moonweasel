@@ -32,9 +32,9 @@ public class WeaselView extends View {
 
 	/* Camera parameters */
 	private static final float CAMERA_FOV_ANGLE = 60.0f; /*
-														 * Camera (vertical)
-														 * field of view angle
-														 */
+														  * Camera (vertical)
+														  * field of view angle
+														  */
 	private static final float CAMERA_CLIPPING_NEAR = 0.1f;
 	private static final float CAMERA_CLIPPING_FAR = 500000000;
 
@@ -84,22 +84,11 @@ public class WeaselView extends View {
 		/* Set viewport */
 		GL11.glViewport(0, 0, mode.getWidth(), mode.getHeight());
 
-		/* Set up lighting */
-		//setUpLighting();
-
 		/* Enable things */
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 
 		initComponents();
-
-		// Image cursorImage =
-		// Toolkit.getDefaultToolkit().getImage("xparent.gif");
-		// Cursor blankCursor =
-		// Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, new
-		// Point( 0, 0), "" );
-		// setCursor( blankCursor );
-
 	}
 
 	public void initComponents() {
@@ -122,9 +111,6 @@ public class WeaselView extends View {
 
 		State interp = State.interpolate(ent.getLastRenderState(), ent
 				.getState(), alpha);
-		// Vector relative = interp.orientation.rotate(
-		// new Vector(0, radius*CAMERA_PILOT_OFFSET_SCALAR, radius *
-		// CAMERA_PILOT_OFFSET_SCALAR));
 
 		Vector relative = interp.orientation.rotate(new Vector(
 				ent.getData().cameraPosOffset.x,
@@ -155,12 +141,11 @@ public class WeaselView extends View {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 		GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);
-		//GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		Texture texture = textures[BaseTextures.WALL.ordinal()];
 		texture.bind();
 
-		final float BG_DISTANCE = 5000.f;
+		final float BG_DISTANCE = 3750.f;
 		
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0, 0, BG_DISTANCE);
@@ -193,7 +178,6 @@ public class WeaselView extends View {
 		GL11.glPopMatrix();
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		//GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopAttrib();
 
 		EntityManager em = EntityManager.getEntityManager();
@@ -238,8 +222,6 @@ public class WeaselView extends View {
         
         GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glPushMatrix();
-		//GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-		//GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glLoadIdentity();
 		GLU.gluOrtho2D(0, mode.getWidth(), 0, mode.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -251,7 +233,6 @@ public class WeaselView extends View {
 			e.draw();
 			GL11.glPopMatrix();
 		}
-//		GL11.glPopAttrib();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 
 		GL11.glPopMatrix();

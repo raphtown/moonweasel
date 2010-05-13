@@ -22,12 +22,11 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	private static float LASER_OFFSET = 0.3f;
 	private static long COOLDOWN = 200;
-	//private static final float STERN = 0.1f;
 	private static final float LASER_SCANNING_RANGE_Y = 0.15f; //radians
 	private static final float LASER_SCANNING_RANGE_X = 0.05f;
 	
 	
-	final static float MAX_SPEED = 0.01f;
+	final static float MAX_SPEED = 0.025f;
 	
 	private ShipData data;
 	private int health;
