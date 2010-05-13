@@ -19,6 +19,8 @@ public class UserCommand implements Timed {
 		ATTACK_1,
 		AUTOMATIC_THRUSTER_CONTROL,
 		
+		STOP,
+		
 		NUM_COMMANDS
 	}
 	

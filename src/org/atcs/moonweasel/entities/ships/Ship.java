@@ -154,6 +154,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 		if (command.get(Commands.BOOST)) {
 			relativeForce.z *= 5;
 		}
+		if (command.get(Commands.STOP)) {
+			this.getState().momentum = Vector.ZERO;
+		}
+		
 		
 		if (command.get(Commands.LEFT) && command.get(Commands.RIGHT)) {
 		} else if (command.get(Commands.LEFT)) {
