@@ -55,7 +55,9 @@ public class Player extends Entity {
 	}
 	
 	public void died() {
+		System.out.println("DIED");
 		deaths++;
+		ship.spawn();
 	}
 	
 	private Range<UserCommand> getCommandsBefore(long t) {

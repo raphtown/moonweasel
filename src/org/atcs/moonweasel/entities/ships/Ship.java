@@ -22,8 +22,8 @@ public class Ship extends ModelEntity implements Vulnerable {
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	private static float LASER_OFFSET = 0.3f;
 	private static long COOLDOWN = 200;
-	private static final float LASER_SCANNING_RANGE_Y = 0.15f; //radians
-	private static final float LASER_SCANNING_RANGE_X = 0.05f;
+	private static final float LASER_SCANNING_RANGE_Y = 0.25f; //radians
+	private static final float LASER_SCANNING_RANGE_X = 0.1f;
 	
 	
 	final static float MAX_SPEED = 0.025f;
@@ -33,7 +33,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	private Player pilot;
 	private Player[] gunners;
-	private float laserOffset;
+	public float laserOffset;
 	private long nextFireTime;
 	
 	
@@ -213,7 +213,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		explosion.setPosition(this.getPosition());
 		explosion.spawn();
 
-		float distance = getState().mass / 5000;
+		float distance = getState().mass / 1000;
 		float damage;
 		float scale;
 		for (Ship ship : manager.getAllShipsInSphere(
@@ -260,6 +260,8 @@ public class Ship extends ModelEntity implements Vulnerable {
 	@Override
 	public void spawn() {
 		assert pilot != null;
+		this.health = this.data.health;
+		respawn();
 	}
 	
 	private ModelEntity autoTargetingLaser()
@@ -272,18 +274,20 @@ public class Ship extends ModelEntity implements Vulnerable {
 			float thetaY = (new Vector(0,enemyPosition.y,enemyPosition.z)).angleBetween((new Vector(0,0,-1)));
 			float thetaX = (new Vector(enemyPosition.x,0,enemyPosition.z)).angleBetween((new Vector(0,0,-1)));
 			
+			float distance = enemyPosition.length();
+			float thetaScaleFactor = (float)(4*(Math.exp(-distance)) + 1)/3;
 			
 			System.out.println("ThetaY: " + thetaY);
 			System.out.println("ThetaX: " + thetaX);
 			
 			
-			if (thetaY <= LASER_SCANNING_RANGE_Y)
+			if (thetaY <= thetaScaleFactor*LASER_SCANNING_RANGE_Y)
 			{
-				if (thetaX <= LASER_SCANNING_RANGE_X)
+				if (thetaX <= thetaScaleFactor*LASER_SCANNING_RANGE_X)
 				{
 					if (me instanceof Ship)
 					{
-						((Ship) me).damage(20);
+						((Ship) me).damage(data.attack);
 						System.out.println("Auto-targeted hitscan");
 					}
 					return me;
