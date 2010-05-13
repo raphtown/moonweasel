@@ -18,7 +18,7 @@ import org.lwjgl.util.glu.GLU;
 
 public class WeaselView extends View {
 	private enum BaseTextures {
-		WALL("dev_measuregeneric01.png"), NUM_TEXTURES(null);
+		WALL("starfield2.png"), NUM_TEXTURES(null);
 
 		public final String filename;
 
@@ -88,8 +88,6 @@ public class WeaselView extends View {
 		//setUpLighting();
 
 		/* Enable things */
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 

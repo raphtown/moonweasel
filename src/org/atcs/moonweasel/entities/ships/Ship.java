@@ -87,7 +87,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 	
 	private void drawExhaust()
 	{
+		
 		GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		float green = this.getState().velocity.length() * 100;
 		Cylinder cylinder = new Cylinder();
 		Vector v;
@@ -109,6 +112,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		GL11.glColor4f(0.8f, 0.75f * (1.0f - green), 0.0f, 0.5f);
 		cylinder.draw(.02f,0.001f, .1f, 30, 30);
 		GL11.glPopMatrix();
+		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopAttrib();
 	}
 	
@@ -180,9 +184,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 			this.getState().momentum = unit.scale(MAX_SPEED * data.mass);
 		}
 		
-		
-		System.out.println(this.getState().velocity.length());
-		
 		force.sum(state.orientation.rotate(relativeForce.toVector()));
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
 		state.addDerivative(new TimedDerivative(getTime(), 
@@ -211,8 +212,9 @@ public class Ship extends ModelEntity implements Vulnerable {
 		EntityManager manager = EntityManager.getEntityManager();
 		Explosion explosion = manager.create("explosion");
 		explosion.setPosition(this.getPosition());
+		explosion.spawn();
 
-		float distance = getState().mass / 1000;
+		float distance = getState().mass / 5000;
 		float damage;
 		float scale;
 		for (Ship ship : manager.getAllShipsInSphere(
@@ -261,7 +263,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		assert pilot != null;
 	}
 	
-	public ModelEntity autoTargetingLaser()
+	private ModelEntity autoTargetingLaser()
 	{
 		ArrayList<ModelEntity> entitiesToCheck = entitiesInFront();
 		for(ModelEntity me : entitiesToCheck)
@@ -293,32 +295,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 		return null;
 		
 	}
-	
-//	public ModelEntity laserHitScan() //returns null if no collision, otherwise the object that was hit
-//	{
-//		// <a,b,c> + t*<x,y,z>
-//		Vector x1 = this.getState().position;
-//		Vector x2 = this.getState().bodyToWorld.transform(new Vector(0,0,-1));
-//		
-//		
-//		ArrayList<ModelEntity> entitiesToCheck = entitiesInFront();
-//		for(ModelEntity me : entitiesToCheck) //just checks hitscan on centroids
-//		{
-//			Vector x0 = me.getState().position;
-//			float distance = (x0.subtract(x1).cross(x0.subtract(x2))).length()/(x2.subtract(x1)).length();
-//			if(distance < Laser_Hitscan_Threshold)
-//			{
-//				System.out.println("LAZORED");
-//				if(me instanceof Ship)
-//				{
-//					((Ship) me).damage(25);
-//				}
-//				return me;	 
-//			}
-//		}
-//		System.out.println("Missed");
-//		return null;
-//	}
 	
 	public ArrayList<ModelEntity> entitiesInFront() //returns a list of all entities in front of this ship
 	{

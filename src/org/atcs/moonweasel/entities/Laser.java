@@ -34,7 +34,7 @@ public class Laser extends ParticleEntity
 		{
 			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
 //			GL11.glScalef(5, 5, 5);
-			GL11.glColor3f(0.0f, 0.1f, 0.9f);
+			GL11.glColor3f(0.0f, 0.3f, 0.9f);
 //			Cylinder cylinder = new Cylinder();
 //			cylinder.draw(0.005f, 0.005f, 1.0f, 3000, 300);
 			Vector laserEnd = source.getState().bodyToWorld.transform(new Vector(0,0,-1000));
