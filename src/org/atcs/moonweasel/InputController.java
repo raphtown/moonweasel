@@ -37,6 +37,7 @@ public class InputController {
 				case Keyboard.KEY_D: command.set(Commands.RIGHT, Keyboard.getEventKeyState()); break;
 				case Keyboard.KEY_R: command.set(Commands.FORWARD, Keyboard.getEventKeyState()); break;
 				case Keyboard.KEY_F: command.set(Commands.BACKWARD, Keyboard.getEventKeyState()); break;
+				case Keyboard.KEY_P: command.set(Commands.STOP, Keyboard.getEventKeyState()); break;
 				case Keyboard.KEY_LSHIFT:
 				case Keyboard.KEY_RSHIFT: command.set(Commands.BOOST, Keyboard.getEventKeyState()); break;
 			}
