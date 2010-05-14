@@ -7,9 +7,13 @@ import org.atcs.moonweasel.util.Quaternion;
 
 public class Laser extends ParticleEntity
 {
-	private static final long serialVersionUID = -7650624412188994157L;
-
+<<<<<<< HEAD
+	private static final long serialVersionUID = 6253870822665981065L;
+	private static final float VELOCITY = 150.0f;
+	private static final int LIFESPAN = 10;
+=======
 	private static final int LIFESPAN = 2;
+>>>>>>> master
 	
 	private int age;
 	private Ship source;

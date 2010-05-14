@@ -15,7 +15,8 @@ public class Player extends Entity
 	public enum Status {
 		DEAD, PILOT, GUNNER;
 	}
-
+	
+	@SuppressWarnings("unused")
 	private Status status;
 	private Ship ship;
 
@@ -63,7 +64,9 @@ public class Player extends Entity
 	}
 
 	public void died() {
+		System.out.println("DIED");
 		deaths++;
+		ship.spawn();
 	}
 
 	public Range<UserCommand> getCommandsBefore(long t) {

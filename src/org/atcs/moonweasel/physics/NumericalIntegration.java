@@ -114,9 +114,20 @@ public class NumericalIntegration
 		state.momentum = state.momentum.add(Vector.add(a.force, b.force, b.force, c.force, c.force, d.force).scale(dt/6));
 		state.orientation = state.orientation.add(Quaternion.add(a.spin, b.spin, b.spin, c.spin, c.spin, d.spin).scale(dt/6));
 		state.angularMomentum = state.angularMomentum.add(Vector.add(a.torque, b.torque, b.torque, c.torque, c.torque, d.torque).scale(dt/6));				
+		
+		//System.out.println(state.position.length());
+		
+		if(state.position.length() >= 100)
+		{
+			state.position = state.position.scale(-0.95f);
+			System.out.println("WARP");
+		}
+		
 		state.recalculate();
 
 		state.clearDerivativesBefore(t + dt);
+		
+		
 	}
 }
 

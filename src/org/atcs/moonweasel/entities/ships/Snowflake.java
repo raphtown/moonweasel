@@ -12,12 +12,4 @@ public class Snowflake extends Ship
 	public Snowflake() {
 		super(DATA);
 	}
-	
-	@Override
-	public void spawn() {
-	}
-	
-	@Override
-	public void think() {
-	}
 }

@@ -33,7 +33,11 @@ public class EnergyBomb extends ModelEntity
 	{
 		State state = getState();
 		
+<<<<<<< HEAD
+		float forceConstant = .000014f;
+=======
 		float speed = state.velocity.length();
+>>>>>>> master
 		
 		
 		float forceConstant = .000114f;		

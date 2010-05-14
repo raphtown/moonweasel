@@ -62,6 +62,10 @@ public abstract class Entity implements Identifiable, Serializable {
 		this.destroyed = true;
 	}
 	
+	protected void respawn() {
+		this.destroyed = false;
+	}
+	
 	public final String getEntityType() {
 		return this.getClass().getSimpleName().toLowerCase();
 	}

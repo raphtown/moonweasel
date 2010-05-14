@@ -37,8 +37,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class TextureLoader {
     /** The table of textures that have been loaded in this loader */
-    @SuppressWarnings("unchecked")
-	private HashMap table = new HashMap();
+    private HashMap<String, Texture> table = new HashMap<String, Texture>();
 
     /** The colour model including alpha for the GL image */
     private ColorModel glAlphaColorModel;
@@ -193,7 +192,7 @@ public class TextureLoader {
      * @param texture The texture to store the data into
      * @return A buffer containing the data
      */
-    @SuppressWarnings({ "unchecked", "unchecked" })
+    @SuppressWarnings("unchecked")
 	private ByteBuffer convertImageData(BufferedImage bufferedImage,Texture texture) { 
         ByteBuffer imageBuffer = null; 
         WritableRaster raster;
