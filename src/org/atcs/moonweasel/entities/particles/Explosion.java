@@ -28,7 +28,18 @@ public class Explosion extends ParticleEntity {
 	}
 	
 	public void spawn() {
-		age = 25;
+		age = 0;
 		setOrientation(Quaternion.ZERO);
+		scheduleThink(50);
+	}
+	
+	public void think() {
+		age++;
+		
+		if (age < MAX_LIFE) {
+			this.scheduleThink(50);			
+		} else {
+			destroy();
+		}
 	}
 }
