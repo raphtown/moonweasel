@@ -66,8 +66,6 @@ public class Laser extends ParticleEntity
 	@Override
 	public void spawn()
 	{
-		if (autoTargeting == true) System.out.println("This laser is auto-targeting");
-		else System.out.println("This laser is not auto-targeting");
 		assert source != null;
 	
 		age = 0;

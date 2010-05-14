@@ -60,12 +60,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 			ModelEntity enemy = autoTargetingLaser();
 			if (enemy != null)
 			{
-				System.out.println("Targeted an enemy - firing an auto-targeted laser");
 				laser.setTarget(enemy);
-			}
-			else
-			{
-				System.out.println("Did not find an enemy - firing a straight laser");
 			}
 			laser.spawn();
 
