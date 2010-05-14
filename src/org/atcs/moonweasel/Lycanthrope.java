@@ -11,7 +11,6 @@ public class Lycanthrope extends Moonweasel
 	private WeaselView view;
 	private InputController input;
 	private Player player;
-	private short lastCommand = 0;
 	private Client client;
 	
 	public Lycanthrope(DisplayMode mode, boolean fullscreen)
@@ -45,14 +44,9 @@ public class Lycanthrope extends Moonweasel
 		t = System.currentTimeMillis();
 		UserCommand command = input.poll(t);
 		
-		if (command.getAsBitmask() != lastCommand)
-		{
-			player.addCommand(command);
-			client.sendCommandToServer(command);
-		}
-			
-		lastCommand = command.getAsBitmask();
-		
+		player.addCommand(command);
+		client.sendCommandToServer(command);
+
 		player.clearCommandsBefore(t);
 		
 		interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) / SKIP_TICKS;
