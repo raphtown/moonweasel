@@ -41,13 +41,12 @@ public class Lycanthrope extends Moonweasel
 	protected void act(long next_logic_tick) 
 	{
 		float interpolation;
-		t = System.currentTimeMillis();
 		UserCommand command = input.poll(t);
 		
 		player.addCommand(command);
 		client.sendCommandToServer(command);
 
-		player.clearCommandsBefore(t);
+	//	player.clearCommandsBefore(t);
 		
 		interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) / SKIP_TICKS;
 		view.render(interpolation);

@@ -50,7 +50,7 @@ public class Server extends RMIObject implements IServer
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
 	private ArrayList<String> newlyConnectedClients = new ArrayList<String>();
 	private Map<String, IClient> connectingClients = new HashMap<String, IClient>();
-	private final Map<Player, Long> playerCommandMap = new HashMap<Player, Long>();
+	private final Map<Player, UserCommand> playerCommandMap = new HashMap<Player, UserCommand>();
 	private Moonweasel m;
 
 	/**
@@ -111,15 +111,15 @@ public class Server extends RMIObject implements IServer
 		float mouseX = mouse.x;
 		float mouseY = mouse.y;
 		Player plr = playerMap.get(c);
-		if (playerCommandMap.get(plr) != null)
-			if (playerCommandMap.get(plr).compareTo(new Long(command)) == 0)
-				return;
 		UserCommand ucommand = new UserCommand();
 		ucommand.setKeysAsBitmask(command);
 		ucommand.setMouse(mouseX, mouseY);
 		ucommand.setTime(m.getT() - 5);
+		if (playerCommandMap.get(plr) != null)
+			if (playerCommandMap.get(plr).compareTo(ucommand) == 0)
+				return;
 		plr.addCommand(ucommand);
-		playerCommandMap.put(plr, new Long(command));
+		playerCommandMap.put(plr, ucommand);
 	}
 
 	/**

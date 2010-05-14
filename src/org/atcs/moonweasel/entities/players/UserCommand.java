@@ -113,4 +113,9 @@ public class UserCommand implements Timed, Comparable<UserCommand>, Serializable
 	{
 		return "[" + getAsBitmask() + " " + mouse + "]";
 	}
+	
+	public boolean equaps(UserCommand o)
+	{
+		return getAsBitmask() == o.getAsBitmask() && mouse.equals(o.mouse);
+	}
 }

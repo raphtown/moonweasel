@@ -15,7 +15,7 @@ public class Player extends Entity
 	public enum Status {
 		DEAD, PILOT, GUNNER;
 	}
-	
+
 	@SuppressWarnings("unused")
 	private Status status;
 	private Ship ship;
@@ -56,7 +56,7 @@ public class Player extends Entity
 			}
 		}
 	}
-	
+
 	public void destroy() 
 	{
 		super.destroy();
@@ -96,18 +96,17 @@ public class Player extends Entity
 
 	public void think() {
 		if (ship != null) {
-			synchronized (commands) {
-				for (UserCommand command : commands) {
-					Debug.print("Command: " + command);
-					ship.apply(command);
-				}
+			Range<UserCommand> currCommands = getCommandsBefore(getTime());
+			for (UserCommand command : currCommands) {
+				Debug.print("Command: " + command);
+				ship.apply(command);
 			}
 		}
 		clearCommandsBefore(getTime());
 
 		scheduleThink(50);
 	}
-	
+
 
 	public Status getStatus() {
 		return status;

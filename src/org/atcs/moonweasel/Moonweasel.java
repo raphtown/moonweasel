@@ -124,12 +124,11 @@ public abstract class Moonweasel
 			{
 				entityManager.update(t);
 				physics.update(t, SKIP_TICKS);
-				
+				act(next_logic_tick);
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
 			}
-			this.act(next_logic_tick);
 		}
 	}
 	
