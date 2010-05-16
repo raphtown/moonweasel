@@ -25,7 +25,7 @@ public class InputController {
 	public UserCommand poll(long t) {
 		UserCommand command = new UserCommand();
 		command.copyKeyState(lastCommand);
-		lastCommand = command;
+		
 		
 		Keyboard.poll();
 		while (Keyboard.next()) {
@@ -66,6 +66,12 @@ public class InputController {
 		
 		command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
 		command.setTime(t);
+		
+		if(lastCommand.getMouse() != null && command.getMouse() != null && lastCommand.getAsBitmask() == command.getAsBitmask() && lastCommand.getMouse().equals(command.getMouse()))
+		{
+			return null;
+		}
+		lastCommand = command;
 		
 		return command;
 	}

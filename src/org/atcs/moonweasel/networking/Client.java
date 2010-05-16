@@ -151,6 +151,8 @@ public class Client extends RMIObject implements IClient
 		}
 	}
 	
+	private List<ChangeList> changes = null;
+	
 	public void receiveChanges(List<ChangeList> changes) throws RemoteException
 	{
 		EntityManager mgr = EntityManager.getEntityManager();
@@ -159,9 +161,30 @@ public class Client extends RMIObject implements IClient
 			System.err.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
 			System.exit(1);
 		}
-
-		for (ChangeList l : changes)
-			ChangeCompiler.compile(l, mgr);
+		
+		synchronized(changes)
+		{
+			this.changes = changes;
+		}
+		
+	}
+	
+	public List<ChangeList> getChanges()
+	{
+		if(changes != null)
+		{
+			synchronized(changes)
+			{
+				return changes;
+			}
+		}
+		
+		return null;
+	}
+	
+	public void resetChanges()
+	{
+		changes = null;
 	}
 
 	public ShipType sendShipChoice() throws RemoteException

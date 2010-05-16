@@ -59,12 +59,13 @@ public class WeaselView extends View {
 
 	/* Game objects */
 	private Player me;
-
+	
 	public WeaselView(DisplayMode mode, boolean fullscreen, Player p) {
 		super(mode, fullscreen);
 
 		textures = new Texture[BaseTextures.NUM_TEXTURES.ordinal()];
 		me = p;
+
 		init();
 	}
 
@@ -128,6 +129,7 @@ public class WeaselView extends View {
 				cameraLook.y, cameraLook.z, up.x, up.y, up.z);
 	}
 
+	@Override
 	public void render(float alpha) {
 		
 		setProjection(alpha);
@@ -217,7 +219,7 @@ public class WeaselView extends View {
 	        	entity.draw();
         	GL11.glPopMatrix();
         }
-
+        
         GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();

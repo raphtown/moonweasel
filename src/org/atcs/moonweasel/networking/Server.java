@@ -11,9 +11,12 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 import org.atcs.moonweasel.Debug;
@@ -50,7 +53,7 @@ public class Server extends RMIObject implements IServer
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
 	private ArrayList<String> newlyConnectedClients = new ArrayList<String>();
 	private Map<String, IClient> connectingClients = new HashMap<String, IClient>();
-	private final Map<Player, UserCommand> playerCommandMap = new HashMap<Player, UserCommand>();
+	public PriorityQueue<UserCommand> commandList = new PriorityQueue<UserCommand>();
 	private Moonweasel m;
 
 	/**
@@ -111,15 +114,11 @@ public class Server extends RMIObject implements IServer
 		float mouseX = mouse.x;
 		float mouseY = mouse.y;
 		Player plr = playerMap.get(c);
-		UserCommand ucommand = new UserCommand();
+		UserCommand ucommand = new UserCommand(plr);
 		ucommand.setKeysAsBitmask(command);
 		ucommand.setMouse(mouseX, mouseY);
 		ucommand.setTime(m.getT() - 5);
-		if (playerCommandMap.get(plr) != null)
-			if (playerCommandMap.get(plr).compareTo(ucommand) == 0)
-				return;
-		plr.addCommand(ucommand);
-		playerCommandMap.put(plr, ucommand);
+		commandList.add(ucommand);
 	}
 
 	/**
@@ -147,7 +146,6 @@ public class Server extends RMIObject implements IServer
 		this.sendDeletedEntitiesToAll(toDelete);
 
 		playerMap.remove(clientName);
-
 		s.destroy();
 		plr.destroy();
 	}
@@ -277,7 +275,7 @@ public class Server extends RMIObject implements IServer
 	{
 		while (playerMap.get(ip) == null)
 		{
-			Debug.print("DERP");
+			Debug.print("ID Request from: " + ip);
 
 			try {
 				Thread.sleep(500);
@@ -326,6 +324,13 @@ public class Server extends RMIObject implements IServer
 			System.out.println("Performing setup...");
 			setupClient(clientName);
 		}
+
+		while(commandList.size() != 0)
+		{
+			UserCommand u = commandList.poll();
+			u.player.addCommand(u);
+		}
+		
 		newlyConnectedClients.clear();
 		sendChangesToAll();
 	}

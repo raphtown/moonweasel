@@ -62,7 +62,6 @@ public class EntityManager extends Manager<Entity> {
 
 	public void update(long t) {
 		offset = t - System.currentTimeMillis();
-
 		while (thoughts.size() > 0
 				&& thoughts.firstKey() < System.currentTimeMillis()) {
 			thoughts.remove(thoughts.firstKey()).think();

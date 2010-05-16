@@ -7,7 +7,9 @@ import org.atcs.moonweasel.util.Vector;
 
 public class UserCommand implements Timed, Comparable<UserCommand>, Serializable {
 	private static final long serialVersionUID = 1L;
-
+	public Player player;
+	
+	
 	public enum Commands {
 		UP((short)0x1),
 		DOWN((short)0x2),
@@ -37,10 +39,17 @@ public class UserCommand implements Timed, Comparable<UserCommand>, Serializable
 	private boolean[] commands;
 	private Vector mouse;
 	
-	public UserCommand() {
+	public UserCommand()
+	{
 		this.commands = new boolean[Commands.NUM_COMMANDS.ordinal()];
 		set(Commands.AUTOMATIC_THRUSTER_CONTROL, true);
 		set(Commands.ROLLING, true);
+	}
+	
+	
+	public UserCommand(Player player) {
+		this();
+		this.player = player;
 	}
 	
 	public void copyKeyState(UserCommand o) {

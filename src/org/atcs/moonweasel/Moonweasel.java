@@ -1,5 +1,6 @@
 package org.atcs.moonweasel;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -12,9 +13,6 @@ import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.physics.Physics;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 
 public abstract class Moonweasel
 {
@@ -49,51 +47,49 @@ public abstract class Moonweasel
 	}
 
 	public static void main(String[] args) {
-		int width = 800, height = 600;
-		DisplayMode mode = null;
-		try {
-			DisplayMode[] modes = Display.getAvailableDisplayModes();
-
-			for (int i = 0; i < modes.length; i++) {
-				if ((modes[i].getWidth() == width)
-						&& (modes[i].getHeight() == height)) {
-					mode = modes[i];
-					break;
-				}
-			}
-			
-			if (mode == null) {
-				throw new RuntimeException(String.format(
-						"Unable to find target display mode width %d, height %d.",
-						width, height));
-			}
-		} catch (LWJGLException e) {
-			throw new RuntimeException("Unable to choose display mode.", e);
-		}
-
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Server (0) or Client (1)?");
-		Moonweasel weasel;
-		int choice = scanner.nextInt();
-		if(choice == 0)
+		int choice;
+		if(args.length == 0)
 		{
-			weasel = new Artemis(mode, false);
+			Scanner scanner = new Scanner(System.in);
+			System.out.println("Server (0) or Client (1) or both(2)?");
+			choice = scanner.nextInt();
 		}
 		else
 		{
-			weasel = new Lycanthrope(mode, false);
+			choice = Integer.parseInt(args[0]);
 		}
 
-		// weasel.seeFox();
-		weasel.run();
-		weasel.destroy(); // eaten
-
-		System.exit(0);
+		if(choice == 0)
+		{
+			Moonweasel weasel = new Artemis(false);
+			weasel.run();
+		}
+		else if(choice == 1)
+		{
+			Moonweasel weasel = new Lycanthrope(false);
+			weasel.run();
+		}
+		else
+		{
+			Moonweasel weasel1 = new Artemis(false);
+			weasel1.run();
+			Runtime rt = Runtime.getRuntime();
+			String[] cmdarray = {"java","-ea", "-Djava.security.policy=no.policy",
+					"-Xmx256M", "org.atcs.moonweasel.Moonweasel", "1"};
+			
+			try
+			{
+				rt.exec(cmdarray);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			Moonweasel weasel2 = new Lycanthrope(false);
+			weasel2.run();
+		}
+		
 	}
-
-	protected final int TICKS_PER_SECOND = 25;
-	protected final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-	protected final int MAX_FRAMESKIP = 5;
 	
 	protected Physics physics;
 
@@ -101,7 +97,8 @@ public abstract class Moonweasel
 
 	protected long t;
 
-	protected Moonweasel(DisplayMode mode, boolean fullscreen) {
+	protected Moonweasel(boolean fullscreen) 
+	{
 		this.entityManager = EntityManager.getEntityManager();
 		this.physics = new Physics();
 	}
@@ -109,10 +106,14 @@ public abstract class Moonweasel
 	protected void destroy() {
 		physics.destroy();
 	}
-	protected void run() {
-		final int TICKS_PER_SECOND = 50;
-		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-		final int MAX_FRAMESKIP = 5;
+	
+	protected final int TICKS_PER_SECOND = 50;
+	protected final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+	protected final int MAX_FRAMESKIP = 5;
+	
+	protected void run() 
+	{
+
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		
