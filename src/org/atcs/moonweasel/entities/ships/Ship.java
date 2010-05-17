@@ -1,7 +1,5 @@
 package org.atcs.moonweasel.entities.ships;
 
-import java.util.ArrayList;
-
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -10,6 +8,8 @@ import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
+import org.atcs.moonweasel.ranges.CustomRange;
+import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.State;
@@ -83,7 +83,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 	{
 		if(this.getState().velocity.z <= 0.0f)
 		{
-
 			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -266,10 +265,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 		respawn();
 	}
 
-	private ModelEntity autoTargetingLaser()
+	private Ship autoTargetingLaser()
 	{
-		ArrayList<ModelEntity> entitiesToCheck = entitiesInFront();
-		for(ModelEntity me : entitiesToCheck)
+		Range<Ship> entitiesToCheck = shipsInFront();
+		for(Ship me : entitiesToCheck)
 		{
 			Vector enemyPosition = this.getState().worldToBody.transform(me.getState().position).normalize();
 
@@ -279,10 +278,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 			float distance = enemyPosition.length();
 			float thetaScaleFactor = (float)(4*(Math.exp(-distance)) + 1)/3;
 			
-			System.out.println("ThetaY: " + thetaY);
-			System.out.println("ThetaX: " + thetaX);
-			
-			
 			if (thetaY <= thetaScaleFactor*LASER_SCANNING_RANGE_Y)
 			{
 				if (thetaX <= thetaScaleFactor*LASER_SCANNING_RANGE_X)
@@ -290,7 +285,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 					if (me instanceof Ship)
 					{
 						((Ship) me).damage(data.attack);
-						System.out.println("Auto-targeted hitscan");
 					}
 					return me;
 				}
@@ -301,18 +295,16 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 	}
 
-	public ArrayList<ModelEntity> entitiesInFront() //returns a list of all entities in front of this ship
+	public Range<Ship> shipsInFront() //returns a list of all entities in front of this ship
 	{
-		ArrayList<ModelEntity> forwardEntities = new ArrayList<ModelEntity>();
-		for(ModelEntity me : EntityManager.getEntityManager().getAllOfType(Ship.class))
-		{
-			if(this.getState().worldToBody.transform(me.getState().position).z < 0)
-			{
-				forwardEntities.add(me);
+		EntityManager em = EntityManager.getEntityManager();
+		final Ship me = this;
+		CustomRange<Ship> range = new CustomRange<Ship>(em.getAllOfType(Ship.class)) {
+			protected boolean filter(Ship e) {
+				return (me.getState().worldToBody.transform(e.getState().position).z < 0);
 			}
-		}
-		//todo: add asteroid class here
+		};
 
-		return forwardEntities;
+		return range;
 	}
 }

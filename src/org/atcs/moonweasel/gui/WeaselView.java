@@ -1,5 +1,6 @@
 package org.atcs.moonweasel.gui;
 
+import java.awt.Font;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -176,7 +177,7 @@ public class WeaselView extends View {
 		GL11.glRotatef(90, 1, 0, 0);
 		drawCubeFace(texture, BG_DISTANCE);
 		GL11.glPopMatrix();
-
+		texture.unbind();
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glPopAttrib();
 
@@ -233,10 +234,10 @@ public class WeaselView extends View {
 			e.draw();
 			GL11.glPopMatrix();
 		}
+		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
-
 		GL11.glPopMatrix();
-
+		
 		GL11.glFlush();
 		Display.update();
 	}
