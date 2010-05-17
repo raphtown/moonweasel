@@ -54,8 +54,10 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 	public void apply(UserCommand command) {
 		//Shooting
+//		System.out.println("Applying command: " + command);
 		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
 		{
+			System.out.println("wow");
 			EntityManager manager = EntityManager.getEntityManager();
 			Laser laser = manager.create("laser");
 			laser.setSource(this);
@@ -148,6 +150,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 		// Thrusters
 		if (command.get(Commands.FORWARD)) {
+			System.out.println("lol");
 			relativeForce.z -= f;
 		} 
 		if (command.get(Commands.BACKWARD)) {
@@ -158,6 +161,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		}
 		if (command.get(Commands.STOP)) {
 			this.getState().momentum = Vector.ZERO;
+			this.getState().angularMomentum = Vector.ZERO;
 		}
 
 

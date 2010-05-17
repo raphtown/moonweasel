@@ -27,6 +27,7 @@ public class ChangeCompiler
 			{
 				if (s.startsWith("create"))
 				{
+					System.out.println("Creating..." + s + "  Type name: " + changes.getTypeName());
 					if (!created && !(changes.getTypeName().equals("Player")))
 					{
 						mgr.create(changes.getTypeName());
@@ -59,7 +60,7 @@ public class ChangeCompiler
 						if (e instanceof ModelEntity)
 						{
 							Vector v = getVectorFromString(params.substring(9));
-							((ModelEntity)e).setVelocity(v);
+							((ModelEntity)e).getState().momentum = v.scale(((ModelEntity)e).getState().mass);
 						}
 					}
 					else if (params.startsWith("position"))
@@ -102,7 +103,7 @@ public class ChangeCompiler
 				else if (change.startsWith("apply command "))
 				{
 					if (e instanceof Ship)
-						((Ship)e).apply(getCommandFromString(change.substring(15)));
+						((Ship)e).apply(getCommandFromString(change.substring(14)));
 				}
 				iter.remove();
 			}

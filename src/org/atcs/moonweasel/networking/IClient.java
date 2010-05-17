@@ -13,5 +13,6 @@ public interface IClient extends Remote
 {	
 	public void receiveEntities(boolean add, ArrayList<Entity> eList) throws RemoteException;
 	public void receiveChanges(List<ChangeList> changes) throws RemoteException;
+	public void receiveIStates(List<IState> IStates) throws RemoteException;
 	public ShipType sendShipChoice() throws RemoteException;
 }

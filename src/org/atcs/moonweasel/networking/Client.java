@@ -169,6 +169,24 @@ public class Client extends RMIObject implements IClient
 		
 	}
 	
+	private List<IState> IStates = null;
+	
+	public void receiveIStates(List<IState> IStates) throws RemoteException
+	{
+		EntityManager mgr = EntityManager.getEntityManager();
+		if (IStates == null)
+		{
+			System.err.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
+			System.exit(1);
+		}
+		
+		synchronized(IStates)
+		{
+			this.IStates = IStates;
+		}
+		
+	}
+	
 	public List<ChangeList> getChanges()
 	{
 		if(changes != null)
@@ -182,9 +200,28 @@ public class Client extends RMIObject implements IClient
 		return null;
 	}
 	
+	public List<IState> getIStates()
+	{
+		if(IStates != null)
+		{
+			synchronized(IStates)
+			{
+				return IStates;
+			}
+		}
+		
+		return null;
+	}
+	
+	
 	public void resetChanges()
 	{
 		changes = null;
+	}
+	
+	public void resetIStates()
+	{
+		IStates = null;
 	}
 
 	public ShipType sendShipChoice() throws RemoteException

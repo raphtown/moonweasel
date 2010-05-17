@@ -14,7 +14,7 @@ public class InputController {
 		try {
 			Keyboard.create();
 			Mouse.create();
-			Mouse.setGrabbed(true);			
+			Mouse.setGrabbed(true);
 		} catch (LWJGLException e) {
 			throw new RuntimeException("Unable to create keyboard or mouse.", e);
 		}
@@ -30,6 +30,7 @@ public class InputController {
 		Keyboard.poll();
 		while (Keyboard.next()) {
 			int key = Keyboard.getEventKey();
+//			System.out.println(key + "  " + Keyboard.getEventKeyState());
 			switch (key) {
 				case Keyboard.KEY_W: command.set(Commands.UP, Keyboard.getEventKeyState()); break;
 				case Keyboard.KEY_S: command.set(Commands.DOWN, Keyboard.getEventKeyState()); break;
@@ -54,6 +55,7 @@ public class InputController {
 		
 		Mouse.poll();
 		while (Mouse.next()) {
+//	 		System.out.println(Mouse.getEventButton() + "  " + Mouse.getEventButtonState());
 			switch (Mouse.getEventButton()) {
 				case 0:
 					command.set(Commands.ATTACK_1, Mouse.getEventButtonState());
@@ -67,12 +69,12 @@ public class InputController {
 		command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
 		command.setTime(t);
 		
-		if(lastCommand.getMouse() != null && command.getMouse() != null && lastCommand.getAsBitmask() == command.getAsBitmask() && lastCommand.getMouse().equals(command.getMouse()))
-		{
-			return null;
-		}
-		lastCommand = command;
-		
+//		if(lastCommand.getMouse() != null && command.getMouse() != null && lastCommand.getAsBitmask() == command.getAsBitmask() && lastCommand.getMouse().equals(command.getMouse()))
+//		{
+//			return null;
+//		}
+//		lastCommand = command;
+//		
 		return command;
 	}
 }

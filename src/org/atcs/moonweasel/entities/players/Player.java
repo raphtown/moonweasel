@@ -98,7 +98,7 @@ public class Player extends Entity
 		if (ship != null) {
 			Range<UserCommand> currCommands = getCommandsBefore(getTime());
 			for (UserCommand command : currCommands) {
-				Debug.print("Command: " + command);
+//				Debug.print("Command: " + command);
 				ship.apply(command);
 			}
 		}

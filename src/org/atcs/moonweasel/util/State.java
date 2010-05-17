@@ -141,6 +141,7 @@ public class State implements Serializable
 		v2 = bodyToWorld.transform(v2);
 		return (v2.subtract(v1).normalize());
 	}
+
 	
 	public float getMass()
 	{

@@ -2,12 +2,15 @@ package org.atcs.moonweasel;
 
 import java.util.List;
 
+import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
+import org.atcs.moonweasel.networking.IState;
 import org.atcs.moonweasel.networking.changes.ChangeCompiler;
 import org.atcs.moonweasel.networking.changes.ChangeList;
+import org.atcs.moonweasel.util.State;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -73,20 +76,37 @@ public class Lycanthrope extends Moonweasel
 		
 		if(command != null)
 		{
-			player.addCommand(command);
+//			player.addCommand(command);
 			client.sendCommandToServer(command);
 		}
 		
 		
-		List<ChangeList> changes = client.getChanges();
+//		List<IState> IStates = client.getIStates();
+//		
+//		if(IStates != null)
+//		{
+//			for (IState l : IStates)
+//			{
+//				State s = ((ModelEntity)entityManager.get(l.ownerID)).getState();
+//				s.angularMomentum = l.angularMomentum;
+//				s.momentum = l.momentum;
+//				s.position = l.position;
+//				s.orientation = l.orientation;
+//			}
+//			
+//			client.resetIStates();
+//		}
 		
+		List<ChangeList> changes = client.getChanges();
+
 		if(changes != null)
 		{
 			for (ChangeList l : changes)
 				ChangeCompiler.compile(l, entityManager);
-			
+
 			client.resetChanges();
 		}
+
 		
 
 	//	player.clearCommandsBefore(t);

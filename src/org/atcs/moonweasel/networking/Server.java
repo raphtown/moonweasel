@@ -23,6 +23,7 @@ import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.Moonweasel;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.Ship;
@@ -30,6 +31,7 @@ import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.ranges.Range;
+import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 /**
@@ -109,7 +111,7 @@ public class Server extends RMIObject implements IServer
 		if (!connectedClients.keySet().contains(c))
 			throw new RemoteException("Unconnected client trying to execute command!");
 
-		Debug.print("Received command " + command + " from " + c + ".");
+//		Debug.print("Received command " + command + " from " + c + ".");
 
 		float mouseX = mouse.x;
 		float mouseY = mouse.y;
@@ -261,6 +263,43 @@ public class Server extends RMIObject implements IServer
 			}
 		}
 	}
+	
+	public IState generateIState(ModelEntity e)
+	{
+		State s = e.getState();
+		return new IState(s.position,s.momentum,s.orientation,s.angularMomentum,e.getID());
+	}
+	
+	public void sendIStatesToAll()
+	{
+		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
+		List<IState> list = new LinkedList<IState>();
+		synchronized (EntityManager.getEntityManager())
+		{
+			while(range.hasNext())
+			{
+				ModelEntity e = range.next();
+				list.add(this.generateIState(e));
+			}
+		}
+
+		Set<String> temp = getSafeConnectedClientsSet();
+
+		for (String clientName : temp)
+		{
+			IClient c = connectedClients.get(clientName);
+			try
+			{
+				c.receiveIStates(list);
+			} 
+			catch (RemoteException e)
+			{ 
+				e.printStackTrace();
+				System.err.println("Invalid client in client list...");
+				disconnectClient(clientName);
+			}
+		}
+	}
 
 	public void connectionInitializationComplete(String c)
 	{
@@ -276,7 +315,7 @@ public class Server extends RMIObject implements IServer
 		while (playerMap.get(ip) == null)
 		{
 			Debug.print("ID Request from: " + ip);
-
+			System.out.println(playerMap.get(ip));
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -286,6 +325,8 @@ public class Server extends RMIObject implements IServer
 		}
 		return playerMap.get(ip).getID();
 	}
+	
+
 
 	private void setupClient(String clientName)
 	{
@@ -307,6 +348,7 @@ public class Server extends RMIObject implements IServer
 		}
 		Player plr = mgr.create("player");
 		playerMap.put(clientName, plr);
+		System.out.println(playerMap);
 		plr.spawn();
 
 		Ship ship = mgr.create(shipType.typeName);
@@ -332,6 +374,7 @@ public class Server extends RMIObject implements IServer
 		}
 		
 		newlyConnectedClients.clear();
+//		sendIStatesToAll();
 		sendChangesToAll();
 	}
 	
