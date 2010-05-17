@@ -53,23 +53,23 @@ public class Ship extends ModelEntity implements Vulnerable {
 	}
 
 	public void apply(UserCommand command) {
-//		//Shooting
-//		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
-//		{
-//			EntityManager manager = EntityManager.getEntityManager();
-//			Laser laser = manager.create("laser");
-//			laser.setSource(this);
-//			laserOffset = -laserOffset;
-//
-//			ModelEntity enemy = autoTargetingLaser();
-//			if (enemy != null)
-//			{
-//				laser.setTarget(enemy);
-//			}
-//			laser.spawn();
-//
-//			nextFireTime = getTime() + COOLDOWN;
-//		}
+		//Shooting
+		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
+		{
+			EntityManager manager = EntityManager.getEntityManager();
+			Laser laser = manager.create("laser");
+			laser.setSource(this);
+			laserOffset = -laserOffset;
+
+			ModelEntity enemy = autoTargetingLaser();
+			if (enemy != null)
+			{
+				laser.setTarget(enemy);
+			}
+			laser.spawn();
+
+			nextFireTime = getTime() + COOLDOWN;
+		}
 
 		applyMovement(command);
 	}
