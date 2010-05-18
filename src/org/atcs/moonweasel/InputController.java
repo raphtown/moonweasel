@@ -73,7 +73,7 @@ public class InputController {
 //		{
 //			return null;
 //		}
-//		lastCommand = command;
+		lastCommand = command;
 //		
 		return command;
 	}

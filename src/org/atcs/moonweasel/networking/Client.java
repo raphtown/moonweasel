@@ -231,6 +231,8 @@ public class Client extends RMIObject implements IClient
 					s.momentum = l.momentum;
 					s.position = l.position;
 					s.orientation = l.orientation;
+					s.recalculate();
+					System.out.println("V = " + s.velocity);
 				}
 			}
 			IStates.clear();
