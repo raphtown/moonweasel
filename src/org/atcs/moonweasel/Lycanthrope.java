@@ -1,6 +1,7 @@
 package org.atcs.moonweasel;
 
 import org.atcs.moonweasel.entities.players.Player;
+
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
