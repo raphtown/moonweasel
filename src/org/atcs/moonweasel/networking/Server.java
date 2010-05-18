@@ -6,19 +6,16 @@ import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.UnmarshalException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.Moonweasel;
@@ -56,7 +53,7 @@ public class Server extends RMIObject implements IServer
 	public Map<String, Player> playerMap = new HashMap<String, Player>();
 	private ArrayList<String> newlyConnectedClients = new ArrayList<String>();
 	private Map<String, IClient> connectingClients = new HashMap<String, IClient>();
-	public PriorityQueue<UserCommand> commandList = new PriorityQueue<UserCommand>();
+	public PriorityBlockingQueue<UserCommand> commandList = new PriorityBlockingQueue<UserCommand>();
 	private Moonweasel m;
 
 	/**
@@ -317,9 +314,10 @@ public class Server extends RMIObject implements IServer
 
 	public Integer getMyID(String ip) throws RemoteException
 	{
+		Debug.print("ID Request from: " + ip);
 		while (playerMap.get(ip) == null)
 		{
-			Debug.print("ID Request from: " + ip);
+			Debug.print("No ID found for: " + ip);
 			System.out.println(playerMap.get(ip));
 			try {
 				Thread.sleep(500);
@@ -364,6 +362,9 @@ public class Server extends RMIObject implements IServer
 		sendNewEntitiesToAll();
 	}
 
+	private final int TICKS_PER_ISTATE_UPDATE = 5;
+	private int IStateUpdateCount = 0;
+	
 	public void act()
 	{
 		for(String clientName : newlyConnectedClients)
@@ -379,7 +380,12 @@ public class Server extends RMIObject implements IServer
 		}
 
 		newlyConnectedClients.clear();
-		sendIStatesToAll();
+		if(IStateUpdateCount++ >= TICKS_PER_ISTATE_UPDATE)
+		{
+			sendIStatesToAll();
+			IStateUpdateCount = 0;
+		}
+		
 		//		sendChangesToAll();
 		this.sendDeletedEntitiesToAll(EntityManager.getEntityManager().deletedEntities);
 		EntityManager.getEntityManager().deletedEntities.clear();

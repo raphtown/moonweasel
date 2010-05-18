@@ -10,16 +10,18 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
+import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
-import org.atcs.moonweasel.networking.changes.ChangeCompiler;
 import org.atcs.moonweasel.networking.changes.ChangeList;
+import org.atcs.moonweasel.util.State;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 
@@ -60,7 +62,7 @@ public class Client extends RMIObject implements IClient
 		server = (IServer) registry.lookup(SERVER_OBJECT_NAME);
 		server.connect(getIP());
 	}
-	
+
 	public void connectionInitializationComplete()
 	{
 		try {
@@ -118,7 +120,7 @@ public class Client extends RMIObject implements IClient
 			e.printStackTrace();
 		}
 	}
-	
+
 	public int getMyID()
 	{
 		try
@@ -133,99 +135,128 @@ public class Client extends RMIObject implements IClient
 		}
 		return -1;
 	}
-	
-	public void receiveEntities(boolean add, ArrayList<Entity> eList) throws RemoteException
+
+	private List<Entity> entitiesToAdd = new LinkedList<Entity>();
+	private List<Entity> entitiesToDelete = new LinkedList<Entity>();
+
+	public void receiveEntities(boolean add, List<Entity> eList) throws RemoteException
 	{
-		EntityManager mgr = EntityManager.getEntityManager();
-		for (Entity e : eList)
+		if(add)
 		{
-			System.out.println("Received New Entity: " + e + "  with id: " + e.getID());
-			if(add)
+			synchronized(entitiesToAdd)
 			{
-				mgr.add(e);
-			}
-			else
-			{
-				mgr.delete(e);
+				entitiesToAdd.addAll(eList);
 			}
 		}
+		else
+		{
+			synchronized(entitiesToDelete)
+			{
+				entitiesToDelete.addAll(eList);
+			}
+		}
+
 	}
-	
-	private List<ChangeList> changes = null;
-	
+
+	private List<ChangeList> changes = new LinkedList<ChangeList>();
+
 	public void receiveChanges(List<ChangeList> changes) throws RemoteException
 	{
-		EntityManager mgr = EntityManager.getEntityManager();
-		if (changes == null)
+		synchronized(this.changes)
 		{
-			System.err.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
-			System.exit(1);
+			if (changes == null)
+			{
+				System.err.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
+				System.exit(1);
+			}
+
+			if(this.changes.size() > 0)
+				System.out.println("Got new changes before old ones processed!");
+			this.changes.addAll(changes);
 		}
-		
-		synchronized(changes)
-		{
-			this.changes = changes;
-		}
-		
 	}
-	
-	private List<IState> IStates = null;
-	
+
+	private List<IState> IStates =  new LinkedList<IState>();
+
 	public void receiveIStates(List<IState> IStates) throws RemoteException
 	{
-		EntityManager mgr = EntityManager.getEntityManager();
-		if (IStates == null)
+		synchronized(this.IStates)
 		{
-			System.err.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
-			System.exit(1);
-		}
-		
-		synchronized(IStates)
-		{
-			this.IStates = IStates;
-		}
-		
-	}
-	
-	public List<ChangeList> getChanges()
-	{
-		if(changes != null)
-		{
-			synchronized(changes)
+			if (IStates == null)
 			{
-				return changes;
+				System.err.println("ERROR ERROR ERROR - CHANGE LIST IS NULL");
+				System.exit(1);
 			}
-		}
-		
-		return null;
-	}
-	
-	public List<IState> getIStates()
-	{
-		if(IStates != null)
-		{
-			synchronized(IStates)
+
+			if(this.IStates.size() > 0)
 			{
-				return IStates;
+				System.out.println("Got new IStates before old ones processed!");
+				this.IStates.clear();
 			}
+
+			this.IStates.addAll(IStates);
 		}
-		
-		return null;
 	}
-	
-	
-	public void resetChanges()
-	{
-		changes = null;
-	}
-	
-	public void resetIStates()
-	{
-		IStates = null;
-	}
+
 
 	public ShipType sendShipChoice() throws RemoteException
 	{
 		return ShipType.SNOWFLAKE;
+	}
+
+	public void act()
+	{
+		EntityManager mgr = EntityManager.getEntityManager();
+		synchronized(entitiesToAdd)
+		{
+			for (Entity e : entitiesToAdd)
+			{
+				System.out.println("Adding New Entity: " + e + "  with id: " + e.getID());
+				mgr.add(e);
+			}
+			entitiesToAdd.clear();
+		}
+		
+		synchronized(IStates)
+		{
+			for (IState l : IStates)
+			{
+				ModelEntity me = ((ModelEntity)mgr.get(l.ownerID));
+				if(me == null)
+					System.err.println("Update for non-existent entity: " + l.ownerID);
+				else
+				{
+					State s = me.getState();
+					s.angularMomentum = l.angularMomentum;
+					s.momentum = l.momentum;
+					s.position = l.position;
+					s.orientation = l.orientation;
+				}
+			}
+			IStates.clear();
+		}
+
+
+		synchronized(entitiesToDelete)
+		{
+			for (Entity e : entitiesToDelete)
+			{
+				System.out.println("Deleting Old Entity: " + e + "  with id: " + e.getID());
+				mgr.delete(e);
+			}
+			this.entitiesToDelete.clear();
+		}
+
+		//		synchronized(changes)
+		//		{
+		//
+		//		if(changes != null)
+		//		{
+		//			for (ChangeList l : changes)
+		//				ChangeCompiler.compile(l, mgr);
+		//
+		//			changes.clear();
+		//		}
+		//		}
 	}
 }

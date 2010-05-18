@@ -58,6 +58,7 @@ public class Lycanthrope extends Moonweasel
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			client.act();
 			this.player = (Player) entityManager.get(client.getMyID());
 		}
 		this.view = new WeaselView(mode, fullscreen, player);
@@ -81,32 +82,7 @@ public class Lycanthrope extends Moonweasel
 		}
 		
 		
-		List<IState> IStates = client.getIStates();
-		
-		if(IStates != null)
-		{
-			for (IState l : IStates)
-			{
-				State s = ((ModelEntity)entityManager.get(l.ownerID)).getState();
-				s.angularMomentum = l.angularMomentum;
-				s.momentum = l.momentum;
-				s.position = l.position;
-				s.orientation = l.orientation;
-			}
-			
-			client.resetIStates();
-		}
-		
-//		List<ChangeList> changes = client.getChanges();
-//
-//		if(changes != null)
-//		{
-//			for (ChangeList l : changes)
-//				ChangeCompiler.compile(l, entityManager);
-//
-//			client.resetChanges();
-//		}
-
+		client.act();
 		
 
 	//	player.clearCommandsBefore(t);
