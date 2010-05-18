@@ -10,6 +10,7 @@ import org.atcs.moonweasel.Identifiable;
 import org.atcs.moonweasel.networking.changes.ChangeList;
 
 public abstract class Entity implements Identifiable, Serializable {
+	private static final long serialVersionUID = 1L;
 	private static int nextID = 0;
 	
 	public static String getEntityType(Class<? extends Entity> clazz) {

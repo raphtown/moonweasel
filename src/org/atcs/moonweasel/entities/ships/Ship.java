@@ -1,6 +1,8 @@
 package org.atcs.moonweasel.entities.ships;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.EntityManager;
@@ -11,6 +13,7 @@ import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
+import org.atcs.moonweasel.networking.IState;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.State;
@@ -337,5 +340,22 @@ public class Ship extends ModelEntity implements Vulnerable {
 		//todo: add asteroid class here
 
 		return forwardEntities;
+	}
+	
+	public void unpackageIState(IState is)
+	{
+		super.unpackageIState(is);
+		List<Object> objects = is.objects;
+		Iterator<Object> iter = objects.iterator();
+		this.health =  (Integer) iter.next();
+		iter.remove();
+	}
+	
+	public IState packageIState()
+	{
+		IState is = super.packageIState();
+		List<Object> objects = is.objects;
+		objects.add(health);
+		return is;
 	}
 }

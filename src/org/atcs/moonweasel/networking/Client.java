@@ -21,7 +21,6 @@ import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.networking.changes.ChangeList;
-import org.atcs.moonweasel.util.State;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 
@@ -226,13 +225,7 @@ public class Client extends RMIObject implements IClient
 					System.err.println("Update for non-existent entity: " + l.ownerID);
 				else
 				{
-					State s = me.getState();
-					s.angularMomentum = l.angularMomentum;
-					s.momentum = l.momentum;
-					s.position = l.position;
-					s.orientation = l.orientation;
-					s.recalculate();
-					System.out.println("V = " + s.velocity);
+					me.unpackageIState(l);
 				}
 			}
 			IStates.clear();

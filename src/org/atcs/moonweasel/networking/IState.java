@@ -1,26 +1,19 @@
 package org.atcs.moonweasel.networking;
 
 import java.io.Serializable;
-
-import org.atcs.moonweasel.util.Quaternion;
-import org.atcs.moonweasel.util.Vector;
+import java.util.List;
 
 public class IState implements Serializable
 {
 	private static final long serialVersionUID = 7529233692222397283L;
-	public Vector position;
-	public Vector momentum;
-	public Quaternion orientation;
-	public Vector angularMomentum;
+
+	public List<Object> objects;
 	
 	public int ownerID;
 	
-	public IState(Vector position, Vector momentum, Quaternion orientation, Vector angularMomentum, int ownerID)
+	public IState(List<Object> objects, int ownerID)
 	{
-		this.position = position;
-		this.momentum = momentum;
-		this.orientation = orientation;
-		this.angularMomentum = angularMomentum;
+		this.objects = objects;
 		this.ownerID = ownerID;
 	}
 }

@@ -29,7 +29,6 @@ import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.networking.changes.ChangeList;
 import org.atcs.moonweasel.ranges.Range;
-import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
 /**
@@ -260,12 +259,6 @@ public class Server extends RMIObject implements IServer
 		}
 	}
 
-	public IState generateIState(ModelEntity e)
-	{
-		State s = e.getState();
-		return new IState(s.position,s.momentum,s.orientation,s.angularMomentum,e.getID());
-	}
-
 	public void sendIStatesToAll()
 	{
 		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
@@ -275,7 +268,7 @@ public class Server extends RMIObject implements IServer
 			while(range.hasNext())
 			{
 				ModelEntity e = range.next();
-				list.add(this.generateIState(e));
+				list.add(e.packageIState());
 			}
 		}
 

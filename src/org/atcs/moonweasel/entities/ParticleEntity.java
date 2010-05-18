@@ -4,6 +4,7 @@ import org.atcs.moonweasel.util.Quaternion;
 import org.atcs.moonweasel.util.Vector;
 
 public abstract class ParticleEntity extends Entity implements Positional {
+	private static final long serialVersionUID = 1L;
 	private Vector position;
 	private Quaternion orientation;
 	

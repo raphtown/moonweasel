@@ -15,7 +15,6 @@ public class Player extends Entity
 		DEAD, PILOT, GUNNER;
 	}
 
-	@SuppressWarnings("unused")
 	private Status status;
 	private Ship ship;
 
@@ -110,4 +109,5 @@ public class Player extends Entity
 	public Status getStatus() {
 		return status;
 	}
+
 }
