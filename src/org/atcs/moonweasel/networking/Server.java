@@ -111,7 +111,7 @@ public class Server extends RMIObject implements IServer
 		if (!connectedClients.keySet().contains(c))
 			throw new RemoteException("Unconnected client trying to execute command!");
 
-//		Debug.print("Received command " + command + " from " + c + ".");
+		//		Debug.print("Received command " + command + " from " + c + ".");
 
 		float mouseX = mouse.x;
 		float mouseY = mouse.y;
@@ -162,7 +162,7 @@ public class Server extends RMIObject implements IServer
 
 	public void sendCurrentEntitiesToClient(String clientName)
 	{
-		Debug.print("Sending out entities to " + clientName);
+		Debug.print("Sending out current entities to " + clientName);
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 		synchronized (EntityManager.getEntityManager())
@@ -182,29 +182,32 @@ public class Server extends RMIObject implements IServer
 
 	public void sendNewEntitiesToAll()
 	{
-		Debug.print("Sending out new entities to all.");
+		
+		
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
-		synchronized (EntityManager.getEntityManager())
+	
+		//		synchronized (EntityManager.getEntityManager())
+		//		{
+		while(range.hasNext())
 		{
-			while(range.hasNext())
+			Entity e = range.next();
+			if(!e.sentToAll)
 			{
-				Entity e = range.next();
-				if(!e.sentToAll)
-				{
-					e.sentToAll = true;
-					eList.add(e);
-				}
+				Debug.print("Sending out new entity to all: " + e);
+				e.sentToAll = true;
+				eList.add(e);
 			}
 		}
-		
+		//		}
+
 		Set<String> temp = getSafeConnectedClientsSet();
 
 		for (String clientName : temp)
 			sendEntities(true, eList, clientName);
 
 	}
-	
+
 	public void sendDeletedEntitiesToAll(ArrayList<Entity> eList)
 	{
 		Debug.print("Sending out deleted entities to all.");
@@ -213,7 +216,7 @@ public class Server extends RMIObject implements IServer
 		for (String clientName : temp)
 			sendEntities(false, eList, clientName);
 	}
-	
+
 	private void sendEntities(boolean add, ArrayList<Entity> eList, String clientName)
 	{
 		IClient c = connectedClients.get(clientName);
@@ -263,13 +266,13 @@ public class Server extends RMIObject implements IServer
 			}
 		}
 	}
-	
+
 	public IState generateIState(ModelEntity e)
 	{
 		State s = e.getState();
 		return new IState(s.position,s.momentum,s.orientation,s.angularMomentum,e.getID());
 	}
-	
+
 	public void sendIStatesToAll()
 	{
 		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
@@ -325,7 +328,7 @@ public class Server extends RMIObject implements IServer
 		}
 		return playerMap.get(ip).getID();
 	}
-	
+
 
 
 	private void setupClient(String clientName)
@@ -348,7 +351,7 @@ public class Server extends RMIObject implements IServer
 		}
 		Player plr = mgr.create("player");
 		playerMap.put(clientName, plr);
-		System.out.println(playerMap);
+		System.out.println("Players: " + playerMap);
 		plr.spawn();
 
 		Ship ship = mgr.create(shipType.typeName);
@@ -372,12 +375,13 @@ public class Server extends RMIObject implements IServer
 			UserCommand u = commandList.poll();
 			u.player.addCommand(u);
 		}
-		
+
 		newlyConnectedClients.clear();
-//		sendIStatesToAll();
-		sendChangesToAll();
+				sendIStatesToAll();
+//		sendChangesToAll();
+		sendNewEntitiesToAll();
 	}
-	
+
 	private Set<String> getSafeConnectedClientsSet()
 	{
 		Set<String> temp = new HashSet<String>();

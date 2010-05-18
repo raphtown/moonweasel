@@ -44,6 +44,7 @@ public abstract class Entity implements Identifiable, Serializable {
 		globalChanges = new ChangeList(getClass().getSimpleName(), getID());
 		this.destroyed = false;
 		this.globalChanges.add("created entity");
+		System.out.println("wow4");
 	}
 	
 	protected void addChange(String change)

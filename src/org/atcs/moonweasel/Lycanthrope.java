@@ -81,31 +81,31 @@ public class Lycanthrope extends Moonweasel
 		}
 		
 		
-//		List<IState> IStates = client.getIStates();
-//		
-//		if(IStates != null)
-//		{
-//			for (IState l : IStates)
-//			{
-//				State s = ((ModelEntity)entityManager.get(l.ownerID)).getState();
-//				s.angularMomentum = l.angularMomentum;
-//				s.momentum = l.momentum;
-//				s.position = l.position;
-//				s.orientation = l.orientation;
-//			}
-//			
-//			client.resetIStates();
-//		}
+		List<IState> IStates = client.getIStates();
 		
-		List<ChangeList> changes = client.getChanges();
-
-		if(changes != null)
+		if(IStates != null)
 		{
-			for (ChangeList l : changes)
-				ChangeCompiler.compile(l, entityManager);
-
-			client.resetChanges();
+			for (IState l : IStates)
+			{
+				State s = ((ModelEntity)entityManager.get(l.ownerID)).getState();
+				s.angularMomentum = l.angularMomentum;
+				s.momentum = l.momentum;
+				s.position = l.position;
+				s.orientation = l.orientation;
+			}
+			
+			client.resetIStates();
 		}
+		
+//		List<ChangeList> changes = client.getChanges();
+//
+//		if(changes != null)
+//		{
+//			for (ChangeList l : changes)
+//				ChangeCompiler.compile(l, entityManager);
+//
+//			client.resetChanges();
+//		}
 
 		
 

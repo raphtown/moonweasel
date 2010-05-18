@@ -57,7 +57,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 //		System.out.println("Applying command: " + command);
 		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
 		{
-			System.out.println("wow");
+			System.out.println("wow1");
 			EntityManager manager = EntityManager.getEntityManager();
 			Laser laser = manager.create("laser");
 			laser.setSource(this);
@@ -150,7 +150,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 		// Thrusters
 		if (command.get(Commands.FORWARD)) {
-			System.out.println("lol");
+			System.out.println("Going forward...");
 			relativeForce.z -= f;
 		} 
 		if (command.get(Commands.BACKWARD)) {
@@ -197,7 +197,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
 		state.addDerivative(new TimedDerivative(getTime(), 
 				force.toVector(), torque.toVector()));
-		addChange("apply command " + command);
+//		addChange("apply command " + command);   This can't go here as long as new entities are sent as well
 	}
 
 	@Override
