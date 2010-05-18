@@ -8,6 +8,8 @@ import org.atcs.moonweasel.util.Vector;
 
 public class EnergyBomb extends ModelEntity
 {
+	private static final long serialVersionUID = -7964430923577915469L;
+
 	private static final int THINK_TIME = 20;
 	
 	private ModelEntity target;

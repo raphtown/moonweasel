@@ -1,13 +1,16 @@
 package org.atcs.moonweasel.util;
 
+import java.io.Serializable;
 import java.util.PriorityQueue;
 
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
-public class State 
+public class State implements Serializable
 {
+	private static final long serialVersionUID = 6811388304295905041L;
+
 	// interpolation used for animating in between states
 	public static State interpolate(State a, State b, float alpha) 
 	{
@@ -137,5 +140,11 @@ public class State
 		v1 = bodyToWorld.transform(v1);
 		v2 = bodyToWorld.transform(v2);
 		return (v2.subtract(v1).normalize());
+	}
+
+	
+	public float getMass()
+	{
+		return mass;
 	}
 }

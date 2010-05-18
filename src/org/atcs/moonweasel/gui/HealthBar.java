@@ -11,7 +11,6 @@ public class HealthBar extends UIElement
 	private int xmax = 120;
 	private int ymin = 0;
 	private int ymax = 20;
-		
 	private Player p;
 	
 	public HealthBar(Vector v, Player pl) 
