@@ -109,8 +109,6 @@ public class Server extends RMIObject implements IServer
 		if (!connectedClients.keySet().contains(c))
 			throw new RemoteException("Unconnected client trying to execute command!");
 
-		//		Debug.print("Received command " + command + " from " + c + ".");
-
 		float mouseX = mouse.x;
 		float mouseY = mouse.y;
 		Player plr = playerMap.get(c);
@@ -136,7 +134,7 @@ public class Server extends RMIObject implements IServer
 	 */
 	private void disconnectClient(String clientName)
 	{
-		System.out.println("Disconnecting client: " + clientName);
+		Debug.print("Disconnecting client: " + clientName);
 		connectedClients.remove(clientName);
 		Player plr = playerMap.get(clientName);
 		playerMap.remove(clientName);
@@ -174,13 +172,9 @@ public class Server extends RMIObject implements IServer
 
 	public void sendNewEntitiesToAll()
 	{
-
-
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 
-		//		synchronized (EntityManager.getEntityManager())
-		//		{
 		while(range.hasNext())
 		{
 			Entity e = range.next();
@@ -191,7 +185,6 @@ public class Server extends RMIObject implements IServer
 				eList.add(e);
 			}
 		}
-		//		}
 
 		Set<String> temp = getSafeConnectedClientsSet();
 
@@ -322,7 +315,6 @@ public class Server extends RMIObject implements IServer
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -369,7 +361,7 @@ public class Server extends RMIObject implements IServer
 	{
 		for(String clientName : newlyConnectedClients)
 		{
-			System.out.println("Performing setup...");
+			Debug.print("Performing setup...");
 			setupClient(clientName);
 		}
 
@@ -386,7 +378,6 @@ public class Server extends RMIObject implements IServer
 			IStateUpdateCount = 0;
 		}
 		
-		//		sendChangesToAll();
 		this.sendDeletedEntitiesToAll(EntityManager.getEntityManager().deletedEntities);
 		EntityManager.getEntityManager().deletedEntities.clear();
 		sendNewEntitiesToAll();

@@ -7,6 +7,7 @@ import org.atcs.moonweasel.util.Vector;
 
 public class IState implements Serializable
 {
+	private static final long serialVersionUID = 7529233692222397283L;
 	public Vector position;
 	public Vector momentum;
 	public Quaternion orientation;

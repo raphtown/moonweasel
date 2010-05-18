@@ -123,8 +123,10 @@ public class UserCommand implements Timed, Comparable<UserCommand>, Serializable
 		return "[" + getAsBitmask() + " " + mouse + "]";
 	}
 	
-	public boolean equaps(UserCommand o)
+	public boolean equals(UserCommand o)
 	{
+		if (o == null)
+			return false;
 		return getAsBitmask() == o.getAsBitmask() && mouse.equals(o.mouse);
 	}
 }

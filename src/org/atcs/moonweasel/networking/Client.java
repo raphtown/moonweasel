@@ -9,11 +9,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -126,7 +126,7 @@ public class Client extends RMIObject implements IClient
 		try
 		{
 			int id = server.getMyID(getIP());
-			System.out.println("Got id: " + id);
+			Debug.print("Got id: " + id);
 			return id;
 		} 
 		catch (RemoteException e)
@@ -171,7 +171,7 @@ public class Client extends RMIObject implements IClient
 			}
 
 			if(this.changes.size() > 0)
-				System.out.println("Got new changes before old ones processed!");
+				Debug.print("Got new changes before old ones processed!");
 			this.changes.addAll(changes);
 		}
 	}
@@ -190,7 +190,7 @@ public class Client extends RMIObject implements IClient
 
 			if(this.IStates.size() > 0)
 			{
-				System.out.println("Got new IStates before old ones processed!");
+				Debug.print("Got new IStates before old ones processed!");
 				this.IStates.clear();
 			}
 
@@ -211,7 +211,7 @@ public class Client extends RMIObject implements IClient
 		{
 			for (Entity e : entitiesToAdd)
 			{
-				System.out.println("Adding New Entity: " + e + "  with id: " + e.getID());
+				Debug.print("Adding New Entity: " + e + "  with id: " + e.getID());
 				mgr.add(e);
 			}
 			entitiesToAdd.clear();
@@ -243,22 +243,10 @@ public class Client extends RMIObject implements IClient
 		{
 			for (Entity e : entitiesToDelete)
 			{
-				System.out.println("Deleting Old Entity: " + e + "  with id: " + e.getID());
+				Debug.print("Deleting Old Entity: " + e + "  with id: " + e.getID());
 				mgr.delete(e);
 			}
 			this.entitiesToDelete.clear();
 		}
-
-		//		synchronized(changes)
-		//		{
-		//
-		//		if(changes != null)
-		//		{
-		//			for (ChangeList l : changes)
-		//				ChangeCompiler.compile(l, mgr);
-		//
-		//			changes.clear();
-		//		}
-		//		}
 	}
 }

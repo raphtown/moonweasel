@@ -1,16 +1,9 @@
 package org.atcs.moonweasel;
 
-import java.util.List;
-
-import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
-import org.atcs.moonweasel.networking.IState;
-import org.atcs.moonweasel.networking.changes.ChangeCompiler;
-import org.atcs.moonweasel.networking.changes.ChangeList;
-import org.atcs.moonweasel.util.State;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -76,16 +69,9 @@ public class Lycanthrope extends Moonweasel
 		UserCommand command = input.poll(t);
 		
 		if(command != null)
-		{
-//			player.addCommand(command);
-			client.sendCommandToServer(command);
-		}
-		
+			client.sendCommandToServer(command);	
 		
 		client.act();
-		
-
-	//	player.clearCommandsBefore(t);
 		
 		interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) / SKIP_TICKS;
 		view.render(interpolation);

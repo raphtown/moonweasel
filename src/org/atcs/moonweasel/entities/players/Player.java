@@ -2,7 +2,6 @@ package org.atcs.moonweasel.entities.players;
 
 import java.util.PriorityQueue;
 
-import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.ranges.Range;
