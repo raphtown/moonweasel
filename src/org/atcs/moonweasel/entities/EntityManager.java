@@ -1,9 +1,11 @@
 package org.atcs.moonweasel.entities;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.Manager;
 import org.atcs.moonweasel.Moonweasel;
 import org.atcs.moonweasel.entities.ships.Ship;
@@ -24,6 +26,7 @@ public class EntityManager extends Manager<Entity> {
 
 	private final TreeMap<Long, Entity> thoughts;
 	private long offset;
+	public ArrayList<Entity> deletedEntities = new ArrayList<Entity>();
 
 	private EntityManager() {
 		this.thoughts = new TreeMap<Long, Entity>();
@@ -72,6 +75,8 @@ public class EntityManager extends Manager<Entity> {
 		while (iter.hasNext()) {
 			entry = iter.next();
 			if (entry.getValue().isDestroyed()) {
+				Debug.print("Removed entity: " + entry.getValue() + " with id: " + entry.getKey());
+				deletedEntities.add(entry.getValue());
 				iter.remove();
 			}
 		}

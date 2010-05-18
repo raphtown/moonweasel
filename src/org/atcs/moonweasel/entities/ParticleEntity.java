@@ -11,7 +11,6 @@ public abstract class ParticleEntity extends Entity implements Positional {
 		super();
 		
 		this.position = Vector.ZERO;
-		System.out.println("wow3");
 	}
 	
 	public abstract void draw();

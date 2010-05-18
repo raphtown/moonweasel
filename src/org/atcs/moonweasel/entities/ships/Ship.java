@@ -2,6 +2,7 @@ package org.atcs.moonweasel.entities.ships;
 
 import java.util.ArrayList;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -205,21 +206,31 @@ public class Ship extends ModelEntity implements Vulnerable {
 		health -= damage;
 
 		if (health <= 0) {
-			destroy();
+			die();
 		}
 		addChange("damage " + damage);
+	}
+	public void die()
+	{
+		Debug.print("Ship was killed: " + this);
+		if (pilot != null)
+			pilot.die();
+		for (Player gunner : gunners) {
+			gunner.die();
+		}
+		explode();
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
+		Debug.print("Ship was destroyed: " + this);
+		explode();
+		addChange("destroy");
+	}
 
-		if (pilot != null)
-			pilot.died();
-		for (Player gunner : gunners) {
-			gunner.died();
-		}
-
+	private void explode()
+	{
 		EntityManager manager = EntityManager.getEntityManager();
 		Explosion explosion = manager.create("explosion");
 		explosion.setPosition(this.getPosition());
@@ -238,7 +249,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 			damage = data.mass * scale;
 			ship.damage((int)damage);
 		}
-		addChange("destroy");
+		
 	}
 
 	public ShipData getData() {

@@ -18,7 +18,6 @@ public class Laser extends ParticleEntity
 	private ModelEntity target;
 	
 	public Laser() {
-		System.out.println("wow2");
 	}
 	
 	public void setTarget(ModelEntity me){

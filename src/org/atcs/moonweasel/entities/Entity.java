@@ -44,7 +44,7 @@ public abstract class Entity implements Identifiable, Serializable {
 		globalChanges = new ChangeList(getClass().getSimpleName(), getID());
 		this.destroyed = false;
 		this.globalChanges.add("created entity");
-		System.out.println("wow4");
+		System.out.println("Entity Created: " + this + "  id: " + this.getID());
 	}
 	
 	protected void addChange(String change)
@@ -60,6 +60,7 @@ public abstract class Entity implements Identifiable, Serializable {
 	}
 	
 	public void destroy() {
+		System.out.println("Entity Marked for destruction: " + this + "  id: " + this.getID());
 		this.destroyed = true;
 	}
 	

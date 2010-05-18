@@ -6,6 +6,7 @@ import static org.atcs.moonweasel.networking.RMIConfiguration.SERVER_OBJECT_NAME
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.UnmarshalException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
@@ -138,17 +139,10 @@ public class Server extends RMIObject implements IServer
 	 */
 	private void disconnectClient(String clientName)
 	{
-		System.err.println("Disconnecting client: " + clientName);
+		System.out.println("Disconnecting client: " + clientName);
 		connectedClients.remove(clientName);
 		Player plr = playerMap.get(clientName);
-		Ship s = plr.getShip();
-		ArrayList<Entity> toDelete = new ArrayList<Entity>();
-		toDelete.add(plr);
-		toDelete.add(s);
-		this.sendDeletedEntitiesToAll(toDelete);
-
 		playerMap.remove(clientName);
-		s.destroy();
 		plr.destroy();
 	}
 
@@ -172,6 +166,7 @@ public class Server extends RMIObject implements IServer
 				Entity e = range.next();
 				if(e.sentToAll)
 				{
+					Debug.print("Sending current entity: " + e + " with id: " + e.getID() + " to client: " + clientName);
 					eList.add(e);
 				}
 			}
@@ -182,11 +177,11 @@ public class Server extends RMIObject implements IServer
 
 	public void sendNewEntitiesToAll()
 	{
-		
-		
+
+
 		ArrayList<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
-	
+
 		//		synchronized (EntityManager.getEntityManager())
 		//		{
 		while(range.hasNext())
@@ -210,11 +205,19 @@ public class Server extends RMIObject implements IServer
 
 	public void sendDeletedEntitiesToAll(ArrayList<Entity> eList)
 	{
-		Debug.print("Sending out deleted entities to all.");
+		;
 
 		Set<String> temp = getSafeConnectedClientsSet();
 		for (String clientName : temp)
+		{
+			if(eList.size() != 0)
+			{
+				Debug.print("Sending out deleted entities to all:  " + eList);
+			}
+			
 			sendEntities(false, eList, clientName);
+		}
+
 	}
 
 	private void sendEntities(boolean add, ArrayList<Entity> eList, String clientName)
@@ -297,7 +300,6 @@ public class Server extends RMIObject implements IServer
 			} 
 			catch (RemoteException e)
 			{ 
-				e.printStackTrace();
 				System.err.println("Invalid client in client list...");
 				disconnectClient(clientName);
 			}
@@ -377,8 +379,10 @@ public class Server extends RMIObject implements IServer
 		}
 
 		newlyConnectedClients.clear();
-				sendIStatesToAll();
-//		sendChangesToAll();
+		sendIStatesToAll();
+		//		sendChangesToAll();
+		this.sendDeletedEntitiesToAll(EntityManager.getEntityManager().deletedEntities);
+		EntityManager.getEntityManager().deletedEntities.clear();
 		sendNewEntitiesToAll();
 	}
 

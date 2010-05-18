@@ -63,8 +63,8 @@ public class Player extends Entity
 		ship.destroy();
 	}
 
-	public void died() {
-		System.out.println("DIED");
+	public void die() {
+		System.out.println("Player died: " + this);
 		deaths++;
 		ship.spawn();
 	}
