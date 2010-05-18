@@ -1,5 +1,9 @@
 package org.atcs.moonweasel.entities.ships;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -8,6 +12,7 @@ import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
+import org.atcs.moonweasel.networking.IState;
 import org.atcs.moonweasel.ranges.CustomRange;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Matrix;
@@ -19,6 +24,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 
 public class Ship extends ModelEntity implements Vulnerable {
+	private static final long serialVersionUID = 6162008933132397822L;
+
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	private static float LASER_OFFSET = 0.3f;
 	private static long COOLDOWN = 200;
@@ -44,12 +51,15 @@ public class Ship extends ModelEntity implements Vulnerable {
 		this.health = this.data.health;
 
 		this.gunners = new Player[data.gunners.length];
+		addChange("created ship " + data);
+
 		this.laserOffset = LASER_OFFSET;
 		this.nextFireTime = 0;
 	}
 
 	public void apply(UserCommand command) {
 		//Shooting
+//		System.out.println("Applying command: " + command);
 		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
 		{
 			EntityManager manager = EntityManager.getEntityManager();
@@ -143,6 +153,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 		// Thrusters
 		if (command.get(Commands.FORWARD)) {
+			System.out.println("Going forward...");
 			relativeForce.z -= f;
 		} 
 		if (command.get(Commands.BACKWARD)) {
@@ -153,6 +164,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		}
 		if (command.get(Commands.STOP)) {
 			this.getState().momentum = Vector.ZERO;
+			this.getState().angularMomentum = Vector.ZERO;
 		}
 
 
@@ -188,33 +200,45 @@ public class Ship extends ModelEntity implements Vulnerable {
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
 		state.addDerivative(new TimedDerivative(getTime(), 
 				force.toVector(), torque.toVector()));
+//		addChange("apply command " + command);   This can't go here as long as new entities are sent as well
 	}
 
 	@Override
 	public void damage(int damage) {
 		health -= damage;
-
+		System.out.println("Owie!  Damaged: " + damage + " Health left: " + health);
 		if (health <= 0) {
-			destroy();
+			die();
 		}
+		addChange("damage " + damage);
+	}
+	public void die()
+	{
+		Debug.print("Ship was killed: " + this);
+		if (pilot != null)
+			pilot.die();
+		for (Player gunner : gunners) {
+			gunner.die();
+		}
+		explode();
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
+		Debug.print("Ship was destroyed: " + this);
+		explode();
+		addChange("destroy");
+	}
 
-		if (pilot != null)
-			pilot.died();
-		for (Player gunner : gunners) {
-			gunner.died();
-		}
-
+	private void explode()
+	{
 		EntityManager manager = EntityManager.getEntityManager();
 		Explosion explosion = manager.create("explosion");
 		explosion.setPosition(this.getPosition());
 		explosion.spawn();
 
-		float distance = getState().mass / 1000;
+		float distance = getState().getMass() / 1000;
 		float damage;
 		float scale;
 		for (Ship ship : manager.getAllShipsInSphere(
@@ -227,6 +251,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 			damage = data.mass * scale;
 			ship.damage((int)damage);
 		}
+		
 	}
 
 	public ShipData getData() {
@@ -256,11 +281,13 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 	public void setPilot(Player pilot) {
 		this.pilot = pilot;
+		addChange("set pilot " + pilot.getID());
 	}
 
 	@Override
 	public void spawn() {
 		assert pilot != null;
+		System.out.println("Respawning: " + this.health);
 		this.health = this.data.health;
 		respawn();
 	}
@@ -306,5 +333,22 @@ public class Ship extends ModelEntity implements Vulnerable {
 		};
 
 		return range;
+	}
+	
+	public void unpackageIState(IState is)
+	{
+		super.unpackageIState(is);
+		List<Object> objects = is.objects;
+		Iterator<Object> iter = objects.iterator();
+		this.health =  (Integer) iter.next();
+		iter.remove();
+	}
+	
+	public IState packageIState()
+	{
+		IState is = super.packageIState();
+		List<Object> objects = is.objects;
+		objects.add(health);
+		return is;
 	}
 }

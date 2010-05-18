@@ -14,7 +14,7 @@ public class InputController {
 		try {
 			Keyboard.create();
 			Mouse.create();
-			Mouse.setGrabbed(true);			
+			Mouse.setGrabbed(true);
 		} catch (LWJGLException e) {
 			throw new RuntimeException("Unable to create keyboard or mouse.", e);
 		}
@@ -25,7 +25,7 @@ public class InputController {
 	public UserCommand poll(long t) {
 		UserCommand command = new UserCommand();
 		command.copyKeyState(lastCommand);
-		lastCommand = command;
+		
 		
 		Keyboard.poll();
 		while (Keyboard.next()) {
@@ -40,6 +40,7 @@ public class InputController {
 				case Keyboard.KEY_P: command.set(Commands.STOP, Keyboard.getEventKeyState()); break;
 				case Keyboard.KEY_LSHIFT:
 				case Keyboard.KEY_RSHIFT: command.set(Commands.BOOST, Keyboard.getEventKeyState()); break;
+				case Keyboard.KEY_LCONTROL: command.set(Commands.ROLLING, Keyboard.getEventKeyState()); break;
 			}
 			
 			if (key == Keyboard.KEY_SPACE && 
@@ -59,7 +60,7 @@ public class InputController {
 					command.set(Commands.ATTACK_1, Mouse.getEventButtonState());
 					break;
 				case 1: 
-					command.set(Commands.ROLLING, !Mouse.getEventButtonState());
+					command.set(Commands.ROLLING, Mouse.getEventButtonState());
 					break;
 			}
 		}
@@ -67,6 +68,11 @@ public class InputController {
 		command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
 		command.setTime(t);
 		
+//		if(lastCommand.equals(command))
+//			return null;
+
+		lastCommand = command;
+
 		return command;
 	}
 }

@@ -1,13 +1,16 @@
 package org.atcs.moonweasel.util;
 
+import java.io.Serializable;
 import org.atcs.moonweasel.physics.ConvexHull.Projection;
 import org.atcs.moonweasel.util.Vector.Direction;
 
 //a 4x4 matrix class that should do pretty much everything useful
 //convention is row-col ordering
 
-public class Matrix 
+public class Matrix implements Serializable
 {
+	private static final long serialVersionUID = -7674184956691732654L;
+
 	public static final Matrix IDENTITY =
 		new Matrix(1, 0, 0, 0,
 				   0, 1, 0, 0,
