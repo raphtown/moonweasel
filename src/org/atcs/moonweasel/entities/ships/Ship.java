@@ -153,7 +153,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 		// Thrusters
 		if (command.get(Commands.FORWARD)) {
-			System.out.println("Going forward...");
 			relativeForce.z -= f;
 		} 
 		if (command.get(Commands.BACKWARD)) {

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import org.atcs.moonweasel.entities.Asteroid;
 import org.atcs.moonweasel.entities.EnergyBomb;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
@@ -13,8 +14,6 @@ import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.physics.Physics;
-import org.atcs.moonweasel.sound.SimpleMidiLoader;
-import org.atcs.moonweasel.util.Vector;
 
 
 
@@ -48,6 +47,7 @@ public abstract class Moonweasel
 		addEntityClass(Explosion.class);
 		addEntityClass(Laser.class);
 		addEntityClass(EnergyBomb.class);
+		addEntityClass(Asteroid.class);
 	}
 
 	public static void main(String[] args) {

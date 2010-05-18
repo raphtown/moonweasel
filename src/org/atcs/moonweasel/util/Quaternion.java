@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Quaternion implements Serializable {	
 	private static final long serialVersionUID = -5604971247198938994L;
-	public static final Quaternion ZERO = new Quaternion(0, 0, 0, 0);
+	public static final Quaternion ZERO = new Quaternion(1, 1, 1, 1);
 	
 	public static Quaternion add(Quaternion... quaternions) {
 		float w = 0;
