@@ -13,6 +13,7 @@ import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.physics.Physics;
+import org.atcs.moonweasel.sound.MidisLoader;
 
 public abstract class Moonweasel
 {
@@ -129,8 +130,8 @@ public abstract class Moonweasel
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
-				MidisLoader ml = new MidisLoader("Music.mid");
-				ml.play("Music", true);
+//				MidisLoader ml = new MidisLoader("Music.mid");
+//				ml.play("Music", true);
 			}
 		}
 	}
