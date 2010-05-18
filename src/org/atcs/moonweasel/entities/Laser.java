@@ -56,7 +56,6 @@ public class Laser extends ParticleEntity
 			GL11.glEnd();
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
-			
 		}
 	}
 	
