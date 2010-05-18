@@ -1,7 +1,14 @@
 package org.atcs.moonweasel.gui;
 
+
+
+
 import java.io.IOException;
 import java.util.ArrayList;
+
+
+
+
 
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -96,6 +103,7 @@ public class WeaselView extends View {
 		uiElements.add(new HealthBar(new Vector(10, 10, 0), me));
 		uiElements.add(new Crosshairs(new Vector(mode.getWidth() / 2, mode
 				.getHeight() / 2, 0)));
+		uiElements.add(new Radar(new Vector(350, 250, 0), me));
 	}
 
 	private void setProjection(float alpha) {
@@ -239,5 +247,29 @@ public class WeaselView extends View {
 
 		GL11.glFlush();
 		Display.update();
+	}
+	
+	public static void drawDisk(double r, int n)
+	{
+		double ts = 2 * Math.PI / (double) n;
+		
+		GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+		GL11.glVertex2i(0, 0);
+			
+			for(int x = 0; x < n; x++)
+				GL11.glVertex2d(r * Math.cos(ts * x), r * Math.sin(ts * x));
+			
+			GL11.glVertex2d(r, 0);	// Close circle
+			GL11.glEnd();
+	}
+	
+	public static void drawCircle(double r, int n)
+	{
+		double ts = 2 * Math.PI / (double) n;
+		
+		GL11.glBegin(GL11.GL_LINE_LOOP);
+			for(int x = 0; x < n; x++)
+				GL11.glVertex2d(r * Math.cos(ts * x), r * Math.sin(ts * x));
+		GL11.glEnd();
 	}
 }
