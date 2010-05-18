@@ -1,6 +1,9 @@
 package org.atcs.moonweasel.util;
 
-public class AxisAngle {
+import java.io.Serializable;
+
+public class AxisAngle implements Serializable {
+	private static final long serialVersionUID = 6836121133678129040L;
 	public final float angle;
 	public final Vector axis;
 	

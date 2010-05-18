@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Sphere;
 
 public class Explosion extends ParticleEntity {
+	private static final long serialVersionUID = 7516058388917314934L;
 	private int age;
 	private final float MAX_RADIUS = 1.0f;
 	private final int MAX_LIFE = 50;

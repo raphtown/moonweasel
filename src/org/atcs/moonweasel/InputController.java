@@ -14,7 +14,7 @@ public class InputController {
 		try {
 			Keyboard.create();
 			Mouse.create();
-			Mouse.setGrabbed(true);			
+			Mouse.setGrabbed(true);
 		} catch (LWJGLException e) {
 			throw new RuntimeException("Unable to create keyboard or mouse.", e);
 		}
@@ -25,7 +25,7 @@ public class InputController {
 	public UserCommand poll(long t) {
 		UserCommand command = new UserCommand();
 		command.copyKeyState(lastCommand);
-		lastCommand = command;
+		
 		
 		Keyboard.poll();
 		while (Keyboard.next()) {
@@ -68,6 +68,11 @@ public class InputController {
 		command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
 		command.setTime(t);
 		
+//		if(lastCommand.equals(command))
+//			return null;
+
+		lastCommand = command;
+
 		return command;
 	}
 }

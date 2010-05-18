@@ -1,6 +1,5 @@
 package org.atcs.moonweasel.entities.players;
 
-import java.util.Comparator;
 import java.util.PriorityQueue;
 
 import org.atcs.moonweasel.entities.Entity;
@@ -8,90 +7,107 @@ import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
+public class Player extends Entity
+{
+	private static final long serialVersionUID = -5228344170942537611L;
 
-public class Player extends Entity {
 	public enum Status {
 		DEAD, PILOT, GUNNER;
 	}
-	
-	@SuppressWarnings("unused")
+
 	private Status status;
 	private Ship ship;
-	
+
 	private int kills;
 	private int assists;
 	private int deaths;
-	
+
 	private PriorityQueue<UserCommand> commands;
-	
+
 	private Player() {
 		this.status = Status.DEAD;
 		this.ship = null;
-		
+
 		this.kills = 0;
 		this.assists = 0;
 		this.deaths = 0;
-		
-		this.commands = new PriorityQueue<UserCommand>(5,
-				new Comparator<UserCommand>() {
-					@Override
-					public int compare(UserCommand o1, UserCommand o2) {
-						return (int)(o1.getTime() - o2.getTime());
-					}
-				});
-		
+
+		this.commands = new PriorityQueue<UserCommand>(5);
+
 		scheduleThink(50);
 	}
-	
+
 	public void addCommand(UserCommand command) {
-		this.commands.add(command);
-	}
-	
-	private void clearCommandsBefore(long t) {
-		while (!commands.isEmpty() &&
-				commands.peek().getTime() < t) {
-			commands.remove();
+		synchronized (commands)
+		{
+			this.commands.add(command);
+			addChange("add command " + command);
 		}
 	}
-	
-	public void died() {
-		System.out.println("DIED");
+
+	public void clearCommandsBefore(long t) {
+		synchronized (commands)
+		{
+			while (!commands.isEmpty() &&
+					commands.peek().getTime() < t) {
+				commands.remove();
+			}
+		}
+	}
+
+	public void destroy() 
+	{
+		super.destroy();
+		ship.destroy();
+	}
+
+	public void die() {
+		System.out.println("Player died: " + this);
 		deaths++;
 		ship.spawn();
 	}
-	
-	private Range<UserCommand> getCommandsBefore(long t) {
+
+	public Range<UserCommand> getCommandsBefore(long t) {
 		return new TimeRange<UserCommand>(0, t, commands.iterator());
 	}
-	
+
 	public void killedPlayer() {
 		kills++;
 	}
-	
+
 	public void killedPlayerAssist() {
 		assists++;
 	}
-	
+
 	public void spawn() {
 		this.commands.clear();
 	}
-	
+
 	public void setShip(Ship ship) {
 		this.ship = ship;
+		addChange("set ship " + ship.getID());
 	}
-	
+
 	public Ship getShip() {
 		return ship;
 	}
-	
+
 	public void think() {
 		if (ship != null) {
-			for (UserCommand command : getCommandsBefore(getTime())) {
-				ship.apply(command);				
+			Range<UserCommand> currCommands = getCommandsBefore(getTime());
+			for (UserCommand command : currCommands) {
+//				Debug.print("Command: " + command);
+				ship.apply(command);
 			}
 		}
 		clearCommandsBefore(getTime());
-		
+
 		scheduleThink(50);
 	}
+
+
+	public Status getStatus() {
+		return status;
+	}
+
 }

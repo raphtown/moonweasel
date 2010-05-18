@@ -1,5 +1,6 @@
 package org.atcs.moonweasel.physics;
 
+import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.Quaternion;
 import org.atcs.moonweasel.util.State;
@@ -47,11 +48,12 @@ public class NumericalIntegration
 		//damping(state, output);
 		MutableVector force = new MutableVector();
 		MutableVector torque = new MutableVector();
-		for (TimedDerivative derivative : state.getDerivativesBefore(t)) 
-		{
+		Range<TimedDerivative> derivatives = state.getDerivativesBefore(t);
+		for (TimedDerivative derivative : derivatives) {
 			force.sum(derivative.force);
 			torque.sum(derivative.torque);
 		}
+		
 		output.force = output.force.add(force.toVector());
 		output.torque = output.torque.add(torque.toVector());
 	}
