@@ -61,7 +61,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 //		System.out.println("Applying command: " + command);
 		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
 		{
-			System.out.println("wow1");
 			EntityManager manager = EntityManager.getEntityManager();
 			Laser laser = manager.create("laser");
 			laser.setSource(this);
@@ -207,7 +206,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	@Override
 	public void damage(int damage) {
 		health -= damage;
-
+		System.out.println("Owie!  Damaged: " + damage + " Health left: " + health);
 		if (health <= 0) {
 			die();
 		}
@@ -288,6 +287,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	@Override
 	public void spawn() {
 		assert pilot != null;
+		System.out.println("Respawning: " + this.health);
 		this.health = this.data.health;
 		respawn();
 	}
@@ -355,6 +355,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 	{
 		IState is = super.packageIState();
 		List<Object> objects = is.objects;
+		System.out.println(health);
 		objects.add(health);
 		return is;
 	}
