@@ -13,7 +13,7 @@ import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Networking;
 import org.atcs.moonweasel.physics.Physics;
-import org.atcs.moonweasel.sound.MidisLoader;
+import org.atcs.moonweasel.sound.SimpleMidiLoader;
 import org.atcs.moonweasel.util.Vector;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -127,6 +127,9 @@ public class Moonweasel {
 		int loops;
 		float interpolation;
 		
+		SimpleMidiLoader myLoader = new SimpleMidiLoader("sf64b2.mid");
+		myLoader.playMidi();
+		
 		while (!view.shouldQuit()) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
@@ -138,8 +141,6 @@ public class Moonweasel {
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
-				MidisLoader ml = new MidisLoader("Music.mid");
-				ml.play("Music", true);
 			}
 
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
