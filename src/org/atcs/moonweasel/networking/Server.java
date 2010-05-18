@@ -218,7 +218,6 @@ public class Server extends RMIObject implements IServer
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			System.err.println("Invalid client in client list...");
 			disconnectClient(clientName);
 		}

@@ -355,7 +355,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 	{
 		IState is = super.packageIState();
 		List<Object> objects = is.objects;
-		System.out.println(health);
 		objects.add(health);
 		return is;
 	}
