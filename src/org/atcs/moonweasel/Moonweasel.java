@@ -105,7 +105,7 @@ public class Moonweasel {
 		snowflake2.setPosition(new Vector(0,20,0));
 		snowflake2.setPilot(player);
 		snowflake2.spawn();
-		
+				
 		this.physics = new Physics();
 		this.view = new WeaselView(mode, fullscreen, player);
 		this.input = new InputController();
