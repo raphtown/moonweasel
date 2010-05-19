@@ -137,7 +137,11 @@ public class Server extends RMIObject implements IServer
 		connectedClients.remove(clientName);
 		Player plr = playerMap.get(clientName);
 		playerMap.remove(clientName);
-		plr.destroy();
+		if(plr != null)
+		{
+			plr.destroy();
+		}
+		
 	}
 
 	public void sendCurrentEntitiesToAll()
@@ -166,7 +170,7 @@ public class Server extends RMIObject implements IServer
 			}
 		}
 
-		
+
 		final Server s = this;
 		final List<Entity> fList = eList;
 		Thread thread = new Thread()        
@@ -214,7 +218,7 @@ public class Server extends RMIObject implements IServer
 			}; 
 			thread.start();
 		}
-			
+
 
 	}
 
@@ -300,7 +304,9 @@ public class Server extends RMIObject implements IServer
 		while(range.hasNext())
 		{
 			ModelEntity e = range.next();
-			list.add(e.packageIState());
+			IState is = e.packageIState();
+			is.time = m.getT();
+			list.add(is);
 		}
 
 		Set<String> temp = getSafeConnectedClientsSet();
@@ -362,6 +368,7 @@ public class Server extends RMIObject implements IServer
 
 		EntityManager mgr = EntityManager.getEntityManager();
 		IClient client = connectedClients.get(clientName);
+
 		ShipType shipType;
 		try
 		{
@@ -392,11 +399,15 @@ public class Server extends RMIObject implements IServer
 
 	public void act()
 	{
+
+		EntityManager mgr = EntityManager.getEntityManager();
 		for(String clientName : newlyConnectedClients)
 		{
 			Debug.print("Performing setup...");
 			setupClient(clientName);
 		}
+
+		newlyConnectedClients.clear();
 
 		while(commandList.size() != 0)
 		{
@@ -404,27 +415,14 @@ public class Server extends RMIObject implements IServer
 			u.player.addCommand(u);
 		}
 
-		newlyConnectedClients.clear();
-
-		final Server s = this;
-		Thread thread = new Thread()        
-		{                 
-
-			@Override                
-			public void run()                 
-			{  
-				if(IStateUpdateCount++ >= TICKS_PER_ISTATE_UPDATE)
-				{   
-					s.sendIStatesToAll(); 
-					IStateUpdateCount = 0;
-				}
-				s.sendNewEntitiesToAll();
-				s.sendDeletedEntitiesToAll(EntityManager.getEntityManager().deletedEntities);
-				EntityManager.getEntityManager().deletedEntities.clear();
-			}            
-		}; 
-		thread.start();
-
+		if(IStateUpdateCount++ >= TICKS_PER_ISTATE_UPDATE)
+		{   
+			sendIStatesToAll(); 
+			IStateUpdateCount = 0;
+		}
+		sendNewEntitiesToAll();
+		sendDeletedEntitiesToAll(mgr.deletedEntities);
+		mgr.deletedEntities.clear();
 
 
 	}
@@ -437,4 +435,10 @@ public class Server extends RMIObject implements IServer
 
 		return temp;
 	}
+
+	public long getTime() throws RemoteException
+	{
+		return m.getT();
+	}
+
 }

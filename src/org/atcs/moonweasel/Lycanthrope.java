@@ -16,6 +16,7 @@ public class Lycanthrope extends Moonweasel
 	private InputController input;
 	private Player player;
 	private Client client;
+	private Moonweasel m;
 	
 	public Lycanthrope(boolean fullscreen)
 	{
@@ -46,7 +47,7 @@ public class Lycanthrope extends Moonweasel
 			throw new RuntimeException("Unable to choose display mode.", e);
 		}
 		
-		this.client = new Client();
+		this.client = new Client(this);
 		client.findAndConnectToServer();
 		client.connectionInitializationComplete();
 		while (player == null)

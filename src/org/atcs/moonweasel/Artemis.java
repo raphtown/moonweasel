@@ -12,14 +12,19 @@ public class Artemis extends Moonweasel {
 	{
 		super(fullscreen);
 		server = new Server("Moonweasel Server", this);
-		
+
 		Asteroid asteroid = EntityManager.getEntityManager().create("asteroid");
 		asteroid.setPosition(new Vector(0, 0, 10));
 		asteroid.spawn();
 	}
 
-	protected void act(final long next_logic_tick) 
+	protected void act(long next_logic_tick) 
 	{
+		
 		server.act();
+		entityManager.update(t);
+		physics.update(t, SKIP_TICKS);
+		
+
 	}
 }

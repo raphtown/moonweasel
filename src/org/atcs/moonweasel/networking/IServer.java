@@ -34,5 +34,6 @@ public interface IServer extends Remote
 	 */
 	public void requestUpdate(final String c) throws RemoteException;
 	public Integer getMyID(String ip) throws RemoteException;
+	public long getTime() throws RemoteException;
 	public void connectionInitializationComplete(String c) throws RemoteException;
 }

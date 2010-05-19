@@ -27,7 +27,7 @@ public class InputController {
 		command.copyKeyState(lastCommand);
 		
 		
-		Keyboard.poll();
+//		Keyboard.poll();
 		while (Keyboard.next()) {
 			int key = Keyboard.getEventKey();
 			switch (key) {
@@ -53,7 +53,7 @@ public class InputController {
 			}
 		}
 		
-		Mouse.poll();
+//		Mouse.poll();
 		while (Mouse.next()) {
 			switch (Mouse.getEventButton()) {
 				case 0:

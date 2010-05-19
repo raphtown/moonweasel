@@ -9,11 +9,13 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.atcs.moonweasel.Debug;
+import org.atcs.moonweasel.Moonweasel;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -21,6 +23,7 @@ import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.networking.changes.ChangeList;
+import org.atcs.moonweasel.ranges.Range;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 
@@ -36,10 +39,13 @@ import org.atcs.moonweasel.networking.changes.ChangeList;
 public class Client extends RMIObject implements IClient
 {
 	private IServer server = null;
-
-	public Client()
+	private Moonweasel m;
+	
+	
+	public Client(Moonweasel m)
 	{
 		super(CLIENT_OBJECT_NAME);
+		this.m = m;
 	}
 
 	public void findAndConnectToServer()
@@ -70,6 +76,7 @@ public class Client extends RMIObject implements IClient
 			e.printStackTrace();
 		}
 	}
+	
 
 	/**
 	 * Serves to get a hostname out of the ServerAnnouncer, splitting out the 
@@ -205,6 +212,14 @@ public class Client extends RMIObject implements IClient
 
 	public void act()
 	{
+		try
+		{
+			m.setT(server.getTime() - 50);
+		} catch (RemoteException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		EntityManager mgr = EntityManager.getEntityManager();
 		synchronized(entitiesToAdd)
 		{
@@ -218,20 +233,28 @@ public class Client extends RMIObject implements IClient
 		
 		synchronized(IStates)
 		{
-			for (IState l : IStates)
+			Iterator<IState> i = IStates.iterator();
+			while(i.hasNext())
 			{
+				IState l = i.next();
 				ModelEntity me = ((ModelEntity)mgr.get(l.ownerID));
 				if(me == null)
 					System.err.println("Update for non-existent entity: " + l.ownerID);
 				else
 				{
-					me.unpackageIState(l);
+//					System.out.println(l.time + "  " + m.getT());
+					if(l.time <= m.getT())
+					{
+//						System.out.println(me);
+//						me.unpackageIState(l);
+						i.remove();
+					}
+					
 				}
 			}
-			IStates.clear();
 		}
-
-
+		
+		
 		synchronized(entitiesToDelete)
 		{
 			for (Entity e : entitiesToDelete)

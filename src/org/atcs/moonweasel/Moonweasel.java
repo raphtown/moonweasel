@@ -1,7 +1,5 @@
 package org.atcs.moonweasel;
 
-import java.io.IOException;
-
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -18,6 +16,7 @@ import org.atcs.moonweasel.entities.ships.Snowflake;
 import org.atcs.moonweasel.physics.ConvexHull;
 import org.atcs.moonweasel.physics.Physics;
 import org.atcs.moonweasel.physics.ConvexHull.Projection;
+import org.atcs.moonweasel.ranges.Range;
 
 public abstract class Moonweasel
 {
@@ -87,7 +86,7 @@ public abstract class Moonweasel
 	
 	protected Physics physics;
 	protected EntityManager entityManager;
-	protected long t;
+	protected long t = 0;
 
 	protected Moonweasel(boolean fullscreen) 
 	{
@@ -102,22 +101,35 @@ public abstract class Moonweasel
 	protected final int TICKS_PER_SECOND = 50;
 	protected final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 	protected final int MAX_FRAMESKIP = 5;
-	
+	long next_logic_tick;
+	int loops;
 	protected void run() 
 	{
-		long next_logic_tick = System.currentTimeMillis();
-		int loops;
 		
+		next_logic_tick = System.currentTimeMillis() + SKIP_TICKS;
 		while (true) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
-				entityManager.update(t);
-				physics.update(t, SKIP_TICKS);
 				act(next_logic_tick);
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
+				if(t == 30000)
+				{
+					System.out.println("-------------------------------");
+					System.out.println("Model Entity Dump:");
+					System.out.println();
+					Range<ModelEntity> allMEs = entityManager.getAllOfType(ModelEntity.class);
+					for(ModelEntity me : allMEs)
+					{
+						System.out.println(me.getState());
+					}
+					System.out.println("-------------------------------");
+				}
+				
+
+				
 			}
 		}
 	}
@@ -127,5 +139,11 @@ public abstract class Moonweasel
 	public long getT()
 	{
 		return t;
+	}
+	
+	public void setT(long t)
+	{
+		this.t = t;
+		next_logic_tick = t + SKIP_TICKS;
 	}
 }

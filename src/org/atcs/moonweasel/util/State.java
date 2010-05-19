@@ -55,6 +55,13 @@ public class State implements Serializable
 		this(entity, Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
 	}
 	
+	public String toString()
+	{
+		return "State with id: " + entity.getID() + "  and position: " + 
+		position + " and momentum: " + momentum + " and orientation: " + 
+		orientation + " and angularMomentum: " + angularMomentum + ".";
+	}
+	
 	private State(ModelEntity entity, Vector position, Vector momentum, 
 			Quaternion orientation, Vector angularMomentum, float mass, 
 			float inverseMass, Matrix inertiaTensor, Matrix inverseInertiaTensor) {

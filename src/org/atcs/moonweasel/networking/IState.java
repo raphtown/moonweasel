@@ -11,6 +11,8 @@ public class IState implements Serializable
 	
 	public int ownerID;
 	
+	public long time;
+	
 	public IState(List<Object> objects, int ownerID)
 	{
 		this.objects = objects;
