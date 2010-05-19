@@ -49,6 +49,10 @@ public class EntityManager extends Manager<Entity> {
 	public TypeRange<Ship> getAllShipsInSphere(Vector center, float radius) {
 		return new TypeRange<Ship>(Ship.class, getAllInSphere(center, radius));
 	}
+	
+	public TypeRange<Asteroid> getAllAsteroidsInSphere(Vector center, float radius) {
+		return new TypeRange<Asteroid>(Asteroid.class, getAllInSphere(center, radius));
+	}
 
 	public long getTime() {
 		return System.currentTimeMillis() + offset;

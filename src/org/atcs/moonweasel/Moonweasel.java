@@ -18,6 +18,7 @@ import org.atcs.moonweasel.physics.Physics;
 import org.atcs.moonweasel.physics.ConvexHull.Projection;
 import org.atcs.moonweasel.ranges.Range;
 
+
 public abstract class Moonweasel
 {
 	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
