@@ -148,7 +148,7 @@ public class Server extends RMIObject implements IServer
 			sendCurrentEntitiesToClient(clientName);
 	}
 
-	public void sendCurrentEntitiesToClient(String clientName)
+	public void sendCurrentEntitiesToClient(final String clientName)
 	{
 		Debug.print("Sending out current entities to " + clientName);
 		ArrayList<Entity> eList = new ArrayList<Entity>();
@@ -166,12 +166,24 @@ public class Server extends RMIObject implements IServer
 			}
 		}
 
-		sendEntities(true, eList, clientName);
+		
+		final Server s = this;
+		final List<Entity> fList = eList;
+		Thread thread = new Thread()        
+		{                 
+
+			@Override                
+			public void run()                 
+			{  
+				s.sendEntities(true, fList, clientName);
+			}            
+		}; 
+		thread.start();
 	}
 
 	public void sendNewEntitiesToAll()
 	{
-		ArrayList<Entity> eList = new ArrayList<Entity>();
+		List<Entity> eList = new ArrayList<Entity>();
 		Range<Entity> range = EntityManager.getEntityManager().getAllOfType(Entity.class);
 
 		while(range.hasNext())
@@ -187,8 +199,22 @@ public class Server extends RMIObject implements IServer
 
 		Set<String> temp = getSafeConnectedClientsSet();
 
-		for (String clientName : temp)
-			sendEntities(true, eList, clientName);
+		for (final String clientName : temp)
+		{
+			final Server s = this;
+			final List<Entity> fList = eList;
+			Thread thread = new Thread()        
+			{                 
+
+				@Override                
+				public void run()                 
+				{  
+					s.sendEntities(true, fList, clientName);
+				}            
+			}; 
+			thread.start();
+		}
+			
 
 	}
 
@@ -203,13 +229,13 @@ public class Server extends RMIObject implements IServer
 			{
 				Debug.print("Sending out deleted entities to all:  " + eList);
 			}
-			
+
 			sendEntities(false, eList, clientName);
 		}
 
 	}
 
-	private void sendEntities(boolean add, ArrayList<Entity> eList, String clientName)
+	private void sendEntities(boolean add, List<Entity> eList, String clientName)
 	{
 		IClient c = connectedClients.get(clientName);
 		try
@@ -245,16 +271,25 @@ public class Server extends RMIObject implements IServer
 
 		for (String clientName : temp)
 		{
-			IClient c = connectedClients.get(clientName);
-			try
-			{
-				c.receiveChanges(list);
-			} 
-			catch (RemoteException e)
-			{ 
-				System.err.println("Invalid client in client list...");
-				disconnectClient(clientName);
-			}
+			final IClient c = connectedClients.get(clientName);
+			final List<ChangeList> fList = list;
+			Thread thread = new Thread()        
+			{                 
+
+				@Override                
+				public void run()                 
+				{  
+					try
+					{
+						c.receiveChanges(fList);
+					} catch (RemoteException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}            
+			}; 
+			thread.start();
 		}
 	}
 
@@ -262,29 +297,35 @@ public class Server extends RMIObject implements IServer
 	{
 		Range<ModelEntity> range = EntityManager.getEntityManager().getAllOfType(ModelEntity.class);
 		List<IState> list = new LinkedList<IState>();
-		synchronized (EntityManager.getEntityManager())
+		while(range.hasNext())
 		{
-			while(range.hasNext())
-			{
-				ModelEntity e = range.next();
-				list.add(e.packageIState());
-			}
+			ModelEntity e = range.next();
+			list.add(e.packageIState());
 		}
 
 		Set<String> temp = getSafeConnectedClientsSet();
 
 		for (String clientName : temp)
 		{
-			IClient c = connectedClients.get(clientName);
-			try
-			{
-				c.receiveIStates(list);
-			} 
-			catch (RemoteException e)
-			{ 
-				System.err.println("Invalid client in client list...");
-				disconnectClient(clientName);
-			}
+			final IClient c = connectedClients.get(clientName);
+			final List<IState> fList = list;
+			Thread thread = new Thread()        
+			{                 
+
+				@Override                
+				public void run()                 
+				{  
+					try
+					{
+						c.receiveIStates(fList);
+					} catch (RemoteException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}            
+			}; 
+			thread.start();
 		}
 	}
 
@@ -348,7 +389,7 @@ public class Server extends RMIObject implements IServer
 
 	private final int TICKS_PER_ISTATE_UPDATE = 5;
 	private int IStateUpdateCount = 0;
-	
+
 	public void act()
 	{
 		for(String clientName : newlyConnectedClients)
@@ -364,15 +405,28 @@ public class Server extends RMIObject implements IServer
 		}
 
 		newlyConnectedClients.clear();
-		if(IStateUpdateCount++ >= TICKS_PER_ISTATE_UPDATE)
-		{
-			sendIStatesToAll();
-			IStateUpdateCount = 0;
-		}
-		
-		this.sendDeletedEntitiesToAll(EntityManager.getEntityManager().deletedEntities);
-		EntityManager.getEntityManager().deletedEntities.clear();
-		sendNewEntitiesToAll();
+
+		final Server s = this;
+		Thread thread = new Thread()        
+		{                 
+
+			@Override                
+			public void run()                 
+			{  
+				if(IStateUpdateCount++ >= TICKS_PER_ISTATE_UPDATE)
+				{   
+					s.sendIStatesToAll(); 
+					IStateUpdateCount = 0;
+				}
+				s.sendNewEntitiesToAll();
+				s.sendDeletedEntitiesToAll(EntityManager.getEntityManager().deletedEntities);
+				EntityManager.getEntityManager().deletedEntities.clear();
+			}            
+		}; 
+		thread.start();
+
+
+
 	}
 
 	private Set<String> getSafeConnectedClientsSet()
