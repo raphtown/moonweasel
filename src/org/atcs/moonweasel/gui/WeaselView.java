@@ -184,7 +184,7 @@ public class WeaselView extends View {
 		EntityManager em = EntityManager.getEntityManager();
 		State interpolated;
 		AxisAngle rotation;
-		GL11.glPushAttrib(GL11.GL_TEXTURE_BIT);
+
 		for (ModelEntity entity : em.getAllOfType(ModelEntity.class)) {
 			if (!entity.isPreCached()) {
 				entity.precache();
@@ -195,6 +195,7 @@ public class WeaselView extends View {
 			entity.setLastRenderState(entity.getState().clone());
 			rotation = interpolated.orientation.toAxisAngle();
 			
+			GL11.glPushAttrib(GL11.GL_TEXTURE_BIT);
 			GL11.glPushMatrix();
 			GL11.glTranslatef(interpolated.position.x, interpolated.position.y,
 					interpolated.position.z);
@@ -204,9 +205,10 @@ public class WeaselView extends View {
 			}
 			entity.draw();
 			GL11.glPopMatrix();
+			GL11.glPopAttrib();
 			
 		}
-		GL11.glPopAttrib();
+		
 
         for (ParticleEntity entity : em.getAllOfType(ParticleEntity.class)) {
         	if (entity == null || entity.getOrientation() == null)

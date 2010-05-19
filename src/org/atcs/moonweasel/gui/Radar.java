@@ -109,10 +109,9 @@ public class Radar extends UIElement {
 					
 					
 					TypeRange<Asteroid> tra = em.getAllAsteroidsInSphere(s.getPosition(), (float) viewingR);				
-					while (tr.hasNext())
+					while (tra.hasNext())
 					{
 						Asteroid ast = tra.next();
-						
 
 							Vector v = new Vector(0, 0, 0);
 							v = s.getState().worldToBody.transform(ast.getPosition());
@@ -120,7 +119,8 @@ public class Radar extends UIElement {
 //							v.subtract(s.getPosition());
 
 								GL11.glPushMatrix();
-								GL11.glColor4f((float) (1 - Math.abs((0.5*v.y/viewingR))), (float) (1 - Math.abs((0.5*v.y/viewingR))), (float) (1 - Math.abs((0.5*v.y/viewingR))), 0.5f);
+								GL11.glColor4f((float) (1 - Math.abs((v.y/viewingR))), (float) (1 - Math.abs((v.y/viewingR))), (float) (1 - Math.abs((v.y/viewingR))), 0.5f);
+//								GL11.glColor4f((float) (0.5 - 0.5*v.y/viewingR), 0, (float) (0.5 + 0.5*v.y/viewingR), 0.5f);
 								GL11.glTranslated(v.x*MINI_MAP_RADIUS/viewingR, -v.z*MINI_MAP_RADIUS/viewingR, 0);
 								WeaselView.drawDisk(TANK_CIRCLE_RADIUS, 100);		
 							GL11.glPopMatrix();
