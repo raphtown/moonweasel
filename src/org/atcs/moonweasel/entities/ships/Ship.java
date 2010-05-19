@@ -1,7 +1,9 @@
 package org.atcs.moonweasel.entities.ships;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
 import org.atcs.moonweasel.entities.ModelEntity;
@@ -10,6 +12,9 @@ import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.players.UserCommand.Commands;
+import org.atcs.moonweasel.networking.IState;
+import org.atcs.moonweasel.ranges.CustomRange;
+import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.MutableVector;
 import org.atcs.moonweasel.util.State;
@@ -19,6 +24,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 
 public class Ship extends ModelEntity implements Vulnerable {
+	private static final long serialVersionUID = 6162008933132397822L;
+
 	private static Matrix BASE_TENSOR = Matrix.IDENTITY;
 	private static float LASER_OFFSET = 0.3f;
 	private static long COOLDOWN = 200;
@@ -44,12 +51,15 @@ public class Ship extends ModelEntity implements Vulnerable {
 		this.health = this.data.health;
 
 		this.gunners = new Player[data.gunners.length];
+		addChange("created ship " + data);
+
 		this.laserOffset = LASER_OFFSET;
 		this.nextFireTime = 0;
 	}
 
 	public void apply(UserCommand command) {
 		//Shooting
+//		System.out.println("Applying command: " + command);
 		if (command.get(Commands.ATTACK_1) && getTime() > nextFireTime)
 		{
 			EntityManager manager = EntityManager.getEntityManager();
@@ -83,7 +93,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 	{
 		if(this.getState().velocity.z <= 0.0f)
 		{
-
 			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -154,6 +163,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 		}
 		if (command.get(Commands.STOP)) {
 			this.getState().momentum = Vector.ZERO;
+			this.getState().angularMomentum = Vector.ZERO;
 		}
 
 
@@ -189,33 +199,45 @@ public class Ship extends ModelEntity implements Vulnerable {
 		torque.sum(state.orientation.rotate(relativeTorque.toVector()));
 		state.addDerivative(new TimedDerivative(getTime(), 
 				force.toVector(), torque.toVector()));
+//		addChange("apply command " + command);   This can't go here as long as new entities are sent as well
 	}
 
 	@Override
 	public void damage(int damage) {
 		health -= damage;
-
+		System.out.println("Owie!  Damaged: " + damage + " Health left: " + health);
 		if (health <= 0) {
-			destroy();
+			die();
 		}
+		addChange("damage " + damage);
+	}
+	public void die()
+	{
+		Debug.print("Ship was killed: " + this);
+		if (pilot != null)
+			pilot.die();
+		for (Player gunner : gunners) {
+			gunner.die();
+		}
+		explode();
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
+		Debug.print("Ship was destroyed: " + this);
+		explode();
+		addChange("destroy");
+	}
 
-		if (pilot != null)
-			pilot.died();
-		for (Player gunner : gunners) {
-			gunner.died();
-		}
-
+	private void explode()
+	{
 		EntityManager manager = EntityManager.getEntityManager();
 		Explosion explosion = manager.create("explosion");
 		explosion.setPosition(this.getPosition());
 		explosion.spawn();
 
-		float distance = getState().mass / 1000;
+		float distance = getState().getMass() / 1000;
 		float damage;
 		float scale;
 		for (Ship ship : manager.getAllShipsInSphere(
@@ -228,6 +250,7 @@ public class Ship extends ModelEntity implements Vulnerable {
 			damage = data.mass * scale;
 			ship.damage((int)damage);
 		}
+		
 	}
 
 	public ShipData getData() {
@@ -257,19 +280,21 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 	public void setPilot(Player pilot) {
 		this.pilot = pilot;
+		addChange("set pilot " + pilot.getID());
 	}
 
 	@Override
 	public void spawn() {
 		assert pilot != null;
+		System.out.println("Respawning: " + this.health);
 		this.health = this.data.health;
 		respawn();
 	}
 
-	private ModelEntity autoTargetingLaser()
+	private Ship autoTargetingLaser()
 	{
-		ArrayList<ModelEntity> entitiesToCheck = entitiesInFront();
-		for(ModelEntity me : entitiesToCheck)
+		Range<Ship> entitiesToCheck = shipsInFront();
+		for(Ship me : entitiesToCheck)
 		{
 			Vector enemyPosition = this.getState().worldToBody.transform(me.getState().position).normalize();
 
@@ -279,10 +304,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 			float distance = enemyPosition.length();
 			float thetaScaleFactor = (float)(4*(Math.exp(-distance)) + 1)/3;
 			
-			System.out.println("ThetaY: " + thetaY);
-			System.out.println("ThetaX: " + thetaX);
-			
-			
 			if (thetaY <= thetaScaleFactor*LASER_SCANNING_RANGE_Y)
 			{
 				if (thetaX <= thetaScaleFactor*LASER_SCANNING_RANGE_X)
@@ -290,7 +311,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 					if (me instanceof Ship)
 					{
 						((Ship) me).damage(data.attack);
-						System.out.println("Auto-targeted hitscan");
 					}
 					return me;
 				}
@@ -301,18 +321,33 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 	}
 
-	public ArrayList<ModelEntity> entitiesInFront() //returns a list of all entities in front of this ship
+	public Range<Ship> shipsInFront() //returns a list of all entities in front of this ship
 	{
-		ArrayList<ModelEntity> forwardEntities = new ArrayList<ModelEntity>();
-		for(ModelEntity me : EntityManager.getEntityManager().getAllOfType(Ship.class))
-		{
-			if(this.getState().worldToBody.transform(me.getState().position).z < 0)
-			{
-				forwardEntities.add(me);
+		EntityManager em = EntityManager.getEntityManager();
+		final Ship me = this;
+		CustomRange<Ship> range = new CustomRange<Ship>(em.getAllOfType(Ship.class)) {
+			protected boolean filter(Ship e) {
+				return (me.getState().worldToBody.transform(e.getState().position).z < 0);
 			}
-		}
-		//todo: add asteroid class here
+		};
 
-		return forwardEntities;
+		return range;
+	}
+	
+	public void unpackageIState(IState is)
+	{
+		super.unpackageIState(is);
+		List<Object> objects = is.objects;
+		Iterator<Object> iter = objects.iterator();
+		this.health =  (Integer) iter.next();
+		iter.remove();
+	}
+	
+	public IState packageIState()
+	{
+		IState is = super.packageIState();
+		List<Object> objects = is.objects;
+		objects.add(health);
+		return is;
 	}
 }

@@ -2,38 +2,29 @@ package org.atcs.moonweasel.ranges;
 
 import java.util.Iterator;
 
-import org.atcs.moonweasel.Timed;
-
-public class TimeRange<E extends Timed> implements Range<E> {
-	private Iterator<E> iterator;
-	private long start;
-	private long end;
+public abstract class CustomRange<E> implements Range<E> {
+	private Iterator<? super E> iterator;
 	private E current;
 	
-	public TimeRange(long start, long end, Iterator<E> iterator) {
+	public CustomRange(Iterator<? super E> iterator) {
 		this.iterator = iterator;
-		this.start = start;
-		this.end = end;
 		this.current = findNextElement();
 	}
 
+	@SuppressWarnings("unchecked")
 	private E findNextElement() {
 		E element;
-		synchronized(iterator)
-		{
-			while (iterator.hasNext()) {
-				element = iterator.next();
-				if (element != null)
-				{
-					if (start <= element.getTime() && element.getTime() < end) {
-						return element;
-					}
-				}
+		while (iterator.hasNext()) {
+			element = (E)iterator.next();
+			if (filter(element)) {
+				return element;
 			}
 		}
-
+		
 		return null;
 	}
+	
+	protected abstract boolean filter(E element);
 	
 	@Override
 	public boolean hasNext() {

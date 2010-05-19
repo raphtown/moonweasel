@@ -20,6 +20,11 @@ public abstract class Manager<T extends Identifiable> implements Iterable<T> {
 		this.elements.put(element.getID(), element);
 	}
 	
+	public void delete(T element)
+	{
+		this.elements.remove(element.getID());
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <E extends T> E create(String type) {
 		Class<E> clazz = (Class<E>)getClass(type);
@@ -27,7 +32,8 @@ public abstract class Manager<T extends Identifiable> implements Iterable<T> {
 		
 		try {
 			Constructor<E> constructor = clazz.getDeclaredConstructor(new Class<?>[0]);
-			constructor.setAccessible(true);
+			if(!constructor.isAccessible())
+				constructor.setAccessible(true);
 			element = constructor.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to create entity of type " + type, e);

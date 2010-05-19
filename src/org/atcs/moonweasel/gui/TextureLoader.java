@@ -85,7 +85,8 @@ public class TextureLoader {
      * @return The loaded texture
      * @throws IOException Indicates a failure to access the resource
      */
-    public Texture getTexture(String resourceName) throws IOException {
+    @SuppressWarnings("unchecked")
+	public Texture getTexture(String resourceName) throws IOException {
         Texture tex = (Texture) table.get(resourceName);
         
         if (tex != null) {

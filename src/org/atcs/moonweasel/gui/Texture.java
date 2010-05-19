@@ -148,4 +148,8 @@ public class Texture {
             widthRatio = ((float) width)/texWidth;
         }
     }
+    
+    public void unbind() {
+    	GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+    }
 }

@@ -1,18 +1,19 @@
 package org.atcs.moonweasel.physics;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.physics.ConvexHull.Projection;
+import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.util.Matrix;
 import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
 
-public class Physics 
+public class Physics
 {
 	private NumericalIntegration integrator;
 	
@@ -22,13 +23,11 @@ public class Physics
 	{
 		this.integrator = new NumericalIntegration();
 	}
-	
-	public void destroy() 
+
+	public void destroy()
 	{
 
 	}
-
-	NumericalIntegration Integrator = new NumericalIntegration();	
 
 	public void update(long t, int dt) //updates all models
 	{
@@ -47,7 +46,8 @@ public class Physics
 		
 		
 		//This method grabs the state from each model entity in the manager.
-		for(ModelEntity e : em.getAllOfType(ModelEntity.class))
+		Range<ModelEntity> modelEntities = em.getAllOfType(ModelEntity.class);
+		for(ModelEntity e : modelEntities)
 		{
 			allStates.add(e.getState());
 			e.getState().setDangerZone(dt);
@@ -109,11 +109,8 @@ public class Physics
 		statesToCheck.clear();
 		collidingStates.clear();
 	}
-	
-	
-	
+
 	//ASSUMPTION: uniform mass distribution over all objects
-	
 	public Vector computeCentroid(ArrayList<Vector> vertexList)
 	{
 		Vector returnVector = new Vector(0,0,0);
@@ -123,16 +120,16 @@ public class Physics
 		}
 		returnVector.scale(1.0f / vertexList.size());
 
-		//averages all of the vertices;
+//		averages all of the vertices;
 		return returnVector;
 
-		//Returns: a vector that gives the location of the centroid in world coordinates
+//		Returns: a vector that gives the location of the centroid in world coordinates
 	}
 	//given a list of a body's coordinates (centered around the centroid), compute the inertia tensor
 	//helpful if you already have the vertices in body coordinates
 	public Matrix computeInertiaTensor(List<Vector> vertexListInBodyCoords)
 	{
-		//IMPLEMENTATION OF http://en.wikipedia.org/wiki/Moment_of_inertia#Moment_of_inertia_tensor	
+//		IMPLEMENTATION OF http://en.wikipedia.org/wiki/Moment_of_inertia#Moment_of_inertia_tensor
 		float i11 = 1, i22 = 1, i33 = 1, i12 = 0, i13 = 0, i23 = 0, i21 = 0, i31 = 0, i32 = 0;
 
 		for(Vector v : vertexListInBodyCoords)
@@ -204,15 +201,16 @@ public class Physics
 		}
 
 		if(crossings % 2 == 1) return true;
-		else return false;	
+		else return false;
 	}
+
 	public static boolean polygonCollision(Vector[] p1, Vector[] p2)
 	{
 		for(Vector v1 : p1)
 		{
 			if(pointInPolygon(v1, p2)) return true;
 		}
-		
+
 		return false;
 	}
 	
@@ -232,7 +230,6 @@ public class Physics
 			for (int i = 0; i < s2body.length; i++) {
 				s2world[i]  = p.project(s2.bodyToWorld.transform(s2body[i], p));
 			}
-
 			if (!polygonCollision(s1world, s2world)) {
 				return false;
 			}

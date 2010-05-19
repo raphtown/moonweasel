@@ -1,12 +1,25 @@
 package org.atcs.moonweasel;
 
+import org.atcs.moonweasel.entities.Asteroid;
+import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.networking.Server;
-import org.lwjgl.opengl.DisplayMode;
+import org.atcs.moonweasel.util.Vector;
 
 public class Artemis extends Moonweasel {
-	public Artemis(DisplayMode mode, boolean fullscreen) {
-		super(mode, fullscreen);
+	protected Server server;
+	
+	public Artemis(boolean fullscreen) 
+	{
+		super(fullscreen);
+		server = new Server("Moonweasel Server", this);
 		
-		this.networking = new Server();
+		Asteroid asteroid = EntityManager.getEntityManager().create("asteroid");
+		asteroid.setPosition(new Vector(0, 0, 10));
+		asteroid.spawn();
+	}
+
+	protected void act(final long next_logic_tick) 
+	{
+		server.act();
 	}
 }

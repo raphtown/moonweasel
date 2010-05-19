@@ -7,6 +7,8 @@ import org.atcs.moonweasel.util.Quaternion;
 
 public class Laser extends ParticleEntity
 {
+	private static final long serialVersionUID = -7650624412188994157L;
+
 	private static final int LIFESPAN = 2;
 	
 	private int age;
@@ -40,7 +42,6 @@ public class Laser extends ParticleEntity
 			GL11.glEnd();
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
-			
 		}
 		else
 		{
@@ -55,7 +56,6 @@ public class Laser extends ParticleEntity
 			GL11.glEnd();
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
-			
 		}
 	}
 	
