@@ -91,12 +91,13 @@ public class Ship extends ModelEntity implements Vulnerable {
 
 	private void drawExhaust()
 	{
-		if(this.getState().velocity.z <= 0.0f)
+		Vector velocity = this.getState().orientation.inverse().rotate(this.getState().velocity);
+		if(velocity.z < 0.0f)
 		{
 			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			float green = this.getState().velocity.length() * 100;
+			float green = velocity.length() * 100;
 			Cylinder cylinder = new Cylinder();
 			Vector v;
 
