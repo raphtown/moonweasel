@@ -25,9 +25,8 @@ public class InputController {
 	public UserCommand poll(long t) {
 		UserCommand command = new UserCommand();
 		command.copyKeyState(lastCommand);
-		
-		
-//		Keyboard.poll();
+				
+		Keyboard.poll();
 		while (Keyboard.next()) {
 			int key = Keyboard.getEventKey();
 			switch (key) {
@@ -53,7 +52,7 @@ public class InputController {
 			}
 		}
 		
-//		Mouse.poll();
+		Mouse.poll();
 		while (Mouse.next()) {
 			switch (Mouse.getEventButton()) {
 				case 0:
@@ -68,9 +67,6 @@ public class InputController {
 		command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
 		command.setTime(t);
 		
-//		if(lastCommand.equals(command))
-//			return null;
-
 		lastCommand = command;
 
 		return command;

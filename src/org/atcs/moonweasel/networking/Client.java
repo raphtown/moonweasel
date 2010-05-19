@@ -41,7 +41,6 @@ public class Client extends RMIObject implements IClient
 	private IServer server = null;
 	private Moonweasel m;
 	
-	
 	public Client(Moonweasel m)
 	{
 		super(CLIENT_OBJECT_NAME);
@@ -212,14 +211,14 @@ public class Client extends RMIObject implements IClient
 
 	public void act()
 	{
-		try
-		{
-			m.setT(server.getTime() - 50);
-		} catch (RemoteException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//		try
+//		{
+//			m.setT(server.getTime() - 50);
+//		} catch (RemoteException e1)
+//		{
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		EntityManager mgr = EntityManager.getEntityManager();
 		synchronized(entitiesToAdd)
 		{
@@ -243,7 +242,7 @@ public class Client extends RMIObject implements IClient
 				else
 				{
 //					System.out.println(l.time + "  " + m.getT());
-					if(l.time <= m.getT())
+//					if(l.time <= m.getT())
 					{
 //						System.out.println(me + " " + me.getPosition());
 						me.unpackageIState(l);

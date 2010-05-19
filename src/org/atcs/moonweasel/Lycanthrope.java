@@ -1,11 +1,13 @@
 package org.atcs.moonweasel;
 
-import org.atcs.moonweasel.entities.players.Player;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
+import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
-import org.atcs.moonweasel.sound.SimpleMidiLoader;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -16,14 +18,14 @@ public class Lycanthrope extends Moonweasel
 	private InputController input;
 	private Player player;
 	private Client client;
-	private Moonweasel m;
+	
+	private Queue<UserCommand> commands;
 	
 	public Lycanthrope(boolean fullscreen)
 	{
-		
 		super(fullscreen);
-		SimpleMidiLoader myLoader = new SimpleMidiLoader("sf64b2.mid");
-		myLoader.playMidi();
+//		SimpleMidiLoader myLoader = new SimpleMidiLoader("sf64b2.mid");
+//		myLoader.playMidi();
 		
 		int width = 800, height = 600;
 		DisplayMode mode = null;
@@ -62,25 +64,36 @@ public class Lycanthrope extends Moonweasel
 		}
 		this.view = new WeaselView(mode, fullscreen, player);
 		this.input = new InputController();
+		this.commands = new LinkedList<UserCommand>();
 	}
 	
 	protected void destroy() {
 		super.destroy();
 		view.destroy();
 	}
-
-	protected void act(long next_logic_tick) 
-	{
-		float interpolation;
-		UserCommand command = input.poll(t);
-		
-		if(command != null)
-			client.sendCommandToServer(command);	
-		
-		client.act();
-		
-		interpolation = (float)(System.currentTimeMillis() - offset) / SKIP_TICKS;
-		view.render(interpolation);
+	
+	protected boolean shouldQuit() {
+		return view.shouldQuit();
 	}
 
+	protected void logic_act(long t, int skip_ticks) 
+	{
+		physics.update(t, skip_ticks);
+		
+		UserCommand command = input.poll(t);
+		player.addCommand(command);
+		commands.add(command);
+	}
+
+	protected void render_act(float interpolation) {
+		view.render(interpolation);
+		
+		Iterator<UserCommand> iter = commands.iterator();
+		while (iter.hasNext()) {
+			client.sendCommandToServer(iter.next());
+			iter.remove();
+		}
+		
+		client.act();
+	}
 }

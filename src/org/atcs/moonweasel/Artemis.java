@@ -17,25 +17,18 @@ public class Artemis extends Moonweasel {
 		asteroid.setPosition(new Vector(0, 0, 50));
 		asteroid.spawn();
 	}
-
 	
-	final int SENDS_PER_UPDATE = 3;
-	int count = 0;
-	protected void act(long next_logic_tick) 
+	protected boolean shouldQuit() {
+		return false;
+	}
+	
+	protected void logic_act(long t, int skip_ticks) 
 	{
-		count++;
-//		if(count >= SENDS_PER_UPDATE)
-//		{
-			count = 0;
-			t += SKIP_TICKS;
-			this.next_logic_tick += SKIP_TICKS;
-			loops++;
-			entityManager.update(t);
-			physics.update(t, SKIP_TICKS);
-//		}
+		entityManager.update(t);
+		physics.update(t, skip_ticks);
+	}
+	
+	protected void render_act(float interpolation) {
 		server.act();
-
-		
-
 	}
 }

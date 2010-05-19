@@ -18,7 +18,6 @@ import org.atcs.moonweasel.physics.Physics;
 import org.atcs.moonweasel.physics.ConvexHull.Projection;
 import org.atcs.moonweasel.ranges.Range;
 
-
 public abstract class Moonweasel
 {
 	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
@@ -87,7 +86,6 @@ public abstract class Moonweasel
 	
 	protected Physics physics;
 	protected EntityManager entityManager;
-	protected long t = 0;
 
 	protected Moonweasel(boolean fullscreen) 
 	{
@@ -99,53 +97,36 @@ public abstract class Moonweasel
 		physics.destroy();
 	}
 	
-	protected final int TICKS_PER_SECOND = 50;
-	protected final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-	protected final int MAX_FRAMESKIP = 5;
-	long next_logic_tick;
-	int loops;
 	protected void run() 
 	{
+		final int TICKS_PER_SECOND = 50;
+		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+		final int MAX_FRAMESKIP = 5;
+
+		long t = 0;
+		long next_logic_tick = System.currentTimeMillis();
+		int loops;
+		float interpolation;
 		
-		next_logic_tick = System.currentTimeMillis() + SKIP_TICKS;
-		while (true) {
+		while (!shouldQuit()) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
-				act(next_logic_tick);
+				logic_act(t, SKIP_TICKS);
 
-				if(t == 30000)
-				{
-					System.out.println("-------------------------------");
-					System.out.println("Model Entity Dump:");
-					System.out.println();
-					Range<ModelEntity> allMEs = entityManager.getAllOfType(ModelEntity.class);
-					for(ModelEntity me : allMEs)
-					{
-						System.out.println(me.getState());
-					}
-					System.out.println("-------------------------------");
-				}
-				
-
-				
+				t += SKIP_TICKS;
+				next_logic_tick += SKIP_TICKS;
+				loops++;
 			}
+
+			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
+					/ SKIP_TICKS;
+			render_act(interpolation);
 		}
 	}
 	
-	protected abstract void act(long next_logic_tick);
-
-	public long getT()
-	{
-		return t;
-	}
+	protected abstract boolean shouldQuit();
 	
-	protected long offset;
-	
-	public void setT(long t)
-	{
-		this.t = t;
-		next_logic_tick = t + SKIP_TICKS;
-		offset = System.currentTimeMillis();
-	}
+	protected abstract void logic_act(long t, int skip_ticks);
+	protected abstract void render_act(float interpolation);
 }
