@@ -113,9 +113,7 @@ public abstract class Moonweasel
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
 				act(next_logic_tick);
-				t += SKIP_TICKS;
-				next_logic_tick += SKIP_TICKS;
-				loops++;
+
 				if(t == 30000)
 				{
 					System.out.println("-------------------------------");

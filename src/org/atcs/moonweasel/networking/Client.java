@@ -245,8 +245,8 @@ public class Client extends RMIObject implements IClient
 //					System.out.println(l.time + "  " + m.getT());
 					if(l.time <= m.getT())
 					{
-//						System.out.println(me);
-//						me.unpackageIState(l);
+//						System.out.println(me + " " + me.getPosition());
+						me.unpackageIState(l);
 						i.remove();
 					}
 					
