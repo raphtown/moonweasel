@@ -2,19 +2,11 @@ package org.atcs.moonweasel.gui;
 
 
 
-import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
-import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Ship;
 import org.atcs.moonweasel.ranges.TypeRange;
-import org.atcs.moonweasel.util.AxisAngle;
-import org.atcs.moonweasel.util.State;
 import org.atcs.moonweasel.util.Vector;
-
-
-
-import java.util.Iterator;
 import org.lwjgl.opengl.GL11;
 
 
@@ -85,8 +77,8 @@ public class Radar extends UIElement {
 					WeaselView.drawCircle(MINI_MAP_RADIUS, 100);
 //					GL11.glColor4f(0, 1, 0, 0.5f);
 					EntityManager em = EntityManager.getEntityManager();
-					State interpolated;
-					AxisAngle rotation;
+//					State interpolated;
+//					AxisAngle rotation;
 					TypeRange<Ship> tr = em.getAllShipsInSphere(s.getPosition(), (float) viewingR);
 					
 
