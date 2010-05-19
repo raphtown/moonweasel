@@ -140,9 +140,12 @@ public abstract class Moonweasel
 		return t;
 	}
 	
+	protected long offset;
+	
 	public void setT(long t)
 	{
 		this.t = t;
 		next_logic_tick = t + SKIP_TICKS;
+		offset = System.currentTimeMillis();
 	}
 }
