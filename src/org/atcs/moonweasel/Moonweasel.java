@@ -1,6 +1,7 @@
 package org.atcs.moonweasel;
 
 import java.io.IOException;
+
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -10,12 +11,13 @@ import org.atcs.moonweasel.entities.EnergyBomb;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
+import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
+import org.atcs.moonweasel.physics.ConvexHull;
 import org.atcs.moonweasel.physics.Physics;
-
-
+import org.atcs.moonweasel.physics.ConvexHull.Projection;
 
 public abstract class Moonweasel
 {
@@ -48,6 +50,14 @@ public abstract class Moonweasel
 		addEntityClass(Laser.class);
 		addEntityClass(EnergyBomb.class);
 		addEntityClass(Asteroid.class);
+		
+		for (Class<? extends Entity> clazz : ENTITY_MAP.values()) {
+			if (ModelEntity.class.isAssignableFrom(clazz)) {
+				ConvexHull.getConvexHull((Class<? extends ModelEntity>)clazz, Projection.XY);
+				ConvexHull.getConvexHull((Class<? extends ModelEntity>)clazz, Projection.YZ);
+				ConvexHull.getConvexHull((Class<? extends ModelEntity>)clazz, Projection.ZX);
+			}
+		}
 	}
 
 	public static void main(String[] args) {
@@ -55,7 +65,7 @@ public abstract class Moonweasel
 		if(args.length == 0)
 		{
 			Scanner scanner = new Scanner(System.in);
-			System.out.println("Server (0) or Client (1) or both(2)?");
+			System.out.println("Server (0) or Client (1)?");
 			choice = scanner.nextInt();
 		}
 		else
@@ -73,32 +83,10 @@ public abstract class Moonweasel
 			Moonweasel weasel = new Lycanthrope(false);
 			weasel.run();
 		}
-		else
-		{
-			Moonweasel weasel1 = new Artemis(false);
-			weasel1.run();
-			Runtime rt = Runtime.getRuntime();
-			String[] cmdarray = {"java","-ea", "-Djava.security.policy=no.policy",
-					"-Xmx256M", "org.atcs.moonweasel.Moonweasel", "1"};
-			
-			try
-			{
-				rt.exec(cmdarray);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			Moonweasel weasel2 = new Lycanthrope(false);
-			weasel2.run();
-		}
-		
 	}
 	
 	protected Physics physics;
-
 	protected EntityManager entityManager;
-
 	protected long t;
 
 	protected Moonweasel(boolean fullscreen) 
@@ -117,23 +105,19 @@ public abstract class Moonweasel
 	
 	protected void run() 
 	{
-
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		
 		while (true) {
-			
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
-					loops < MAX_FRAMESKIP) 
-			{
+					loops < MAX_FRAMESKIP) {
 				entityManager.update(t);
 				physics.update(t, SKIP_TICKS);
 				act(next_logic_tick);
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
 				loops++;
-
 			}
 		}
 	}
