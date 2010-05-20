@@ -43,18 +43,18 @@ public class MidisLoader implements MetaEventListener
 
   private Sequencer sequencer;
 
-  private HashMap midisMap;
+  private HashMap<String, MidiInfo> midisMap;
   private MidiInfo currentMidi = null;   
         // reference to currently playing MidiInfo object
 
 
   public MidisLoader() 
-  {midisMap = new HashMap();
+  {midisMap = new HashMap<String, MidiInfo>();
     initSequencer();
   }
 
   public MidisLoader(String soundsFnm) 
-  { midisMap = new HashMap();
+  { midisMap = new HashMap<String, MidiInfo>();
     initSequencer();
     loadSoundsFile(soundsFnm);
   }
@@ -225,7 +225,7 @@ public class MidisLoader implements MetaEventListener
   */
   {
     if (meta.getType() == END_OF_TRACK) {
-      String name = currentMidi.getName();
+//      String name = currentMidi.getName();
       // System.out.println("  END_OF_TRACK for " + name);
       boolean hasLooped = currentMidi.tryLooping();  // music still looping?
       if (!hasLooped)   // no it's finished

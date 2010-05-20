@@ -6,6 +6,8 @@ import org.atcs.moonweasel.util.Vector;
 
 public class Asteroid extends ModelEntity
 {
+	private static final long serialVersionUID = 8565600289625737618L;
+
 	public Asteroid()
 	{
 		super(10000, Matrix.IDENTITY.scale(100));

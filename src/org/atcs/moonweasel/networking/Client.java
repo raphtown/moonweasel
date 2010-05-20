@@ -23,7 +23,6 @@ import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.entities.ships.ShipType;
 import org.atcs.moonweasel.networking.announcer.ServerAnnouncer;
 import org.atcs.moonweasel.networking.changes.ChangeList;
-import org.atcs.moonweasel.ranges.Range;
 
 /**
  * Serves as a client for the RMI connection that we are planning to use as 
