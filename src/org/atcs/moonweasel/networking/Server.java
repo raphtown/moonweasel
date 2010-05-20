@@ -53,6 +53,7 @@ public class Server extends RMIObject implements IServer
 	private ArrayList<String> newlyConnectedClients = new ArrayList<String>();
 	private Map<String, IClient> connectingClients = new HashMap<String, IClient>();
 	public PriorityBlockingQueue<UserCommand> commandList = new PriorityBlockingQueue<UserCommand>();
+	@SuppressWarnings("unused")
 	private Moonweasel m;
 
 	/**

@@ -8,6 +8,7 @@ import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.players.UserCommand;
 import org.atcs.moonweasel.gui.WeaselView;
 import org.atcs.moonweasel.networking.Client;
+import org.atcs.moonweasel.sound.SimpleMidiLoader;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -24,8 +25,8 @@ public class Lycanthrope extends Moonweasel
 	public Lycanthrope(boolean fullscreen)
 	{
 		super(fullscreen);
-//		SimpleMidiLoader myLoader = new SimpleMidiLoader("sf64b2.mid");
-//		myLoader.playMidi();
+		SimpleMidiLoader myLoader = new SimpleMidiLoader("sf64b2.mid");
+		myLoader.playMidi();
 		
 		int width = 800, height = 600;
 		DisplayMode mode = null;

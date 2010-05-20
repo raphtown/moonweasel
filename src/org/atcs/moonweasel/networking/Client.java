@@ -38,6 +38,7 @@ import org.atcs.moonweasel.networking.changes.ChangeList;
 public class Client extends RMIObject implements IClient
 {
 	private IServer server = null;
+	@SuppressWarnings("unused")
 	private Moonweasel m;
 	
 	public Client(Moonweasel m)
