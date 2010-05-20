@@ -114,7 +114,7 @@ public class Server extends RMIObject implements IServer
 		UserCommand ucommand = new UserCommand(plr);
 		ucommand.setKeysAsBitmask(command);
 		ucommand.setMouse(mouseX, mouseY);
-//		ucommand.setTime(m.getT() - 5);
+		ucommand.setTime(m.getT() - 5);
 		commandList.add(ucommand);
 	}
 
@@ -305,7 +305,7 @@ public class Server extends RMIObject implements IServer
 		{
 			ModelEntity e = range.next();
 			IState is = e.packageIState();
-			//is.time = m.getT();
+			is.time = m.getT();
 			list.add(is);
 		}
 
@@ -383,7 +383,6 @@ public class Server extends RMIObject implements IServer
 		}
 		Player plr = mgr.create("player");
 		playerMap.put(clientName, plr);
-		System.out.println("Players: " + playerMap);
 		plr.spawn();
 
 		Ship ship = mgr.create(shipType.typeName);
@@ -438,8 +437,8 @@ public class Server extends RMIObject implements IServer
 
 	public long getTime() throws RemoteException
 	{
-		return 0;
-//		return m.getT();
+//		return 0;
+		return m.getT();
 	}
 
 }

@@ -167,7 +167,6 @@ public class Ship extends ModelEntity implements Vulnerable {
 			this.getState().angularMomentum = Vector.ZERO;
 		}
 
-
 		if (command.get(Commands.LEFT) && command.get(Commands.RIGHT)) {
 		} else if (command.get(Commands.LEFT)) {
 			relativeForce.x -= f;

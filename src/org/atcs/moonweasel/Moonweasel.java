@@ -49,7 +49,7 @@ public abstract class Moonweasel
 		addEntityClass(Laser.class);
 		addEntityClass(EnergyBomb.class);
 		addEntityClass(Asteroid.class);
-		
+
 		for (Class<? extends Entity> clazz : ENTITY_MAP.values()) {
 			if (ModelEntity.class.isAssignableFrom(clazz)) {
 				ConvexHull.getConvexHull((Class<? extends ModelEntity>)clazz, Projection.XY);
@@ -83,7 +83,7 @@ public abstract class Moonweasel
 			weasel.run();
 		}
 	}
-	
+
 	protected Physics physics;
 	protected EntityManager entityManager;
 
@@ -96,18 +96,20 @@ public abstract class Moonweasel
 	protected void destroy() {
 		physics.destroy();
 	}
-	
+
+
+
+	long t = 0;
+
 	protected void run() 
 	{
 		final int TICKS_PER_SECOND = 50;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
-
-		long t = 0;
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		float interpolation;
-		
+
 		while (!shouldQuit()) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
@@ -120,13 +122,25 @@ public abstract class Moonweasel
 			}
 
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
-					/ SKIP_TICKS;
+			/ SKIP_TICKS;
 			render_act(interpolation);
 		}
 	}
-	
+
 	protected abstract boolean shouldQuit();
+	protected long offset = 0;
 	
 	protected abstract void logic_act(long t, int skip_ticks);
 	protected abstract void render_act(float interpolation);
+
+
+	public void setT(long t) 	
+	{	 	
+		this.t = t;		 	  
+	}
+	
+	public long getT()
+	{
+		return t;
+	}
 }
