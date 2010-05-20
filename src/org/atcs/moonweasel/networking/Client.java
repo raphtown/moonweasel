@@ -39,7 +39,7 @@ public class Client extends RMIObject implements IClient
 {
 	private IServer server = null;
 	private Moonweasel m;
-
+	
 	public Client(Moonweasel m)
 	{
 		super(CLIENT_OBJECT_NAME);
@@ -74,7 +74,7 @@ public class Client extends RMIObject implements IClient
 			e.printStackTrace();
 		}
 	}
-
+	
 
 	/**
 	 * Serves to get a hostname out of the ServerAnnouncer, splitting out the 
@@ -207,24 +207,17 @@ public class Client extends RMIObject implements IClient
 	{
 		return ShipType.SNOWFLAKE;
 	}
-	
-	public void act()
-	{		
-		try
-		{
-			long serverTime = server.getTime();
-			if(serverTime - m.getT() > 100)
-			{
-				System.out.println("out of sync");
-				m.setT(serverTime - 50); 
-			}
-		} catch (RemoteException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
 
+	public void act()
+	{
+//		try
+//		{
+//			m.setT(server.getTime() - 50);
+//		} catch (RemoteException e1)
+//		{
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		EntityManager mgr = EntityManager.getEntityManager();
 		synchronized(entitiesToAdd)
 		{
@@ -235,7 +228,7 @@ public class Client extends RMIObject implements IClient
 			}
 			entitiesToAdd.clear();
 		}
-
+		
 		synchronized(IStates)
 		{
 			Iterator<IState> i = IStates.iterator();
@@ -248,18 +241,18 @@ public class Client extends RMIObject implements IClient
 				else
 				{
 //					System.out.println(l.time + "  " + m.getT());
-					if(l.time <= m.getT())
+//					if(l.time <= m.getT())
 					{
 //						System.out.println(me + " " + me.getPosition());
 						me.unpackageIState(l);
 						i.remove();
 					}
-
+					
 				}
 			}
 		}
-
-
+		
+		
 		synchronized(entitiesToDelete)
 		{
 			for (Entity e : entitiesToDelete)

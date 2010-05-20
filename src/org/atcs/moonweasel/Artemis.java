@@ -24,11 +24,8 @@ public class Artemis extends Moonweasel {
 	
 	protected void logic_act(long t, int skip_ticks) 
 	{
-
-		
 		entityManager.update(t);
 		physics.update(t, skip_ticks);
-		
 	}
 	
 	protected void render_act(float interpolation) {

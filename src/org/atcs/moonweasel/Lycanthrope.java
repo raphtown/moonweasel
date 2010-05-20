@@ -78,22 +78,16 @@ public class Lycanthrope extends Moonweasel
 
 	protected void logic_act(long t, int skip_ticks) 
 	{
-		entityManager.update(t);
 		physics.update(t, skip_ticks);
 		
 		UserCommand command = input.poll(t);
-		command.setTime(t + 100);
-//		player.addCommand(command);
-		if(command != null)
-		{
-			client.sendCommandToServer(command);
-		}
-		
-//		commands.add(command);
+		player.addCommand(command);
+		commands.add(command);
 	}
 
 	protected void render_act(float interpolation) {
 		view.render(interpolation);
+		
 		Iterator<UserCommand> iter = commands.iterator();
 		while (iter.hasNext()) {
 			client.sendCommandToServer(iter.next());
