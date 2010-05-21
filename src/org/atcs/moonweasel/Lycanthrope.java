@@ -25,8 +25,8 @@ public class Lycanthrope extends Moonweasel
 	public Lycanthrope(boolean fullscreen)
 	{
 		super(fullscreen);
-		SimpleMidiLoader myLoader = new SimpleMidiLoader("sf64b2.mid");
-		myLoader.playMidi();
+//		SimpleMidiLoader myLoader = new SimpleMidiLoader("sf64b2.mid");
+//		myLoader.playMidi();
 		
 		int width = 800, height = 600;
 		DisplayMode mode = null;
@@ -82,7 +82,7 @@ public class Lycanthrope extends Moonweasel
 		physics.update(t, skip_ticks);
 		
 		UserCommand command = input.poll(t);
-		player.addCommand(command);
+//		player.addCommand(command);
 		commands.add(command);
 	}
 

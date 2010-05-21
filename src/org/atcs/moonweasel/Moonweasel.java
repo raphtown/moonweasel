@@ -79,7 +79,7 @@ public abstract class Moonweasel
 		}
 		else if(choice == 1)
 		{
-			Moonweasel weasel = new Lycanthrope(true);
+			Moonweasel weasel = new Lycanthrope(false);
 			weasel.run();
 		}
 	}
