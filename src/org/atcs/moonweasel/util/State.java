@@ -125,7 +125,7 @@ public class State implements Serializable
 	public void recalculate() {
 		if(Moonweasel.fh != null)
 		{
-//			orientation = Moonweasel.fh.getQuaternion();
+			orientation = Moonweasel.fh.getQuaternion();
 		}	
 		velocity = momentum.scale(inverseMass);
 		angularVelocity = inverseInertiaTensor.transform(angularMomentum);

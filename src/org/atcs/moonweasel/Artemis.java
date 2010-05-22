@@ -13,38 +13,42 @@ public class Artemis extends Moonweasel {
 		super(fullscreen);
 		server = new Server("Moonweasel Server", this);
 
-		for (int i = 0; i < 10; i++)
-		{
-			float x, y, z;
-			x = (float)(Math.random()) * 50;
-			y = (float)(Math.random()) * 50;
-			z = (float)(Math.random()) * 50;
-
-			if (Math.random() >= 0.5)
-				x *= -1;
-			if (Math.random() >= 0.5)
-				y *= -1;
-			if (Math.random() >= 0.5)
-				z *= -1;
-			
-			float dx, dy, dz;
-			dx = (float)(Math.random()) * 0.0025f;
-			dy = (float)(Math.random()) * 0.0025f;
-			dz = (float)(Math.random()) * 0.0025f;
-
-			if (Math.random() >= 0.5)
-				dx *= -1;
-			if (Math.random() >= 0.5)
-				dy *= -1;
-			if (Math.random() >= 0.5)
-				dz *= -1;
-			
-
-			Asteroid asteroid = EntityManager.getEntityManager().create("asteroid");
-			asteroid.setPosition(new Vector(x, y, z));
-			asteroid.setVelocity(new Vector(dx, dy, dz));
-			asteroid.spawn();
-		}
+		Asteroid asteroid = EntityManager.getEntityManager().create("asteroid");
+		asteroid.setPosition(new Vector(0, 0, 50));
+		asteroid.spawn();
+		
+//		for (int i = 0; i < 10; i++)
+//		{
+//			float x, y, z;
+//			x = (float)(Math.random()) * 50;
+//			y = (float)(Math.random()) * 50;
+//			z = (float)(Math.random()) * 50;
+//
+//			if (Math.random() >= 0.5)
+//				x *= -1;
+//			if (Math.random() >= 0.5)
+//				y *= -1;
+//			if (Math.random() >= 0.5)
+//				z *= -1;
+//			
+//			float dx, dy, dz;
+//			dx = (float)(Math.random()) * 0.0025f;
+//			dy = (float)(Math.random()) * 0.0025f;
+//			dz = (float)(Math.random()) * 0.0025f;
+//
+//			if (Math.random() >= 0.5)
+//				dx *= -1;
+//			if (Math.random() >= 0.5)
+//				dy *= -1;
+//			if (Math.random() >= 0.5)
+//				dz *= -1;
+//			
+//
+//			Asteroid asteroid = EntityManager.getEntityManager().create("asteroid");
+//			asteroid.setPosition(new Vector(x, y, z));
+//			asteroid.setVelocity(new Vector(dx, dy, dz));
+//			asteroid.spawn();
+//		}
 	}
 	
 	protected boolean shouldQuit() {

@@ -89,7 +89,7 @@ public abstract class Moonweasel
 		{
 			try
 			{
-//				fh = new FutureHand(true,"/dev/cu.FireFly-12E6-SPP");
+				fh = new FutureHand(true,"/dev/cu.FireFly-12E6-SPP");
 			} catch (Exception e)
 			{
 				// TODO Auto-generated catch block

@@ -66,16 +66,16 @@ public class InputController {
 			}
 		}
 		
-		
-		if(Moonweasel.fh != null)
-		{
-			float[] RPY = Moonweasel.fh.getRPY();
-			command.setMouse(new Vector(RPY[0] * 5, RPY[1] * 5, 0));
-		}	
-		else
-		{
-			command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
-		}	
+		command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
+//		if(Moonweasel.fh != null)
+//		{
+//			float[] RPY = Moonweasel.fh.getRPY();
+//			command.setMouse(new Vector(RPY[0] * 5, RPY[1] * 5, 0));
+//		}	
+//		else
+//		{
+//			command.setMouse(new Vector(Mouse.getDX(), Mouse.getDY(), 0));
+//		}	
 		
 		command.setTime(t);
 		
