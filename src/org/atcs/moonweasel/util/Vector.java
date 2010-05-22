@@ -1,7 +1,10 @@
 package org.atcs.moonweasel.util;
 
-public class Vector
+import java.io.Serializable;
+
+public class Vector implements Serializable
 {
+	private static final long serialVersionUID = -2998400708006284540L;
 	public static final Vector ZERO = new Vector(0, 0, 0);
 	
 	public static Vector add(Vector... vectors) {
@@ -87,7 +90,7 @@ public class Vector
 	
 	public float dot(Vector o) 
 	{
-		return x * o.x + y * o.y + x * o.z;
+		return x * o.x + y * o.y + z * o.z;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.atcs.moonweasel.util;
 
+import java.io.Serializable;
 import java.util.PriorityQueue;
 
 import org.atcs.moonweasel.Moonweasel;
@@ -7,8 +8,10 @@ import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.ranges.Range;
 import org.atcs.moonweasel.ranges.TimeRange;
 
-public class State 
+public class State implements Serializable
 {
+	private static final long serialVersionUID = 6811388304295905041L;
+
 	// interpolation used for animating in between states
 	public static State interpolate(State a, State b, float alpha) 
 	{
@@ -51,6 +54,13 @@ public class State
 	public State(ModelEntity entity, float mass, Matrix inertia) 
 	{
 		this(entity, Vector.ZERO, Vector.ZERO, Quaternion.ZERO, Vector.ZERO, mass, 1 / mass, inertia, inertia.inverse());
+	}
+	
+	public String toString()
+	{
+		return "State with id: " + entity.getID() + "  and position: " + 
+		position + " and momentum: " + momentum + " and orientation: " + 
+		orientation + " and angularMomentum: " + angularMomentum + ".";
 	}
 	
 	private State(ModelEntity entity, Vector position, Vector momentum, 
@@ -113,7 +123,10 @@ public class State
 	}
 
 	public void recalculate() {
-		orientation = Moonweasel.fh.getQuaternion();
+		if(Moonweasel.fh != null)
+		{
+//			orientation = Moonweasel.fh.getQuaternion();
+		}	
 		velocity = momentum.scale(inverseMass);
 		angularVelocity = inverseInertiaTensor.transform(angularMomentum);
 		orientation = orientation.normalize();
@@ -129,5 +142,20 @@ public class State
 	public void setDangerZone(float dt)
 	{
 		dangerZoneRadius = 5 + velocity.scale(dt).length();
+	}
+	
+	public Vector getUnitVectorOrientation()
+	{
+		Vector v1 = new Vector(0,0,0);
+		Vector v2 = new Vector(0,0,-1);
+		v1 = bodyToWorld.transform(v1);
+		v2 = bodyToWorld.transform(v2);
+		return (v2.subtract(v1).normalize());
+	}
+
+	
+	public float getMass()
+	{
+		return mass;
 	}
 }

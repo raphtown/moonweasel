@@ -1,7 +1,12 @@
 package org.atcs.moonweasel.util;
 
-public class Quaternion {	
-	public static final Quaternion ZERO = new Quaternion(0, 0, 0, 0);
+
+import java.io.Serializable;
+
+public class Quaternion implements Serializable {	
+	private static final long serialVersionUID = -5604971247198938994L;
+
+	public static final Quaternion ZERO = new Quaternion(1, 1, 1, 1);
 	
 	public static Quaternion add(Quaternion... quaternions) {
 		float w = 0;
@@ -68,8 +73,9 @@ public class Quaternion {
 	}
 	
 	public Quaternion inverse() {
-		Quaternion normalized = this.normalize();
-		return new Quaternion(normalized.w, -normalized.x, -normalized.y, -normalized.z);
+		Quaternion inverse = new Quaternion(w, -x, -y, -z);
+		float scaleFactor = w*w + x*x + y*y + z*z;
+		return inverse.scale(1/scaleFactor);
 	}
 
 	public float length() {

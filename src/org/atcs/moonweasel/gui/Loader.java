@@ -21,10 +21,9 @@ public abstract class Loader {
 		String path = String.format("data/models/%s/", name);
 		
 		try {
-			return loader.loadModel(path, name);			
+			return loader.loadModel(path, name);
 		} catch (IOException e) {
-			
-			return false;
+			throw new RuntimeException("Unable to import " + name, e);
 		}
 	}
 	

@@ -100,6 +100,7 @@ public class Material
 	
 	public void disable() {
 		if (hasTextureFile) {
+			texture.unbind();
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 		}
 	}

@@ -4,49 +4,80 @@ import org.atcs.moonweasel.entities.ships.Ship;
 
 import org.atcs.moonweasel.util.Vector;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Cylinder;
+import org.atcs.moonweasel.util.Quaternion;
 
 public class Laser extends ParticleEntity
 {
-	private static final float VELOCITY = 150.0f;
-	private static final int LIFESPAN = 10;
+	private static final long serialVersionUID = -7650624412188994157L;
+
+	private static final int LIFESPAN = 2;
 	
 	private int age;
 	private Ship source;
-	private Vector offset;
+	
+	private boolean autoTargeting = false;
+	private ModelEntity target;
 	
 	public Laser() {
-		offset = Vector.ZERO;
+	}
+	
+	public void setTarget(ModelEntity me){
+		autoTargeting = true;
+		target = me;
 	}
 	
 	@Override
 	public void draw()
 	{
-		GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
-		GL11.glScalef(5, 5, 5);
-		GL11.glColor3f(0.0f, 0.1f, 0.9f);
-		Cylinder cylinder = new Cylinder();
-		cylinder.draw(0.01f, 0.01f, 1.0f, 30, 30);
-		GL11.glPopAttrib();
+		if (!autoTargeting)
+		{
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+			GL11.glColor3f(0.0f, 0.3f, 0.9f);
+			Vector laserEnd = source.getState().bodyToWorld.transform(new Vector(0,0,-10000));
+			
+			GL11.glPushMatrix();
+			GL11.glLoadIdentity();
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glVertex3f(source.getPosition().x, source.getPosition().y, source.getPosition().z);
+			GL11.glVertex3f(laserEnd.x, laserEnd.y, laserEnd.z);
+			GL11.glEnd();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+		}
+		else
+		{
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+			GL11.glColor3f(0.0f, 0.1f, 0.9f);
+			
+			GL11.glPushMatrix();
+			GL11.glLoadIdentity();
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glVertex3f(source.getPosition().x, source.getPosition().y, source.getPosition().z);
+			GL11.glVertex3f(target.getState().position.x, target.getState().position.y, target.getState().position.z);
+			GL11.glEnd();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+		}
 	}
 	
-	public void setSource(Ship ship, Vector offset) {
+	public void setSource(Ship ship) {
 		this.source = ship;
-		this.offset = offset;
 	}
 	
 	@Override
 	public void spawn()
 	{
 		assert source != null;
-		
+	
 		age = 0;
-		this.setOrientation(source.getState().orientation);
+
+		this.setOrientation(Quaternion.ZERO);
 		this.setPosition(source.getPosition());
-		this.setPosition(getPosition().add(getOrientation().rotate(offset)));
+//		this.setPosition(getPosition().add(getOrientation().rotate(offset)));
 		
 		scheduleThink(50);
 	}
+	
 	
 	@Override
 	public void think() {
@@ -55,9 +86,6 @@ public class Laser extends ParticleEntity
 			return;
 		}
 		age++;
-		
-		Vector speed = new Vector(0.0f, 0.0f, -VELOCITY * 0.02f);
-		this.setPosition(getPosition().add(getOrientation().rotate(speed)));
 		
 		scheduleThink(30);
 	}

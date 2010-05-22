@@ -2,51 +2,52 @@ package org.atcs.moonweasel;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeMap;
 
+import org.atcs.moonweasel.entities.Asteroid;
 import org.atcs.moonweasel.entities.EnergyBomb;
 import org.atcs.moonweasel.entities.Entity;
 import org.atcs.moonweasel.entities.EntityManager;
 import org.atcs.moonweasel.entities.Laser;
+import org.atcs.moonweasel.entities.ModelEntity;
 import org.atcs.moonweasel.entities.particles.Explosion;
 import org.atcs.moonweasel.entities.players.Player;
 import org.atcs.moonweasel.entities.ships.Snowflake;
-import org.atcs.moonweasel.gui.WeaselView;
-import org.atcs.moonweasel.networking.Networking;
+import org.atcs.moonweasel.physics.ConvexHull;
 import org.atcs.moonweasel.physics.Physics;
-import org.atcs.moonweasel.util.Vector;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
+import org.atcs.moonweasel.physics.ConvexHull.Projection;
 
 import futurehand.FutureHand;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.UnsupportedCommOperationException;
 
-public class Moonweasel {
+@SuppressWarnings("unchecked")
+public abstract class Moonweasel
+{
 	private static final Map<String, Class<? extends Entity>> ENTITY_MAP;
 	private static final Map<Integer, Class<? extends Entity>> ENTITY_TYPE_ID_MAP;
-	
-	public static FutureHand fh;
+
+		public static FutureHand fh;
 
 	private static void addEntityClass(Class<? extends Entity> clazz) {
 		ENTITY_MAP.put(Entity.getEntityType(clazz), clazz);
 		ENTITY_TYPE_ID_MAP.put(clazz.toString().hashCode(), clazz);
 	}
-	
+
 	public static int getTypeID(Class<? extends Entity> clazz) {
 		return clazz.toString().hashCode();
 	}
-	
+
 	public static Class<? extends Entity> getEntityClassByID(int id) {
 		return ENTITY_TYPE_ID_MAP.get(id);
 	}
-	
+
 	public static Class<? extends Entity> getEntityClassByName(String name) {
 		return ENTITY_MAP.get(name);
 	}
-	
+
 	static {
 		ENTITY_MAP = new TreeMap<String, Class<? extends Entity>>();
 		ENTITY_TYPE_ID_MAP = new TreeMap<Integer, Class<? extends Entity>>();
@@ -55,104 +56,84 @@ public class Moonweasel {
 		addEntityClass(Explosion.class);
 		addEntityClass(Laser.class);
 		addEntityClass(EnergyBomb.class);
+		addEntityClass(Asteroid.class);
+
+		for (Class<? extends Entity> clazz : ENTITY_MAP.values()) {
+			if (ModelEntity.class.isAssignableFrom(clazz)) {
+				ConvexHull.getConvexHull((Class<? extends ModelEntity>)clazz, Projection.XY);
+				ConvexHull.getConvexHull((Class<? extends ModelEntity>)clazz, Projection.YZ);
+				ConvexHull.getConvexHull((Class<? extends ModelEntity>)clazz, Projection.ZX);
+			}
+		}
 	}
 
 	public static void main(String[] args) {
-		int width = 800, height = 600;
-		DisplayMode mode = null;
-		try {
-			DisplayMode[] modes = Display.getAvailableDisplayModes();
-
-			for (int i = 0; i < modes.length; i++) {
-				if ((modes[i].getWidth() == width)
-						&& (modes[i].getHeight() == height)) {
-					mode = modes[i];
-					break;
-				}
-			}
-			
-			if (mode == null) {
-				throw new RuntimeException(String.format(
-						"Unable to find target display mode width %d, height %d.",
-						width, height));
-			}
-		} catch (LWJGLException e) {
-			throw new RuntimeException("Unable to choose display mode.", e);
+		int choice;
+		if(args.length == 0)
+		{
+			Scanner scanner = new Scanner(System.in);
+			System.out.println("Server (0) or Client (1)?");
+			choice = scanner.nextInt();
 		}
-		try
+		else
 		{
-			fh = new FutureHand(true,"/dev/tty.usbserial-A6008jck");
-		} catch (Exception e)
+			choice = Integer.parseInt(args[0]);
+		}
+
+		if(choice == 0)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(-1);
-		} 
-		Moonweasel weasel = new Artemis(mode, false);
+			Moonweasel weasel = new Artemis(false);
+			weasel.run();
+		}
+		else if(choice == 1)
+		{
+			try
+			{
+//				fh = new FutureHand(true,"/dev/cu.FireFly-12E6-SPP");
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(-1);
+			} 
+			
+			Moonweasel weasel = new Lycanthrope(false);
+			weasel.run();
+		}
 
-		// weasel.seeFox();
-		weasel.run();
-		weasel.destroy(); // eaten
 
-		System.exit(0);
 	}
 
 	protected Physics physics;
-	protected WeaselView view;
-	protected InputController input;
-	protected Networking networking;
+	protected EntityManager entityManager;
 
-	private EntityManager entityManager;
-	private Player player;
-
-	protected Moonweasel(DisplayMode mode, boolean fullscreen) {
+	protected Moonweasel(boolean fullscreen) 
+	{
 		this.entityManager = EntityManager.getEntityManager();
-		
-		player = this.entityManager.create("player");
-		player.spawn();
-
-		Snowflake snowflake = this.entityManager.create("snowflake");
-		snowflake.setPilot(player);
-		snowflake.spawn();
-		player.setShip(snowflake);
-		
-		Snowflake snowflake3 = this.entityManager.create("snowflake");
-		snowflake3.setPosition(new Vector(0,0,-10));
-		snowflake3.spawn();
-//		
-//		
-//		EnergyBomb snowflake2 = this.entityManager.create("energybomb");
-//		snowflake2.setPosition(new Vector(0,0,-20));
-//		snowflake2.setTarget(snowflake3);
-//		snowflake2.spawn();
-		
 		this.physics = new Physics();
-		this.view = new WeaselView(mode, fullscreen, player);
-		this.input = new InputController();
 	}
 
-	private void destroy() {
+	protected void destroy() {
 		physics.destroy();
-		view.destroy();
 	}
+
+	long t = 0;
 	
-	private void run() {
+	protected void run() 
+	{
 		final int TICKS_PER_SECOND = 50;
 		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
 
-		long t = 0;
 		long next_logic_tick = System.currentTimeMillis();
 		int loops;
 		float interpolation;
-		
-		while (!view.shouldQuit()) {
+
+		while (!shouldQuit()) {
 			loops = 0;
 			while (System.currentTimeMillis() > next_logic_tick &&
 					loops < MAX_FRAMESKIP) {
-				entityManager.update(t);
-				physics.update(t, SKIP_TICKS);
-				player.addCommand(input.poll(t));
+				logic_act(t, SKIP_TICKS);
 
 				t += SKIP_TICKS;
 				next_logic_tick += SKIP_TICKS;
@@ -160,8 +141,24 @@ public class Moonweasel {
 			}
 
 			interpolation = (float)(System.currentTimeMillis() + SKIP_TICKS - next_logic_tick) 
-				/ SKIP_TICKS;
-			view.render(interpolation);
+			/ SKIP_TICKS;
+			render_act(interpolation);
 		}
 	}
+
+//
+//	public void setT(long t)   	 	
+//	{   	
+//		this.t = t;       	 	
+//	}	
+//	
+//	public long getT() 	
+//	{
+//		return t;
+//	}
+
+	protected abstract boolean shouldQuit();
+
+	protected abstract void logic_act(long t, int skip_ticks);
+	protected abstract void render_act(float interpolation);
 }

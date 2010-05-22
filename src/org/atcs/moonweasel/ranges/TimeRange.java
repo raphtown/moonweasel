@@ -19,13 +19,19 @@ public class TimeRange<E extends Timed> implements Range<E> {
 
 	private E findNextElement() {
 		E element;
-		while (iterator.hasNext()) {
-			element = iterator.next();
-			if (start <= element.getTime() && element.getTime() < end) {
-				return element;
+		synchronized(iterator)
+		{
+			while (iterator.hasNext()) {
+				element = iterator.next();
+				if (element != null)
+				{
+					if (start <= element.getTime() && element.getTime() < end) {
+						return element;
+					}
+				}
 			}
 		}
-		
+
 		return null;
 	}
 	

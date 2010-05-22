@@ -1,9 +1,11 @@
 package org.atcs.moonweasel.entities;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.atcs.moonweasel.Debug;
 import org.atcs.moonweasel.Manager;
 import org.atcs.moonweasel.Moonweasel;
 import org.atcs.moonweasel.entities.ships.Ship;
@@ -24,6 +26,7 @@ public class EntityManager extends Manager<Entity> {
 
 	private final TreeMap<Long, Entity> thoughts;
 	private long offset;
+	public ArrayList<Entity> deletedEntities = new ArrayList<Entity>();
 
 	private EntityManager() {
 		this.thoughts = new TreeMap<Long, Entity>();
@@ -46,21 +49,26 @@ public class EntityManager extends Manager<Entity> {
 	public TypeRange<Ship> getAllShipsInSphere(Vector center, float radius) {
 		return new TypeRange<Ship>(Ship.class, getAllInSphere(center, radius));
 	}
+	
+	public TypeRange<Asteroid> getAllAsteroidsInSphere(Vector center, float radius) {
+		return new TypeRange<Asteroid>(Asteroid.class, getAllInSphere(center, radius));
+	}
 
 	public long getTime() {
 		return System.currentTimeMillis() + offset;
 	}
 
 	public void registerThink(Entity entity, int ms) {
-		while (thoughts.containsKey(System.currentTimeMillis() + ms)) { 
-			ms += 1;
-		}
-		this.thoughts.put(System.currentTimeMillis() + ms, entity);
+		 long time = System.currentTimeMillis() + ms;
+		 int offset = 0;
+		 while (this.thoughts.containsKey(time + offset))
+			 	offset++;
+		 time = time + offset;
+		 this.thoughts.put(time, entity);
 	}
 
 	public void update(long t) {
 		offset = t - System.currentTimeMillis();
-
 		while (thoughts.size() > 0
 				&& thoughts.firstKey() < System.currentTimeMillis()) {
 			thoughts.remove(thoughts.firstKey()).think();
@@ -71,8 +79,19 @@ public class EntityManager extends Manager<Entity> {
 		while (iter.hasNext()) {
 			entry = iter.next();
 			if (entry.getValue().isDestroyed()) {
+				Debug.print("Removed entity: " + entry.getValue() + " with id: " + entry.getKey());
+				deletedEntities.add(entry.getValue());
 				iter.remove();
 			}
 		}
+	}
+
+	public int getNextID() {
+		return Entity.getNextIDWithoutChanging();
+	}
+
+	public void setNextID(int nextID)
+	{
+		Entity.setNextID(nextID);
 	}
 }

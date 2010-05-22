@@ -1,6 +1,6 @@
 package org.atcs.moonweasel.sound;
 
-public class SoundManager 
+public class SoundManager
 {
 	public enum Sounds {
 		MUSIC("data/music/music.mp3"),
@@ -8,11 +8,10 @@ public class SoundManager
 		BOOST("data/music/boost.mp3"),
 		EXPLOSION("data/music/explosion.mp3"),
 		TAUNT("data/music/taunt.mp3");
-		
 		private Sounds(String filename)
 		{
 		}
-		
+
 		public void play(){
 		}
 	}

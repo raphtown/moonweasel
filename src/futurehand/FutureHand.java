@@ -1,5 +1,6 @@
 package futurehand;
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -28,7 +29,7 @@ public class FutureHand	 extends Thread {
 	private float[] gy_offset = {0f,0f,0f};
 	float last;
 	private FileWriter datalog;
-	
+
 	final static int ROLL = 0;
 	final static int PITCH = 1;
 	final static int YAW = 2;
@@ -65,15 +66,42 @@ public class FutureHand	 extends Thread {
 		}
 	}
 
-	public FutureHand(boolean useSerialPort, String filename) throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException {
-		if (useSerialPort) {
+	public FutureHand(boolean useSerialPort, String filename) throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException
+	{
+		if (useSerialPort) 
+		{
 			CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(filename);
-			SerialPort port = (SerialPort)portId.open("serial",4000);
-			// Set the port to 115,200 baud, 8 bits, 1 stop bit, no parity
+
+			SerialPort port = null;
+			int count = -1;
+			while(port == null && count++ < 3)
+			{
+				try
+				{
+					port = (SerialPort)portId.open("serial",4000);
+				}
+				catch(PortInUseException e)
+				{
+					System.err.println("Port in use, retrying...");
+					try
+					{
+						Thread.sleep(1000);
+					} 
+					catch (InterruptedException e1)
+					{
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+
 			port.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 			in = new BufferedReader(new InputStreamReader(port.getInputStream()));
 			System.out.println("Input port is ready: "+port.toString());
-		} else {
+			// Set the port to 115,200 baud, 8 bits, 1 stop bit, no parity
+		} 
+		else 
+		{
 			File f = new File(filename);
 			System.out.println("Reading from "+f.getAbsolutePath());
 			in=new BufferedReader(new FileReader(f));
@@ -84,6 +112,8 @@ public class FutureHand	 extends Thread {
 
 	public void run() {
 		int v[]=new int[10];
+
+		int waserror = 0;
 		// for (int loopcnt=0;loopcnt<10;loopcnt++)
 		while (true) 
 		{
@@ -92,13 +122,19 @@ public class FutureHand	 extends Thread {
 				line=in.readLine();
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.exit(-1);
+//				System.exit(-1);
 			}
 			if (line==null)
 				break;
+			if(waserror == 1)
+			{
+				waserror = 0;
+				System.err.println("Next line: " + line);
+			}
 			String[] elements=line.split("\t");
 			if (elements.length != 10) {
 				System.err.println("Expected 10 elements, got "+elements.length);
+				waserror = 1;
 				continue;
 			}
 			for (int i=0;i<Math.min(elements.length,v.length);i++) {
@@ -107,12 +143,12 @@ public class FutureHand	 extends Thread {
 				} catch (Exception e) {
 					System.err.println("Error parsing "+elements[i]);
 				}
-//				System.out.print(String.valueOf(v[i])+" ");
+				//				System.out.print(String.valueOf(v[i])+" ");
 			}
 			// Rescale integer values to true values
 			float t=v[0] / 1000.0f;
 			float ac_xyz[]={v[1] / 256.0f,v[2] / 256.0f,v[3] / 256.0f};
-			float mg_xyz[]={v[4] / 1300.0f,v[5] / 1300.0f,v[6] / 1300.0f};
+			float mg_xyz[]={-v[4] / 1300.0f,-v[5] / 1300.0f,v[6] / 1300.0f};
 			float gy_xyz[]={((v[7] / 1023f * 5.0f) - 1.23f) * 300f * (float)Math.PI/180f,((v[8] / 1023f * 5.0f) - 1.23f) * 300f* (float)Math.PI/180f,((v[9] / 1023f * 5.0f) - 1.23f) * 300f* (float)Math.PI/180f};
 			// Send the new values to the updater
 			updateRPY(t,ac_xyz,mg_xyz,gy_xyz);
@@ -141,6 +177,14 @@ public class FutureHand	 extends Thread {
 		else
 		{
 			float dt = t - last;
+
+			if(dt < 0 || dt > 1)
+			{
+				System.err.println("DT less than 0, skipping update");
+				System.err.println("t: " + t + ", last: " + last);
+				last = t;
+				return;
+			}
 
 			float ac_xyz_total = 0;
 
@@ -217,7 +261,7 @@ public class FutureHand	 extends Thread {
 
 			if (Math.abs(acm_rpy[PITCH]) > 80*Math.PI/180)
 			{
-			    // Almost vertical, don't use acm roll or yaw since they are meaningless
+				// Almost vertical, don't use acm roll or yaw since they are meaningless
 				rpy= addVectors(multiplyElements(compweightvert, addVectors(rpy, gy_delta_rpy)),
 						multiplyElements(addScalarToVector(1, multiplyMatrixByScalar(compweightvert, -1)), acm_rpy));
 			}
@@ -226,14 +270,14 @@ public class FutureHand	 extends Thread {
 				rpy= addVectors(multiplyElements(compweight, addVectors(rpy, gy_delta_rpy)),
 						multiplyElements(addScalarToVector(1, multiplyMatrixByScalar(compweight, -1)), acm_rpy));
 			}
-			
+
 			float[] errg = multiply3x3by3x1(kinv_matrix, subtractVectors(rpy, acm_rpy));
-			
+
 			gy_offset = addVectors(gy_offset, multiplyMatrixByScalar(errg, dt/recoverytime));
 
 			pitchCorrection = (float) (Math.round(rpy[PITCH]/Math.PI) * Math.PI);
 			rpy = addScalarToVector(-pitchCorrection, rpy);
-			
+
 			for(int i = 0; i < rpy.length; i++)
 			{
 				if (rpy[i]> Math.PI)
@@ -241,12 +285,12 @@ public class FutureHand	 extends Thread {
 				else if (rpy[i]<-Math.PI)
 					rpy[i]=(float)(rpy[i]+2*Math.PI);
 			}
-			
+
 			last = t;
-//			printVector("acm_rpy",acm_rpy);
-//			printVector("gy_delta_rpy",gy_delta_rpy);
-//			printVector("rpy",rpy);
-//			printVector("gy_offset",gy_offset);
+			//			printVector("acm_rpy",acm_rpy);
+			//			printVector("gy_delta_rpy",gy_delta_rpy);
+			//			printVector("rpy",rpy);
+			//			printVector("gy_offset",gy_offset);
 		}
 	}
 
@@ -254,7 +298,7 @@ public class FutureHand	 extends Thread {
 	{
 		System.out.println(nm+": ["+a[0]+", "+a[1]+", "+a[2]+"]");	
 	}
-	
+
 	public static float[] multiplyMatrixByScalar(float[] a, float b)
 	{
 		float[] result = new float[3];
@@ -264,7 +308,7 @@ public class FutureHand	 extends Thread {
 		}
 		return result;
 	}
-	
+
 	public static float[] addScalarToVector(float b, float[] a)
 	{
 		float[] result = new float[3];
@@ -285,7 +329,7 @@ public class FutureHand	 extends Thread {
 		}
 		return result;
 	}
-	
+
 	public static float[] addVectors(float[] a, float[] b)
 	{
 		float[] result = new float[3];
@@ -321,7 +365,7 @@ public class FutureHand	 extends Thread {
 		return result;
 	}
 
-	
+
 	public static float[][] multiply3x3by3x3(float[][] a, float[][] b)
 	{
 		float[][] result = new float[3][3];
@@ -341,7 +385,7 @@ public class FutureHand	 extends Thread {
 
 
 
- 	public float[][] rx(float theta)
+	public float[][] rx(float theta)
 	{
 		float[][] result = {{1,0,0},
 				{0,(float)(Math.cos(theta)),(float)(Math.sin(theta))},
@@ -381,7 +425,7 @@ public class FutureHand	 extends Thread {
 			c[i]=(float)Math.cos(rpy[remap[i]]/2);
 			s[i]=(float)Math.sin(rpy[remap[i]]/2);
 		}
-		
+
 		s[0]=-s[0];  // Flip pitch direction
 		Quaternion q=new Quaternion(
 				c[0]*c[1]*c[2]+s[0]*s[1]*s[2],
@@ -390,5 +434,5 @@ public class FutureHand	 extends Thread {
 				c[0]*c[1]*s[2]-s[0]*s[1]*c[2]);
 		return q;
 	}
-	
+
 }
