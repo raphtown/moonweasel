@@ -21,12 +21,14 @@ import gnu.io.UnsupportedCommOperationException;
  *
  */
 public class FutureHand	 extends Thread {
-	private final BufferedReader in;
+	private BufferedReader in;
 	private float[] rpy = {0f,0f,0f};
 	private float recoverytime = 2;
 	private float[] compweight = {0.98f,0.98f,0.98f};
 	private float[] compweightvert = {1f,0.98f,1f};
 	private float[] gy_offset = {0f,0f,0f};
+	private String portFilename;
+	private SerialPort port = null;
 	float last;
 	private FileWriter datalog;
 
@@ -66,39 +68,77 @@ public class FutureHand	 extends Thread {
 		}
 	}
 
+	private void initializePort()
+	{
+		CommPortIdentifier portId;
+		try
+		{
+			portId = CommPortIdentifier.getPortIdentifier(portFilename);
+		} catch (NoSuchPortException e2)
+		{
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			return;
+		}
+
+		int count = -1;
+		if (port != null) {
+			System.err.println("Closing port");
+		//	port.close();
+			port=null;
+		}
+		while(port == null && count++ < 3)
+		{
+			try
+			{
+				port = (SerialPort)portId.open("serial",4000);
+			}
+			catch(PortInUseException e)
+			{
+				System.err.println("Port in use, retrying...");
+				try
+				{
+					Thread.sleep(5000);
+				} 
+				catch (InterruptedException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+
+		if (port==null) {
+			System.err.println("Unable to open port: "+portFilename);
+			return;
+		}
+		try
+		{
+			port.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+		} catch (UnsupportedCommOperationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+		try
+		{
+			in = new BufferedReader(new InputStreamReader(port.getInputStream()));
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Input port is ready: "+port.toString());
+		// Set the port to 115,200 baud, 8 bits, 1 stop bit, no parity
+	}
+	
 	public FutureHand(boolean useSerialPort, String filename) throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException
 	{
 		if (useSerialPort) 
 		{
-			CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(filename);
-
-			SerialPort port = null;
-			int count = -1;
-			while(port == null && count++ < 3)
-			{
-				try
-				{
-					port = (SerialPort)portId.open("serial",4000);
-				}
-				catch(PortInUseException e)
-				{
-					System.err.println("Port in use, retrying...");
-					try
-					{
-						Thread.sleep(1000);
-					} 
-					catch (InterruptedException e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
-
-			port.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-			in = new BufferedReader(new InputStreamReader(port.getInputStream()));
-			System.out.println("Input port is ready: "+port.toString());
-			// Set the port to 115,200 baud, 8 bits, 1 stop bit, no parity
+			portFilename=filename;
+			initializePort();
 		} 
 		else 
 		{
@@ -124,8 +164,20 @@ public class FutureHand	 extends Thread {
 				e.printStackTrace();
 //				System.exit(-1);
 			}
-			if (line==null)
-				break;
+			if (line==null) {
+				System.err.println("Input line null, restarting port");
+				try
+				{
+					in.close();
+				} catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				initializePort();
+				continue;
+			}
+
 			if(waserror == 1)
 			{
 				waserror = 0;
@@ -150,6 +202,11 @@ public class FutureHand	 extends Thread {
 			float ac_xyz[]={v[1] / 256.0f,v[2] / 256.0f,v[3] / 256.0f};
 			float mg_xyz[]={-v[4] / 1300.0f,-v[5] / 1300.0f,v[6] / 1300.0f};
 			float gy_xyz[]={((v[7] / 1023f * 5.0f) - 1.23f) * 300f * (float)Math.PI/180f,((v[8] / 1023f * 5.0f) - 1.23f) * 300f* (float)Math.PI/180f,((v[9] / 1023f * 5.0f) - 1.23f) * 300f* (float)Math.PI/180f};
+		// Switch orientation to make orientation more intuitive
+			float y=ac_xyz[1]; ac_xyz[1]=ac_xyz[0]; ac_xyz[0]=-y;
+			y=mg_xyz[1]; mg_xyz[1]=mg_xyz[0]; mg_xyz[0]=-y;
+			y=gy_xyz[1]; gy_xyz[1]=gy_xyz[0]; gy_xyz[0]=-y;
+			
 			// Send the new values to the updater
 			updateRPY(t,ac_xyz,mg_xyz,gy_xyz);
 
